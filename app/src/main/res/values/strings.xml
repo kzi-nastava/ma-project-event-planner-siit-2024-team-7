@@ -3,4 +3,6 @@
     <string name="welcome_message">Welcome</string>
     <string name="sign_up_message">Sign up here</string>
     <string name="register_as">Register As:</string>
+    <string name="register_eo">Register As Event Organizer</string>
+    <string name="register_spp">Register As Service and Product Provider</string>
 </resources>

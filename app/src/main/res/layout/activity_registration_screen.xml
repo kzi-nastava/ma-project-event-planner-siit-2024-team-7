@@ -35,108 +35,185 @@
             android:text="@string/register_as" />
 
         <RadioGroup
+            android:id="@+id/register_rg"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">
 
-            <RadioButton
-                android:id="@+id/eoradio"
-                android:layout_width="wrap_content"
+            <RadioButton android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="Event organizer" />
 
             <RadioButton
-                android:id="@+id/sppradio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Service and product provider" />
         </RadioGroup>
     </TableRow>
 
-    <TableLayout
+    <include
         android:id="@+id/eoinputs"
+        layout="@layout/event_organizer_inputs"
+        android:visibility="visible" />
+
+    <include
+        android:id="@+id/sppinputs"
+        layout="@layout/spp_inputs"
+        android:visibility="gone"/>
+
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:labelFor="@id/country"
+            android:text="Country:" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:labelFor="@id/first_name"
-                android:text="First Name:" />
+        <EditText
+            android:id="@+id/country"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:autofillHints="" />
+    </TableRow>
 
-            <EditText
-                android:id="@+id/first_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="text"
-                android:autofillHints="" />
-        </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:labelFor="@id/city"
+            android:text="City:" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:labelFor="@id/last_name"
-                android:text="Last Name:" />
+        <EditText
+            android:id="@+id/city"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:autofillHints="" />
+    </TableRow>
 
-            <EditText
-                android:id="@+id/last_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="text"
-                android:autofillHints="" />
-        </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:labelFor="@id/street"
+            android:text="Street:" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:labelFor="@id/phone_number_eo"
-                android:text="Phone Number:" />
+        <EditText
+            android:id="@+id/street"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:autofillHints="" />
+    </TableRow>
 
-            <EditText
-                android:id="@+id/phone_number_eo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="text"
-                android:autofillHints="" />
-        </TableRow>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:labelFor="@id/house_number"
+            android:text="House Number:" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:labelFor="@id/photo_url"
-                android:text="Photo URL:" />
+        <EditText
+            android:id="@+id/house_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:autofillHints="" />
+    </TableRow>
 
-            <EditText
-                android:id="@+id/photo_url"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="textUri"
-                android:autofillHints="" />
-        </TableRow>
-    </TableLayout>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:labelFor="@id/email"
+            android:text="Email:" />
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="textEmailAddress"
+            android:autofillHints="" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:labelFor="@id/password"
+            android:text="Password:" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="textPassword"
+            android:autofillHints="" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:labelFor="@id/password_confirm"
+            android:text="Confirm Password:" />
+
+        <EditText
+            android:id="@+id/password_confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="textPassword"
+            android:autofillHints="" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:gravity="center"
+            android:text="@string/register_as"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </TableRow>
 </TableLayout>

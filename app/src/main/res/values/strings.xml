@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">EventPlanner</string>
+    <string name="log_in">Log in</string>
+    <string name="welcome">WELCOME</string>
+    <string name="don_t_have_an_account">Don\'t have an account? </string>
+    <string name="sign_up_here"><u>Sign up here!</u></string>
+    <string name="forgot_password"><u>Forgot password?</u></string>
+    <string name="the_ultimate_event_planner">THE ULTIMATE EVENT PLANNER</string>
 </resources>

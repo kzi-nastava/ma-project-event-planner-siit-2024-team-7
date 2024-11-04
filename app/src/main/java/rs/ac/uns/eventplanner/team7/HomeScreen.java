@@ -3,16 +3,15 @@ package rs.ac.uns.eventplanner.team7;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class LoginScreen extends AppCompatActivity {
+public class HomeScreen extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_screen);
+        setContentView(R.layout.activity_home_screen);
     }
 
     @Override
@@ -44,15 +43,15 @@ public class LoginScreen extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
-
-    public void loginOnClick(View view) {
-        Toast.makeText(this, "Successful login!", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(LoginScreen.this, HomeScreen.class);
+    public void registrationOnClick(View view) {
+        Intent intent = new Intent(HomeScreen.this, RegistrationScreen.class);
         startActivity(intent);
     }
 
-    public void signUpOnClick(View view) {
-        Intent intent = new Intent(LoginScreen.this, RegistrationScreen.class);
+    public void loginBtnOnClick(View view) {
+        Intent intent = new Intent(HomeScreen.this, LoginScreen.class);
         startActivity(intent);
+        finish();
     }
+
 }

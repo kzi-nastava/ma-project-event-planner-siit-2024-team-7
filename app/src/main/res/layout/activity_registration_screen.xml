@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegistrationScreen">
+    android:onClick="registerOnClick"
+    tools:context=".RegistrationScreen"
+    android:background="@color/background_blue">
 
     <TableRow
         android:layout_width="match_parent"
@@ -63,7 +65,7 @@
     <include
         android:id="@+id/sppinputs"
         layout="@layout/spp_inputs"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <TableRow
         android:layout_width="match_parent"
@@ -72,8 +74,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:labelFor="@id/country"
+            android:padding="5dp"
             android:text="Country:" />
 
         <EditText
@@ -81,8 +83,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="text"
-            android:autofillHints="" />
+            android:autofillHints=""
+            android:inputType="text" />
     </TableRow>
 
     <TableRow
@@ -92,8 +94,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:labelFor="@id/city"
+            android:padding="5dp"
             android:text="City:" />
 
         <EditText
@@ -101,8 +103,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="text"
-            android:autofillHints="" />
+            android:autofillHints=""
+            android:inputType="text" />
     </TableRow>
 
     <TableRow
@@ -112,8 +114,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:labelFor="@id/street"
+            android:padding="5dp"
             android:text="Street:" />
 
         <EditText
@@ -121,8 +123,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="text"
-            android:autofillHints="" />
+            android:autofillHints=""
+            android:inputType="text" />
     </TableRow>
 
     <TableRow
@@ -132,8 +134,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:labelFor="@id/house_number"
+            android:padding="5dp"
             android:text="House Number:" />
 
         <EditText
@@ -141,8 +143,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="text"
-            android:autofillHints="" />
+            android:autofillHints=""
+            android:inputType="text" />
     </TableRow>
 
     <TableRow
@@ -152,8 +154,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:labelFor="@id/email"
+            android:padding="5dp"
             android:text="Email:" />
 
         <EditText
@@ -161,8 +163,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="textEmailAddress"
-            android:autofillHints="" />
+            android:autofillHints=""
+            android:inputType="textEmailAddress" />
     </TableRow>
 
     <TableRow
@@ -172,8 +174,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:labelFor="@id/password"
+            android:padding="5dp"
             android:text="Password:" />
 
         <EditText
@@ -181,8 +183,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="textPassword"
-            android:autofillHints="" />
+            android:autofillHints=""
+            android:inputType="textPassword" />
     </TableRow>
 
     <TableRow
@@ -192,8 +194,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:labelFor="@id/password_confirm"
+            android:padding="5dp"
             android:text="Confirm Password:" />
 
         <EditText
@@ -201,8 +203,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="textPassword"
-            android:autofillHints="" />
+            android:autofillHints=""
+            android:inputType="textPassword" />
     </TableRow>
 
     <TableRow
@@ -215,6 +217,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             android:gravity="center"
+            android:onClick="registerOnClick"
             android:text="@string/register_as"
             android:textSize="16sp"
             android:textStyle="bold" />

@@ -38,14 +38,17 @@
             android:id="@+id/register_rg"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <RadioButton android:layout_width="wrap_content"
+            <RadioButton
+                android:id="@+id/rb_event_organizer"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
                 android:text="Event organizer" />
 
             <RadioButton
+                android:id="@+id/rb_service_provider"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Service and product provider" />
@@ -55,7 +58,7 @@
     <include
         android:id="@+id/eoinputs"
         layout="@layout/event_organizer_inputs"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <include
         android:id="@+id/sppinputs"

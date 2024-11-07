@@ -68,7 +68,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     public void registerOnClick(View view) {
         Toast.makeText(this, "Successful registration!", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(RegistrationScreen.this, LoginScreen.class);
+        Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

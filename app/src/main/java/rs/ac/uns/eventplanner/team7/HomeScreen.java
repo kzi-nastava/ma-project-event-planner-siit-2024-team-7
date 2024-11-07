@@ -44,12 +44,12 @@ public class HomeScreen extends AppCompatActivity {
         super.onDestroy();
     }
     public void registrationOnClick(View view) {
-        Intent intent = new Intent(HomeScreen.this, RegistrationScreen.class);
+        Intent intent = new Intent(HomeScreen.this, RegistrationActivity.class);
         startActivity(intent);
     }
 
     public void loginBtnOnClick(View view) {
-        Intent intent = new Intent(HomeScreen.this, LoginScreen.class);
+        Intent intent = new Intent(HomeScreen.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

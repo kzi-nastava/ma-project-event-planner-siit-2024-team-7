@@ -16,7 +16,7 @@
             android:name=".LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".RegistrationScreen"
+            android:name=".RegistrationActivity"
             android:exported="false" />
         <activity
             android:name=".SplashScreen"
@@ -29,9 +29,6 @@
             </intent-filter>
 
         </activity>
-        <activity
-            android:name=".LoginScreen"
-            android:exported="false" />
         <activity
             android:name=".HomeScreen"
             android:exported="false"/>

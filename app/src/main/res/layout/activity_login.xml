@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:padding="5dp"
-            android:hint="Username">
+            android:hint="@string/prompt_email">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/usernameInput"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:padding="5dp"
-            android:hint="Password">
+            android:hint="@string/prompt_password">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordInput"
@@ -67,7 +67,7 @@
             android:id="@+id/loginButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Login"
+            android:text="@string/log_in"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:textColor="@color/white"

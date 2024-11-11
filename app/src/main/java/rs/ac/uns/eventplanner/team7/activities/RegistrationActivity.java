@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7;
+package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import rs.ac.uns.eventplanner.team7.activities.LoginActivity;
+import rs.ac.uns.eventplanner.team7.R;
 
 import com.google.android.material.button.MaterialButton;
 

@@ -13,7 +13,6 @@ import com.google.android.material.textview.MaterialTextView;
 import java.util.Objects;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.RegistrationActivity;
 
 public class LoginActivity extends AppCompatActivity {
 

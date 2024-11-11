@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.EventPlanner" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.EventPlanner" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/blue_200</item>
         <item name="colorPrimaryVariant">@color/blue_500</item>
@@ -20,8 +20,6 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
-
-    <style name="Theme.EventPlanner" parent="Base.Theme.EventPlanner" />
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

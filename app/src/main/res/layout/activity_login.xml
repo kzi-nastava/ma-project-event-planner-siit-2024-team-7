@@ -90,7 +90,9 @@
                 android:textColor="@color/black"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:height="48dp"
+                />
 
             <!-- Divider -->
             <com.google.android.material.textview.MaterialTextView
@@ -108,7 +110,9 @@
                 android:textColor="@color/black"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:height="48dp"
+                />
 
         </LinearLayout>
 

@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import rs.ac.uns.eventplanner.team7.activities.LoginActivity;
 
+import com.google.android.material.button.MaterialButton;
+
 public class RegistrationActivity extends AppCompatActivity {
 
     @Override
@@ -23,10 +25,16 @@ public class RegistrationActivity extends AppCompatActivity {
                     if (checkedId == R.id.rb_service_provider) { // if spp is selected
                         findViewById(R.id.eoinputs).setVisibility(View.GONE);
                         findViewById(R.id.sppinputs).setVisibility(View.VISIBLE);
+                        MaterialButton regButton = findViewById(R.id.register_button);
+                        regButton.setEnabled(true);
+                        regButton.setText(R.string.register_spp);
                     }
                     if (checkedId == R.id.rb_event_organizer) { // if eo is selected
                         findViewById(R.id.eoinputs).setVisibility(View.VISIBLE);
                         findViewById(R.id.sppinputs).setVisibility(View.GONE);
+                        MaterialButton regButton = findViewById(R.id.register_button);
+                        regButton.setEnabled(true);
+                        regButton.setText(R.string.register_eo);
                     }
             }
         });

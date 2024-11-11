@@ -14,7 +14,11 @@
     android:orientation="vertical"
     tools:showIn="@layout/activity_home_base">
 
-
-
+    <fragment
+        android:id="@+id/top_events_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.TopEventsFragment"
+        />
 
 </LinearLayout>

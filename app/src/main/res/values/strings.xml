@@ -20,4 +20,6 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="sign_up_ul"><u>Sign up here</u></string>
+    <string name="all_events">TOP EVENTS TO ATTEND NOW</string>
+    <string name="all_services_products">TOP SERVICES AND PRODUCTS</string>
 </resources>

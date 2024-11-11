@@ -1,17 +1,17 @@
-package rs.ac.uns.eventplanner.team7;
+package rs.ac.uns.eventplanner.team7.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class HomeScreen extends AppCompatActivity {
+import rs.ac.uns.eventplanner.team7.R;
+
+public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_screen);
+        setContentView(R.layout.activity_home);
     }
 
     @Override
@@ -42,16 +42,6 @@ public class HomeScreen extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-    public void registrationOnClick(View view) {
-        Intent intent = new Intent(HomeScreen.this, RegistrationActivity.class);
-        startActivity(intent);
-    }
-
-    public void loginBtnOnClick(View view) {
-        Intent intent = new Intent(HomeScreen.this, LoginActivity.class);
-        startActivity(intent);
-        finish();
     }
 
 }

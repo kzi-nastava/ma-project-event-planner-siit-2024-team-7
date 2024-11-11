@@ -2,17 +2,13 @@ package rs.ac.uns.eventplanner.team7;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import rs.ac.uns.eventplanner.team7.activities.LoginActivity;
 
 import com.google.android.material.button.MaterialButton;
 

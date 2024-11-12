@@ -11,7 +11,7 @@
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/all_events"
+        android:text="@string/top_events"
         android:textSize="25sp"
         android:textAlignment="center" />
     <!--    <ListView-->

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     app:layout_constrainedHeight="true"
     app:layout_constraintEnd_toEndOf="parent"
@@ -14,11 +14,16 @@
     android:orientation="vertical"
     tools:showIn="@layout/activity_home_base">
 
-    <fragment
-        android:id="@+id/top_events_fragment"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/home_page_tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.TopEventsFragment"
-        />
+        app:tabMode="fixed"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/home_page_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
 </LinearLayout>

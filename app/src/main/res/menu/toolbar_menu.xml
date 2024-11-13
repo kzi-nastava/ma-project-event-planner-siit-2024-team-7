@@ -3,15 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_search"
-        android:icon="@drawable/baseline_search_24"
-        android:title="Search"
-        app:showAsAction="ifRoom|collapseActionView"
-        app:actionViewClass="androidx.appcompat.widget.SearchView" />
-
-    <item
         android:id="@+id/menu_profile"
-        android:icon="@drawable/baseline_person_24"
-        android:title="Profile"
+        android:icon="@drawable/baseline_more_vert_24"
         app:showAsAction="always" />
 </menu>

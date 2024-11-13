@@ -1,14 +1,13 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import rs.ac.uns.eventplanner.team7.R;

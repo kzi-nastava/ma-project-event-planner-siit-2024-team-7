@@ -31,4 +31,5 @@
     <string name="house_number">House Number</string>
     <string name="prompt_password_again">Password again</string>
     <string name="select_first">Select role first</string>
+    <string name="sign_in_ul"><u>Already have an account? Sign in!</u></string>
 </resources>

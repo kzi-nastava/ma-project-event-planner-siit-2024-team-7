@@ -33,6 +33,9 @@
             android:name=".activities.HomeActivity"
             android:label="Home"
             android:exported="false"/>
+        <activity
+            android:name=".activities.SPPServicesActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

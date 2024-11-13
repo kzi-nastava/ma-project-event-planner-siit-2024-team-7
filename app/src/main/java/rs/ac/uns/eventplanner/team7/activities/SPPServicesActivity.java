@@ -8,13 +8,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import rs.ac.uns.eventplanner.team7.R;
 
-public class SPPServices extends AppCompatActivity {
+public class SPPServicesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_service_list);
-        Button newServiceButton = findViewById(R.id.newServiceButton);
+        setContentView(R.layout.activity_spp_services);
+        Button newServiceButton = findViewById(R.id.new_service_button);
         newServiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

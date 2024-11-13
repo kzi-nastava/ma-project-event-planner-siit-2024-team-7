@@ -3,9 +3,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#D9D7D7</color>
-    <color name="background_blue">#D2EBF1</color>
+    <color name="background">#D2EBF1</color>
     <color name="blue_200">#90CAF9</color>
     <color name="blue_500">#03A9F4</color>
-    <color name="purple_300">#D1C4E9</color>
+    <color name="blue_700">#1976D2</color>
+    <color name="blue_900">#1A237E</color>
+    <color name="purple_200">#B39DDB</color>
     <color name="purple_500">#673AB7</color>
+    <color name="purple_700">#512DA8</color>
+    <color name="purple_900">#4A148C</color>
 </resources>

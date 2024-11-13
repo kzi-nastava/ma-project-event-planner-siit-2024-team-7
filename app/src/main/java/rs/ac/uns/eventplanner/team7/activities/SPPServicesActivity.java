@@ -1,16 +1,14 @@
-package rs.ac.uns.eventplanner.team7;
+package rs.ac.uns.eventplanner.team7.activities;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-public class ServiceListActivity extends AppCompatActivity {
+import rs.ac.uns.eventplanner.team7.R;
+
+public class SPPServices extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

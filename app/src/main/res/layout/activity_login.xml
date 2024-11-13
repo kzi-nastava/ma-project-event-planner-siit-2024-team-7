@@ -21,7 +21,7 @@
             android:id="@+id/welcomeMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome!"
+            android:text="@string/welcome"
             android:layout_marginTop="20dp"
             android:textStyle="bold"
             android:textSize="24sp"
@@ -90,7 +90,9 @@
                 android:textColor="@color/black"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:height="48dp"
+                />
 
             <!-- Divider -->
             <com.google.android.material.textview.MaterialTextView
@@ -108,7 +110,9 @@
                 android:textColor="@color/black"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:height="48dp"
+                />
 
         </LinearLayout>
 

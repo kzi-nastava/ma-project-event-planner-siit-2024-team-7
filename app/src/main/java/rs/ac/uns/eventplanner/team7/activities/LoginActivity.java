@@ -1,19 +1,18 @@
-package rs.ac.uns.eventplanner.team7;
+package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
+
+import java.util.Objects;
+
+import rs.ac.uns.eventplanner.team7.R;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -23,23 +22,24 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         MaterialTextView signUp = findViewById(R.id.signupLink);
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
-                startActivity(intent);
-            }
+        signUp.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+            startActivity(intent);
         });
 
         MaterialButton loginButton = findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextInputLayout usernameLayout = findViewById(R.id.usernameInputLayout);
-                TextInputLayout passwordLayout = findViewById(R.id.passwordInputLayout);
-                usernameLayout.setError("Username is not valid");
-                passwordLayout.setError("Password is not valid");
+        loginButton.setOnClickListener(v -> {
+            TextInputEditText usernameInput = findViewById(R.id.usernameInput);
+            TextInputEditText passwordInput = findViewById(R.id.passwordInput);
+            if (Objects.requireNonNull(usernameInput.getText()).toString().equals("admin@ep.com")
+                    && Objects.requireNonNull(passwordInput.getText()).toString().equals("1234")) {
+                startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                return;
             }
+            TextInputLayout usernameLayout = findViewById(R.id.usernameInputLayout);
+            TextInputLayout passwordLayout = findViewById(R.id.passwordInputLayout);
+            usernameLayout.setError("Username is not valid");
+            passwordLayout.setError("Password is not valid");
         });
     }
 

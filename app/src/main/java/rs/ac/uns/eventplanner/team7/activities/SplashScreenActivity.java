@@ -1,18 +1,16 @@
-package rs.ac.uns.eventplanner.team7;
+package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SplashScreen extends AppCompatActivity {
+import rs.ac.uns.eventplanner.team7.R;
+
+public class SplashScreenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +21,7 @@ public class SplashScreen extends AppCompatActivity {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
+                Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }

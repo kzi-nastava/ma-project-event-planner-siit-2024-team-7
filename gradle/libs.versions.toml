@@ -1,15 +1,17 @@
 [versions]
-agp = "8.7.1"
+agp = "8.7.2"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.9.3"
-constraintlayout = "2.1.4"
-annotation = "1.6.0"
-lifecycleLivedataKtx = "2.8.6"
-lifecycleViewmodelKtx = "2.8.6"
+constraintlayout = "2.2.0"
+annotation = "1.9.1"
+lifecycleLivedataKtx = "2.8.7"
+lifecycleViewmodelKtx = "2.8.7"
+lombok = "1.18.34"
+navigationFragment = "2.8.3"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -22,6 +24,8 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

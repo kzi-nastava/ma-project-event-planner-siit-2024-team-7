@@ -1,18 +1,16 @@
-package rs.ac.uns.eventplanner.team7;
+package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import rs.ac.uns.eventplanner.team7.R;
+
+import com.google.android.material.button.MaterialButton;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -27,10 +25,16 @@ public class RegistrationActivity extends AppCompatActivity {
                     if (checkedId == R.id.rb_service_provider) { // if spp is selected
                         findViewById(R.id.eoinputs).setVisibility(View.GONE);
                         findViewById(R.id.sppinputs).setVisibility(View.VISIBLE);
+                        MaterialButton regButton = findViewById(R.id.register_button);
+                        regButton.setEnabled(true);
+                        regButton.setText(R.string.register_spp);
                     }
                     if (checkedId == R.id.rb_event_organizer) { // if eo is selected
                         findViewById(R.id.eoinputs).setVisibility(View.VISIBLE);
                         findViewById(R.id.sppinputs).setVisibility(View.GONE);
+                        MaterialButton regButton = findViewById(R.id.register_button);
+                        regButton.setEnabled(true);
+                        regButton.setText(R.string.register_eo);
                     }
             }
         });

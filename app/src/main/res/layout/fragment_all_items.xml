@@ -5,14 +5,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AllEventsFragment"
+    tools:context=".fragments.AllItemsFragment"
     android:orientation="vertical"
-    android:id="@+id/all_events_fragment">
+    android:id="@+id/all_services_products_fragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/all_events"
+        android:text="@string/all_services_products"
         android:textSize="28sp"
         android:layout_margin="5dp"
         android:textAlignment="center"/>
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_background"
         android:layout_margin="15dp"
-        android:queryHint="@string/search_bar"/>
+        android:hint="@string/search_bar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,22 +34,26 @@
         app:layout_constraintTop_toBottomOf="@id/event_search_view"
         app:layout_constraintBottom_toBottomOf="@id/event_search_view"
         app:layout_constraintVertical_bias="0.001"
-        android:layout_marginHorizontal="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         >
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/event_filters_button"
+            android:id="@+id/srv_prd_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:text="@string/filters"
             />
 
-        <include layout="@layout/space_divider"/>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.4"/>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/event_sort_button"
+            android:id="@+id/srv_prd_sort_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
@@ -59,13 +63,12 @@
 
     <!-- TODO figure out how it works and how to do pagination with it   -->
 <!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:id="@+id/event_search_results"-->
+<!--        android:id="@+id/srv_prd_search_results"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="0dp"-->
 <!--        android:layout_weight="1"-->
 <!--        tools:listitem="@layout/horizontal_card"-->
 <!--        />-->
-
 
     <ScrollView
         android:layout_width="match_parent"

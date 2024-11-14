@@ -3,14 +3,12 @@ package rs.ac.uns.eventplanner.team7.adapters;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import rs.ac.uns.eventplanner.team7.fragments.AllEventsFragment;
-import rs.ac.uns.eventplanner.team7.fragments.AllServicesProductsFragment;
+import rs.ac.uns.eventplanner.team7.fragments.AllItemsFragment;
 import rs.ac.uns.eventplanner.team7.fragments.TopEventsFragment;
-import rs.ac.uns.eventplanner.team7.fragments.TopServicesProductsFragment;
+import rs.ac.uns.eventplanner.team7.fragments.TopItemsFragment;
 
 public class HomePagerAdapter extends FragmentStateAdapter {
 
@@ -24,8 +22,8 @@ public class HomePagerAdapter extends FragmentStateAdapter {
         switch (position) {
             case 0: return new TopEventsFragment();
             case 1: return new AllEventsFragment();
-            case 2: return new TopServicesProductsFragment();
-            case 3: return new AllServicesProductsFragment();
+            case 2: return new TopItemsFragment();
+            case 3: return new AllItemsFragment();
             default: throw new IllegalStateException("Unexpected position: " + position);
         }
     }

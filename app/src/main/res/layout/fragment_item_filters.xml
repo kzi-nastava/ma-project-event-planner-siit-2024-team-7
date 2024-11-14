@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".fragments.ItemFiltersFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:orientation="horizontal"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/filters"
+            android:textSize="24sp"
+            android:paddingHorizontal="20dp"
+            />
+
+        <include layout="@layout/space_divider"/>
+
+        <include layout="@layout/view_close_button"/>
+
+    </LinearLayout>
+
+    <include layout="@layout/divider_thick"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/available_start_date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="2dp"
+        android:paddingHorizontal="20dp"
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/ic_calendar"
+        android:hint="@string/available_start_date">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/available_start_date_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <include layout="@layout/divider_thin"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/available_end_date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="2dp"
+        android:paddingHorizontal="20dp"
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/ic_calendar"
+        android:hint="@string/available_end_date">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/available_end_date_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <include layout="@layout/divider_thin"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="2dp"
+        android:paddingHorizontal="20dp"
+        app:endIconMode="clear_text"
+        android:hint="@string/item_name">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/item_name_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <include layout="@layout/divider_thin"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="2dp"
+        android:paddingHorizontal="20dp"
+        app:endIconMode="clear_text"
+        android:hint="@string/price">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/item_price_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <include layout="@layout/divider_thin"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/item_category"
+        android:paddingHorizontal="20dp"
+        />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginVertical="2dp"
+        android:paddingHorizontal="20dp"
+        android:id="@+id/item_category_filter"
+        />
+
+    <include layout="@layout/divider_thin"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/item_location"
+        android:paddingHorizontal="20dp"
+        />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
+        android:paddingHorizontal="20dp"
+        android:id="@+id/item_location_filter"
+        />
+
+    <include layout="@layout/divider_thick"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        >
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/apply"
+            android:layout_weight="0.35"
+            />
+
+        <include layout="@layout/space_divider"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reset"
+            android:layout_weight="0.35" />
+
+    </LinearLayout>
+
+</LinearLayout>

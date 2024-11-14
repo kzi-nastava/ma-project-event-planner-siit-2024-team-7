@@ -47,4 +47,17 @@
     <string name="reset">Reset</string>
     <string name="apply">Apply</string>
     <string name="sort_options">Sort by:</string>
+    <string name="button_close">Close</string>
+    <string name="begin_date">Begin date</string>
+    <string name="end_date">End date</string>
+    <string name="event_name">Event name</string>
+    <string name="max_participants">Max participants</string>
+    <string name="event_type">Event type</string>
+    <string name="event_location">Event location</string>
+    <string name="item_location">Item location</string>
+    <string name="available_start_date">Available start date</string>
+    <string name="available_end_date">Available end date</string>
+    <string name="item_name">Item name</string>
+    <string name="price">Price</string>
+    <string name="item_category">Item category</string>
 </resources>

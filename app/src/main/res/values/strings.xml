@@ -32,4 +32,7 @@
     <string name="prompt_password_again">Password again</string>
     <string name="select_first">Select role first</string>
     <string name="sign_in_ul"><u>Already have an account? Sign in!</u></string>
+    <string name="toolbar_chats">Chats</string>
+    <string name="toolbar_notifications">Notifications</string>
+    <string name="toolbar_account">Account</string>
 </resources>

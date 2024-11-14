@@ -6,9 +6,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/activity_home_base"
-        layout="@layout/activity_home_base"
-        />
+<!--    <include-->
+<!--        android:id="@+id/activity_home_base"-->
+<!--        layout="@layout/activity_home_base"-->
+<!--        />-->
 
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/service_management_fragment"
+        layout="@layout/fragment_service_management"/>
 </LinearLayout>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".fragments.ItemSortOptionsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:orientation="horizontal"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sort_options"
+            android:textSize="24sp"
+            android:paddingHorizontal="20dp"
+            />
+
+        <include layout="@layout/space_divider"/>
+
+        <include layout="@layout/view_close_button"/>
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="15dp"
+        >
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            />
+
+        <include layout="@layout/divider_thin"/>
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Price"
+            />
+
+        <include layout="@layout/divider_thin"/>
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            />
+
+        <include layout="@layout/divider_thin"/>
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            />
+
+    </RadioGroup>
+
+</LinearLayout>

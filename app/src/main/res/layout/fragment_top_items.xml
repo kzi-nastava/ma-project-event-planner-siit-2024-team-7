@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".fragments.TopEventsFragment"
     android:orientation="vertical"
-    android:id="@+id/top_events_fragment">
+    android:id="@+id/top_services_products_fragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/top_events"
+        android:text="@string/top_services_products"
         android:textSize="25sp"
-        android:textAlignment="center" />
+        android:textAlignment="center"/>
     <!--    <ListView-->
     <!--        android:layout_margin="5dp"-->
     <!--        android:id="@android:id/list"-->
@@ -36,7 +36,8 @@
             <include layout="@layout/normal_card"/>
             <include layout="@layout/normal_card"/>
             <include layout="@layout/normal_card"/>
-            <include layout="@layout/normal_card" />
+            <include layout="@layout/normal_card"/>
+
         </LinearLayout>
 
     </ScrollView>

@@ -33,22 +33,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/jump_to_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:layout_marginStart="15dp"
-        android:backgroundTint="@color/blue_200"
-        android:clickable="true"
-        android:contentDescription="Jump to section"
-        android:tooltipText=""
-        android:theme="@style/Theme.EventPlanner"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-    />
-
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"

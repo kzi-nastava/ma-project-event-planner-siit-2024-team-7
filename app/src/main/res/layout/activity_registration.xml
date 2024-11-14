@@ -23,7 +23,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="24dp" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/register_as"
@@ -167,7 +167,7 @@
             android:textSize="24sp"
             />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/sign_in_reg"
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"

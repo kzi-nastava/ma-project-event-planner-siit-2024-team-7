@@ -2,8 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/menu_profile"
-        android:icon="@drawable/baseline_more_vert_24"
-        app:showAsAction="always" />
+    <item android:id="@+id/nav_chats"
+        android:title="@string/toolbar_chats"
+        android:icon="@drawable/ic_chat_bubble"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/nav_notifications"
+        android:title="@string/toolbar_notifications"
+        android:icon="@drawable/ic_notifications"
+        app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/nav_account"
+        android:title="@string/toolbar_account"
+        android:icon="@drawable/ic_account"
+        app:showAsAction="ifRoom" />
+
 </menu>

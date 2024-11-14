@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.HomeActivity"
-    android:background="@color/background_blue">
+    android:background="@color/background">
 
     <include layout="@layout/activity_home_content" />
 
@@ -24,12 +24,13 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:menu="@menu/toolbar_menu"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
-            app:layout_scrollFlags="scroll|enterAlways">
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:menu="@menu/toolbar_menu">
 
 
         </androidx.appcompat.widget.Toolbar>
+
     </com.google.android.material.appbar.AppBarLayout>
 
 

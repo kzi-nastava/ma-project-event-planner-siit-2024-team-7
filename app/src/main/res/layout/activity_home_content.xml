@@ -14,16 +14,4 @@
     android:orientation="vertical"
     tools:showIn="@layout/activity_home_base">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/home_page_tab_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabMode="fixed"/>
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/home_page_view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
 </LinearLayout>

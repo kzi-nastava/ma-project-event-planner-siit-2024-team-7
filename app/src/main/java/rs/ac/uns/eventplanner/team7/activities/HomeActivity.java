@@ -2,8 +2,8 @@ package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,18 +11,14 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
+
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.adapters.HomePagerAdapter;
+import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -32,8 +28,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        initTabs();
+//        navbarSetup();
+        loadFragment(new HomeFragment());
     }
 
     @Override
@@ -97,32 +93,6 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void initTabs() {
-        TabLayout tabLayout = findViewById(R.id.home_page_tab_layout);
-        ViewPager2 viewPager = findViewById(R.id.home_page_view_pager);
-
-        HomePagerAdapter adapter = new HomePagerAdapter(this);
-        viewPager.setAdapter(adapter);
-
-        // Link the TabLayout and ViewPager2
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            switch (position) {
-                case 0:
-                    tab.setText(R.string.tab_top_events);
-                    break;
-                case 1:
-                    tab.setText(R.string.tab_all_events);
-                    break;
-                case 2:
-                    tab.setText(R.string.tab_top_services_products);
-                    break;
-                case 3:
-                    tab.setText(R.string.tab_all_services_products);
-                    break;
-            }
-        }).attach();
-    }
-
     private void navbarSetup() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
@@ -130,9 +100,12 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
-//                switch (item.getItemId()) {
-//                    add the cases here
-//                }
+                Log.d("HOME", "Eve me");
+                // add the cases here
+                if (item.getItemId() == R.id.home_fragment) {
+                    selectedFragment = new HomeFragment();
+                    Log.d("HOME", "To je taj");
+                }
                 if (selectedFragment != null) {
                     loadFragment(selectedFragment);
                 }

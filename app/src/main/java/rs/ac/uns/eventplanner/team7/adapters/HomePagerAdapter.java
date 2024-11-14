@@ -12,8 +12,8 @@ import rs.ac.uns.eventplanner.team7.fragments.TopItemsFragment;
 
 public class HomePagerAdapter extends FragmentStateAdapter {
 
-    public HomePagerAdapter(@NonNull FragmentActivity fragmentActivity) {
-        super(fragmentActivity);
+    public HomePagerAdapter(@NonNull Fragment fragment) {
+        super(fragment);
     }
 
     @NonNull

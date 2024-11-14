@@ -33,6 +33,7 @@
     <string name="house_number">House Number</string>
     <string name="prompt_password_again">Password again</string>
     <string name="select_first">Select role first</string>
+    <string name="sign_in_ul"><u>Already have an account? Sign in!</u></string>
     <string name="tab_top_events">Top events</string>
     <string name="tab_all_events">All events</string>
     <string name="tab_top_services_products">Top items</string>
@@ -60,4 +61,5 @@
     <string name="item_name">Item name</string>
     <string name="price">Price</string>
     <string name="item_category">Item category</string>
+    <string name="please_sign_in">Please sign in</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +37,15 @@ public class RegistrationActivity extends AppCompatActivity {
                         regButton.setEnabled(true);
                         regButton.setText(R.string.register_eo);
                     }
+            }
+        });
+
+        TextView signIn = findViewById(R.id.sign_in_reg);
+        signIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
         });
     }

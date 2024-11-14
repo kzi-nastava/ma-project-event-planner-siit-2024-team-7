@@ -28,7 +28,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        navbarSetup();
+        navbarSetup();
         loadFragment(new HomeFragment());
     }
 
@@ -100,11 +100,9 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
-                Log.d("HOME", "Eve me");
                 // add the cases here
                 if (item.getItemId() == R.id.home_fragment) {
                     selectedFragment = new HomeFragment();
-                    Log.d("HOME", "To je taj");
                 }
                 if (selectedFragment != null) {
                     loadFragment(selectedFragment);

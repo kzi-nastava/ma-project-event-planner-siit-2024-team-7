@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center"
+        android:layout_gravity="center">
 
         <!-- Welcome message -->
         <com.google.android.material.textview.MaterialTextView
@@ -24,7 +25,18 @@
             android:text="@string/welcome"
             android:layout_marginTop="20dp"
             android:textStyle="bold"
-            android:textSize="24sp"
+            android:textSize="40sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="10dp" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/please_sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please sign in"
+            android:layout_marginTop="20dp"
+            android:textStyle="italic"
+            android:textSize="30sp"
             android:textColor="@color/black"
             android:layout_marginBottom="24dp" />
 
@@ -71,6 +83,8 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:textColor="@color/white"
+            android:textSize="24sp"
+            android:padding="10dp"
             style="@style/Widget.MaterialComponents.Button"
             android:layout_marginBottom="16dp" />
 
@@ -92,6 +106,7 @@
                 android:focusable="true"
                 android:padding="8dp"
                 android:height="48dp"
+                android:textSize="16sp"
                 />
 
             <!-- Divider -->
@@ -112,6 +127,7 @@
                 android:focusable="true"
                 android:padding="8dp"
                 android:height="48dp"
+                android:textSize="16sp"
                 />
 
         </LinearLayout>

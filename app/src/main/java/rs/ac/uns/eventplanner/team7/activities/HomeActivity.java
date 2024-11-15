@@ -78,9 +78,9 @@ public class HomeActivity extends AppCompatActivity {
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(@NonNull MenuItem item) {
-                    if (item.getItemId() == R.id.nav_logout) {
-                        // Handle logout action
+                    if (item.getItemId() == R.id.nav_logout) { //logout action
                         Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         return true;
                     }

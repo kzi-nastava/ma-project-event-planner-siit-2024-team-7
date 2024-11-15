@@ -24,8 +24,6 @@
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:layout_scrollFlags="scroll|enterAlways"
             app:menu="@menu/toolbar_menu">
-
-
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -35,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-        app:layout_constraintTop_toTopOf="@id/app_bar" />
+        app:layout_constraintTop_toBottomOf="@+id/app_bar" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"

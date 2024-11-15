@@ -33,7 +33,8 @@ public class LoginActivity extends AppCompatActivity {
             TextInputEditText passwordInput = findViewById(R.id.passwordInput);
             if (Objects.requireNonNull(usernameInput.getText()).toString().equals("admin@ep.com")
                     && Objects.requireNonNull(passwordInput.getText()).toString().equals("1234")) {
-                startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                startActivity(intent);
                 return;
             }
             TextInputLayout usernameLayout = findViewById(R.id.usernameInputLayout);

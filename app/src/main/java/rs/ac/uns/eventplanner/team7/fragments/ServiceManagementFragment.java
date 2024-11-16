@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
 
 import rs.ac.uns.eventplanner.team7.R;
@@ -36,5 +37,15 @@ public class ServiceManagementFragment extends Fragment {
         if (args != null) {
             title.setText(args.getString("message_key"));
         }
+
+        if (title.getText() == "SERVICE CREATION") {
+            view.findViewById(R.id.delete_service_button).setVisibility(View.GONE);
+        }
+
+        MaterialButton categoryRecommendationButton = view.findViewById(R.id.button_recommend_category);
+        categoryRecommendationButton.setOnClickListener(v -> {
+            CategoryRecommendationFragment fragment = new CategoryRecommendationFragment();
+            fragment.show(requireActivity().getSupportFragmentManager(), "RecommendationDialog");
+        });
     }
 }

@@ -278,6 +278,16 @@
             android:layout_gravity="start"
             />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/delete_service_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete service"
+            android:backgroundTint="@color/red_delete"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="start"
+            />
+
     </LinearLayout>
 
 </ScrollView>

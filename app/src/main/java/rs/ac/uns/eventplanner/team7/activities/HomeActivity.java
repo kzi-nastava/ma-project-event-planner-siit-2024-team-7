@@ -19,6 +19,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
+import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -101,8 +102,11 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
                 // add the cases here
-                if (item.getItemId() == R.id.home_fragment) {
+                if (item.getItemId() == R.id.nav_home) {
                     selectedFragment = new HomeFragment();
+                }
+                else if (item.getItemId() == R.id.nav_service) {
+                    selectedFragment = new SPPServicesBaseFragment();
                 }
                 if (selectedFragment != null) {
                     loadFragment(selectedFragment);

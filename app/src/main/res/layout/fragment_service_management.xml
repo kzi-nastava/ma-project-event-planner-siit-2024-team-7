@@ -37,6 +37,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_recommend_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="start"
+            android:text="Recommend category" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -218,7 +226,7 @@
 
         </LinearLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_select_images"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -263,11 +271,13 @@
 
         </LinearLayout>
 
-        <com.google.android.material.search.SearchBar
-            android:layout_width="match_parent"
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Event types"
-            android:layout_marginTop="8dp"/>
+            android:text="Event types"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="start"
+            />
 
     </LinearLayout>
 

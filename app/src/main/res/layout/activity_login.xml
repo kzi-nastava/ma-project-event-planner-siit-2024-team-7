@@ -8,7 +8,7 @@
     android:padding="24dp"
     app:cardElevation="4dp"
     app:cardCornerRadius="12dp"
-    android:layout_gravity="center">
+    android:layout_gravity="center_horizontal">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +24,18 @@
             android:text="@string/welcome"
             android:layout_marginTop="20dp"
             android:textStyle="bold"
-            android:textSize="24sp"
+            android:textSize="40sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="10dp" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/please_sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/please_sign_in"
+            android:layout_marginTop="20dp"
+            android:textStyle="italic"
+            android:textSize="30sp"
             android:textColor="@color/black"
             android:layout_marginBottom="24dp" />
 
@@ -34,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:padding="5dp"
+            android:padding="10dp"
             android:hint="@string/prompt_email">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -51,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:padding="5dp"
+            android:padding="10dp"
             android:hint="@string/prompt_password">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -62,26 +73,25 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Login button -->
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/loginButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/log_in"
+            android:text="@string/sign_in"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:textColor="@color/white"
-            style="@style/Widget.MaterialComponents.Button"
+            android:textSize="24sp"
+            android:padding="15dp"
             android:layout_marginBottom="16dp" />
 
-        <!-- Sign up and Forgot password links -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
 
-            <!-- Sign Up link -->
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/signupLink"
                 android:layout_width="wrap_content"
@@ -92,26 +102,7 @@
                 android:focusable="true"
                 android:padding="8dp"
                 android:height="48dp"
-                />
-
-            <!-- Divider -->
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" | "
-                android:textColor="@color/black" />
-
-            <!-- Forgot Password link -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/forgotPasswordLink"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/forgot_password"
-                android:textColor="@color/black"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="8dp"
-                android:height="48dp"
+                android:textSize="16sp"
                 />
 
         </LinearLayout>

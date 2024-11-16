@@ -17,12 +17,13 @@
             android:layout_height="wrap_content"
             android:text="@string/sign_up_message"
             android:textStyle="bold"
-            android:textSize="24sp"
+            android:textSize="32sp"
             android:textColor="@color/black"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="24dp" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/register_as"
@@ -163,6 +164,17 @@
             android:text="@string/select_first"
             android:layout_marginTop="24dp"
             android:textColor="@android:color/white"
+            android:textSize="24sp"
             />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/sign_in_reg"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_in_ul"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
     </LinearLayout>
 </ScrollView>

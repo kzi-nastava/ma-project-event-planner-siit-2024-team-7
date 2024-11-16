@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.AllEventsFragment"
+    android:orientation="vertical"
+    android:id="@+id/all_events_fragment">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/all_events"
+        android:textSize="28sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="5dp"
+        android:textAlignment="center"/>
+
+    <SearchView
+        android:id="@+id/event_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_background"
+        android:layout_margin="15dp"
+        android:queryHint="@string/search_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/event_search_view"
+        app:layout_constraintBottom_toBottomOf="@id/event_search_view"
+        app:layout_constraintVertical_bias="0.001"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        >
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/event_filters_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="@string/filters"
+            />
+
+        <include layout="@layout/space_divider"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/event_sort_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:text="@string/sort"/>
+
+    </LinearLayout>
+
+    <!-- TODO figure out how it works and how to do pagination with it   -->
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/event_search_results"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        tools:listitem="@layout/horizontal_card"-->
+<!--        />-->
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="15dp">
+            <include layout="@layout/horizontal_card"/>
+            <include layout="@layout/horizontal_card"/>
+            <include layout="@layout/horizontal_card"/>
+            <include layout="@layout/horizontal_card"/>
+            <include layout="@layout/horizontal_card"/>
+            <include layout="@layout/horizontal_card"/>
+            <include layout="@layout/horizontal_card"/>
+            <include layout="@layout/horizontal_card"/>
+            <include layout="@layout/horizontal_card"/>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

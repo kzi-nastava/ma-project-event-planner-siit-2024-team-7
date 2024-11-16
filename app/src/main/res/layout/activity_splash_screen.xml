@@ -5,25 +5,28 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_blue"
+    android:background="@color/background"
     tools:context=".activities.SplashScreenActivity">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:fontFamily="sans-serif-light"
-        android:text="@string/the_ultimate_event_planner"
-        android:textColor="@color/cardview_dark_background"
-        android:textSize="48sp"
-        android:textStyle="italic"
+        android:text="@string/splash_screen_title"
+        android:textSize="70sp"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.473" />
+        app:layout_constraintVertical_bias="0.473"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        android:text="@string/splash_screen_subtitle"
+        android:textSize="35sp"
+        android:textAlignment="center" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

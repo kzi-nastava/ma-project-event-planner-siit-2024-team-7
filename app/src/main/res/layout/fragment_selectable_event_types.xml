@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.SelectableEventTypesFragment"
+    android:id="@+id/selectable_event_types_fragment"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Event types"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"/>
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Event type 1"/>
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Event type 2"/>
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Event type 3"/>
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Event type 4"/>
+
+</LinearLayout>

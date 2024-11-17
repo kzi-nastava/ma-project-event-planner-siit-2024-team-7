@@ -8,9 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import rs.ac.uns.eventplanner.team7.R;
 
-public class SelectableEventTypesFragment extends Fragment {
+public class SelectableEventTypesFragment extends BottomSheetDialogFragment {
 
     public SelectableEventTypesFragment() {
         // Required empty public constructor

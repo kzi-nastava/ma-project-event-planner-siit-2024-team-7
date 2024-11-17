@@ -41,11 +41,20 @@ public class ServiceManagementFragment extends Fragment {
         if (title.getText() == "SERVICE CREATION") {
             view.findViewById(R.id.delete_service_button).setVisibility(View.GONE);
         }
+        else if (title.getText() == "SERVICE UDPATE") {
+            view.findViewById(R.id.service_category).setEnabled(false);
+        }
 
         MaterialButton categoryRecommendationButton = view.findViewById(R.id.button_recommend_category);
         categoryRecommendationButton.setOnClickListener(v -> {
             CategoryRecommendationFragment fragment = new CategoryRecommendationFragment();
             fragment.show(requireActivity().getSupportFragmentManager(), "RecommendationDialog");
+        });
+
+        MaterialButton eventTypesButton = view.findViewById(R.id.event_types_button);
+        eventTypesButton.setOnClickListener(v -> {
+            SelectableEventTypesFragment fragment = new SelectableEventTypesFragment();
+            fragment.show(getChildFragmentManager(), fragment.getTag());
         });
     }
 }

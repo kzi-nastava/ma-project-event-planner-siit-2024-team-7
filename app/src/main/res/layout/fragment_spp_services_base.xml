@@ -38,10 +38,13 @@
                     android:layout_marginStart="15dp"
                     android:text="New service" />
 
-                <com.google.android.material.search.SearchBar
-                    android:layout_width="180dp"
-                    android:layout_height="40dp"
-                    android:hint="Search service" />
+                <SearchView
+                    android:id="@+id/event_search_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_background"
+                    android:layout_margin="15dp"
+                    android:queryHint="@string/search_bar"/>
 
             </LinearLayout>
 

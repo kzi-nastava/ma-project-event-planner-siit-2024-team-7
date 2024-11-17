@@ -10,7 +10,9 @@
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Event types"/>
+        android:text="Event types"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"/>
     <com.google.android.material.checkbox.MaterialCheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

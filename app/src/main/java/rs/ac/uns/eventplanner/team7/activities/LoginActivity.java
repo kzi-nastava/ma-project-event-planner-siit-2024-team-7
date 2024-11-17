@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
             if (Objects.requireNonNull(usernameInput.getText()).toString().equals("admin@ep.com")
                     && Objects.requireNonNull(passwordInput.getText()).toString().equals("1234")) {
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                intent.putExtra("isGuest", false);
                 startActivity(intent);
                 return;
             }
@@ -41,6 +42,13 @@ public class LoginActivity extends AppCompatActivity {
             TextInputLayout passwordLayout = findViewById(R.id.passwordInputLayout);
             usernameLayout.setError("Username is not valid");
             passwordLayout.setError("Password is not valid");
+        });
+
+        MaterialTextView guestButton = findViewById(R.id.continue_as_guest);
+        guestButton.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            intent.putExtra("isGuest", true);
+            startActivity(intent);
         });
     }
 

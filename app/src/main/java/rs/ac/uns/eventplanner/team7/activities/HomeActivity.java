@@ -23,10 +23,13 @@ import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private boolean isGuest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        isGuest = getIntent().getBooleanExtra("isGuest", false);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         navbarSetup();
@@ -74,7 +77,12 @@ public class HomeActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.nav_account) {
             View profileMenuItemView = findViewById(R.id.nav_account);
             PopupMenu popupMenu = new PopupMenu(this, profileMenuItemView);
-            popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
+            if (isGuest) { //inflate it with guest menu
+                popupMenu.getMenuInflater().inflate(R.menu.guest_profile_menu, popupMenu.getMenu());
+            }
+            else {
+                popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
+            }
 
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
@@ -82,6 +90,16 @@ public class HomeActivity extends AppCompatActivity {
                     if (item.getItemId() == R.id.nav_logout) { //logout action
                         Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        return true;
+                    }
+                    if (item.getItemId() == R.id.nav_sign_in) {
+                        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        return true;
+                    }
+                    if (item.getItemId() == R.id.nav_sign_up) {
+                        Intent intent = new Intent(HomeActivity.this, RegistrationActivity.class);
                         startActivity(intent);
                         return true;
                     }

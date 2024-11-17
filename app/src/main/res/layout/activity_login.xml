@@ -86,12 +86,6 @@
             android:padding="15dp"
             android:layout_marginBottom="16dp" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/signupLink"
                 android:layout_width="wrap_content"
@@ -105,8 +99,19 @@
                 android:textSize="16sp"
                 />
 
-        </LinearLayout>
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/continue_as_guest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/continue_as_guest_ul"
+            android:textColor="@color/black"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:height="48dp"
+            android:textSize="16sp"
+            />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

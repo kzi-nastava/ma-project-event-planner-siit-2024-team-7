@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
@@ -30,6 +31,14 @@ public class ServiceManagementFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        ImageButton back = view.findViewById(R.id.back_button);
+        back.setOnClickListener(v -> {
+            SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frameLayout, fragment)
+                    .commit();
+        });
 
         MaterialTextView title = view.findViewById(R.id.welcomeMessage);
 

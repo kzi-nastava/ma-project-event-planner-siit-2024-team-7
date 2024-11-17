@@ -14,6 +14,14 @@
         android:gravity="center"
         android:padding="16dp">
 
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/rounded_arrow_back_24"
+            android:background="@color/background"
+            android:layout_gravity="start"/>
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/welcomeMessage"
             android:layout_width="wrap_content"
@@ -120,7 +128,7 @@
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="300dp"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
                 android:hint="Reservation deadline"
@@ -148,7 +156,7 @@
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="300dp"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
                 android:hint="Cancellation deadline"
@@ -176,7 +184,7 @@
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="300dp"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
                 android:hint="Minimum duration"
@@ -204,7 +212,7 @@
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="300dp"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
                 android:hint="Maximum duration"
@@ -279,15 +287,32 @@
             android:layout_gravity="start"
             />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/delete_service_button"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Delete service"
-            android:backgroundTint="@color/red_delete"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="start"
-            />
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_service_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save service"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="start"
+                />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/delete_service_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete service"
+                android:backgroundTint="@color/red_delete"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="start"
+                />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

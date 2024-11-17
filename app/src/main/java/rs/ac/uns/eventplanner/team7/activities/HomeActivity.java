@@ -101,12 +101,15 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
+                Toolbar toolbar = findViewById(R.id.toolbar);
                 // add the cases here
                 if (item.getItemId() == R.id.nav_home) {
                     selectedFragment = new HomeFragment();
+                    toolbar.setTitle(item.getTitle());
                 }
                 else if (item.getItemId() == R.id.nav_service) {
                     selectedFragment = new SPPServicesBaseFragment();
+                    toolbar.setTitle(item.getTitle());
                 }
                 if (selectedFragment != null) {
                     loadFragment(selectedFragment);

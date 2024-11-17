@@ -16,11 +16,39 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="@string/sort_options"
             android:textSize="24sp"
             android:paddingHorizontal="20dp"
+            android:gravity="center"
             />
+
+        <include layout="@layout/space_divider"/>
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:checkedButton="@id/sort_ascending_event"
+            >
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/sort_ascending_event"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/ascending"
+                android:paddingHorizontal="4dp"
+                />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/sort_descending_event"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/descending"
+                android:paddingHorizontal="4dp"
+                />
+
+        </RadioGroup>
 
         <include layout="@layout/space_divider"/>
 
@@ -32,46 +60,70 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="15dp"
+        android:checkedButton="@id/sort_event_name"
         >
 
         <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/sort_event_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Name"
+            android:text="@string/name"
+            android:checked="true"
             />
 
         <include layout="@layout/divider_thin"/>
 
         <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/sort_event_participants"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Participants"
+            android:text="@string/participants"
             />
 
         <include layout="@layout/divider_thin"/>
 
         <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/sort_event_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Type"
+            android:text="@string/type"
             />
 
         <include layout="@layout/divider_thin"/>
 
         <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/sort_event_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Location"
+            android:text="@string/location"
             />
 
         <include layout="@layout/divider_thin"/>
 
         <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/sort_event_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Date"
+            android:text="@string/date"
             />
 
     </RadioGroup>
+
+    <include layout="@layout/divider_thick"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center"
+        >
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sort"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>

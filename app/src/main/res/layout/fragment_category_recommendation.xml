@@ -6,7 +6,8 @@
     tools:context=".fragments.CategoryRecommendationFragment"
     android:orientation="vertical"
     android:id="@+id/category_recommendation_fragment"
-    android:layout_margin="8dp">
+    android:padding="20dp"
+    >
 
     <TextView
         android:id="@+id/dialog_title"
@@ -55,7 +56,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:backgroundTint="@color/purple_500"
             android:text="Submit"
             android:textColor="@color/white" />
 
@@ -64,7 +64,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:backgroundTint="@color/purple_500"
             android:text="Cancel"
             android:textColor="@color/white" />
     </LinearLayout>

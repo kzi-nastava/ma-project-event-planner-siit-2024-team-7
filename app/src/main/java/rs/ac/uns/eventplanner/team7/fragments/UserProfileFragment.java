@@ -45,7 +45,7 @@ public class UserProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         setupRole(view);
         setupInputs(view);
-        setupCarousels(view);
+        setupAllCarousels(view);
         return view;
     }
 
@@ -100,8 +100,13 @@ public class UserProfileFragment extends Fragment {
         }
     }
 
-    private void setupCarousels(View view) {
-        RecyclerView favoritesCarousel = view.findViewById(R.id.favoritesCarousel);
+    private void setupAllCarousels(View view) {
+        setupCarousel(view, R.id.favouriteEventsCarousel);
+        setupCarousel(view, R.id.favouriteServicesCarousel);
+    }
+
+    private void setupCarousel(View view, int carouselId) {
+        RecyclerView favoritesCarousel = view.findViewById(carouselId);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
         favoritesCarousel.setLayoutManager(layoutManager);

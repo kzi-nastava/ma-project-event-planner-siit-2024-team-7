@@ -180,6 +180,9 @@
             layout="@layout/fragment_favourite_events"
             android:id="@+id/favourite_events"/>
 
+        <include
+            layout="@layout/fragment_favourite_services"
+            android:id="@+id/favourite_services"/>
 
 
 

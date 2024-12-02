@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/favourite_events"
+    android:id="@+id/favourite_services"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Favourite Events"
+        android:text="Favourite Services"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
@@ -21,7 +21,7 @@
         >
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/favouriteEventsCarousel"
+            android:id="@+id/favouriteServicesCarousel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />

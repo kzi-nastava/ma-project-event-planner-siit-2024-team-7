@@ -103,6 +103,7 @@ public class UserProfileFragment extends Fragment {
     private void setupAllCarousels(View view) {
         setupCarousel(view, R.id.favouriteEventsCarousel);
         setupCarousel(view, R.id.favouriteServicesCarousel);
+        setupCarousel(view, R.id.favouriteProductsCarousel);
     }
 
     private void setupCarousel(View view, int carouselId) {

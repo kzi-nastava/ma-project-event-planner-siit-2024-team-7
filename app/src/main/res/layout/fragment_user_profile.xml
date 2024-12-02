@@ -184,6 +184,10 @@
             layout="@layout/fragment_favourite_services"
             android:id="@+id/favourite_services"/>
 
+        <include
+            layout="@layout/fragment_favourite_products"
+            android:id="@+id/favourite_products"/>
+
 
 
 

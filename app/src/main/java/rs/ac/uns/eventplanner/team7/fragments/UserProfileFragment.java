@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.util.Pair;
@@ -21,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.adapters.SimpleCarouselAdapter;
 import rs.ac.uns.eventplanner.team7.utils.DrawableComparator;
 
 public class UserProfileFragment extends Fragment {
@@ -42,6 +45,7 @@ public class UserProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         setupRole(view);
         setupInputs(view);
+        setupCarousels(view);
         return view;
     }
 
@@ -77,9 +81,6 @@ public class UserProfileFragment extends Fragment {
             fields.add(new Pair<>(view.findViewById(R.id.change_org_desc_layout), view.findViewById(R.id.change_org_desc)));
         }
 
-
-
-        // Loop through and set up each field
         for (Pair<TextInputLayout, TextInputEditText> field : fields) {
             TextInputLayout layout = field.first;
             TextInputEditText input = field.second;
@@ -97,6 +98,16 @@ public class UserProfileFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private void setupCarousels(View view) {
+        RecyclerView favoritesCarousel = view.findViewById(R.id.favoritesCarousel);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        favoritesCarousel.setLayoutManager(layoutManager);
+
+        SimpleCarouselAdapter adapter = new SimpleCarouselAdapter(R.drawable.image_placeholder, 4);
+        favoritesCarousel.setAdapter(adapter);
     }
 
 }

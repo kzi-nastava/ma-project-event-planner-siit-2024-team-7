@@ -176,7 +176,9 @@
                 android:enabled="false"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-
+        <include
+            layout="@layout/fragment_favourite_events"
+            android:id="@+id/favourite_events"/>
 
 
 

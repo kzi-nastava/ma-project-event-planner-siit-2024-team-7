@@ -73,4 +73,16 @@
     <string name="location">Location</string>
     <string name="date">Date</string>
     <string name="category">Category</string>
+    <string name="your_profile">Your profile</string>
+    <string name="change_profile_picture">Change profile picture</string>
+    <string name="you_eo">You are an Event Organizer</string>
+    <string name="you_spp">You are a Service and Product Provider</string>
+    <string name="example_email">example@gmail.com</string>
+    <string name="change_pass">Change password</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="org_name">Organization name</string>
+    <string name="org_desc">Organization description</string>
+
 </resources>

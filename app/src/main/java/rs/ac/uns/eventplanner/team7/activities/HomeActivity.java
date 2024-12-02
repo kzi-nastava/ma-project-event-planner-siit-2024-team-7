@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
+import rs.ac.uns.eventplanner.team7.fragments.UserProfileFragment;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -92,6 +93,10 @@ public class HomeActivity extends AppCompatActivity {
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         return true;
+                    }
+                    if (item.getItemId() == R.id.nav_my_account) {
+                        Fragment userProfileFragment = new UserProfileFragment();
+                        loadFragment(userProfileFragment);
                     }
                     if (item.getItemId() == R.id.nav_sign_in) {
                         Intent intent = new Intent(HomeActivity.this, LoginActivity.class);

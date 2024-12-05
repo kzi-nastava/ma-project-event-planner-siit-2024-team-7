@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,16 +14,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EventPlanner"
+        tools:ignore="DiscouragedApi"
         tools:targetApi="31">
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="nosensor"/>
         <activity
             android:name=".activities.RegistrationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="nosensor"/>
         <activity
             android:name=".activities.SplashScreenActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="nosensor">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,7 +39,8 @@
         <activity
             android:name=".activities.HomeActivity"
             android:label="Home"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="nosensor"/>
     </application>
 
 </manifest>

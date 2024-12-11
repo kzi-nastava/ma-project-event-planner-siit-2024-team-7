@@ -6,10 +6,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rs.ac.uns.eventplanner.team7.BuildConfig;
 
 public class ClientUtils {
 
-    private static final String API_PATH = "http://192.168.61.197:8080/api";
+    private static final String API_PATH = "http://" + BuildConfig.IP_ADDR +":8080/api/";
 
     public static OkHttpClient test(){
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();

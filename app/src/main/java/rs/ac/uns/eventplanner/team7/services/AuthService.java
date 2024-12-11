@@ -13,7 +13,7 @@ public interface AuthService {
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
-    @POST("/auth/login")
+    @POST("auth/login")
     Call<LoginResponseDTO> login(@Body LoginRequestDTO loginRequestDTO);
 
 }

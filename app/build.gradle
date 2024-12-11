@@ -1,6 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
 }
+def getIpAddress() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties.getProperty('ip_addr')
+}
 
 android {
     namespace 'rs.ac.uns.eventplanner.team7'
@@ -12,7 +17,7 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
-
+        buildConfigField "String", "IP_ADDR", "\"" + getIpAddress()+"\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -42,6 +47,10 @@ dependencies {
     implementation libs.lifecycle.livedata.ktx
     implementation libs.lifecycle.viewmodel.ktx
     implementation libs.navigation.fragment
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
+    implementation("com.kizitonwose.calendar:view:2.6.1")
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

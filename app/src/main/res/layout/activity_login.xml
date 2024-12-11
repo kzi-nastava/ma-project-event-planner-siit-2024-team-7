@@ -39,6 +39,18 @@
             android:textColor="@color/black"
             android:layout_marginBottom="24dp" />
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/error_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/error_login"
+            android:layout_marginTop="20dp"
+            android:textStyle="italic"
+            android:textSize="20sp"
+            android:textColor="@color/red_delete"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone"/>
+
         <!-- Username input field -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/usernameInputLayout"

@@ -120,6 +120,8 @@ public class RegistrationActivity extends AppCompatActivity {
         String pass1 = validateRequiredField(R.id.password, "Password is required");
         String pass2 = validateRequiredField(R.id.password_confirm, "Password confirmation is required");
         String phone = validateRequiredField(R.id.phone_number, "Phone number is required");
+        TextInputEditText photoInput = findViewById(R.id.photo_url);
+        String photoURL = Objects.requireNonNull(photoInput.getText()).toString().trim();
         String orgName = "";
         String orgDesc = "";
         String firstName = "";
@@ -156,7 +158,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         UserRole role = Enum.valueOf(UserRole.class, selectedRole);
         Location loc = new Location(0, 0 , country, city, street, houseNumber);
-        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(email, pass1, pass2, role, "", phone, loc,
+        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(email, pass1, pass2, role, photoURL, phone, loc,
                 firstName, lastName, orgName, orgDesc);
 
         authService.register(registerRequestDTO).enqueue(new Callback<Void>() {

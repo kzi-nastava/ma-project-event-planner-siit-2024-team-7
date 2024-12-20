@@ -21,17 +21,21 @@ import com.google.android.material.textview.MaterialTextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.SimpleCarouselAdapter;
+import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.utils.DrawableComparator;
+import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class UserProfileFragment extends Fragment {
 
-    public boolean isEO;
+    private UserRole role;
 
     public UserProfileFragment() {
-        isEO = true;
+        String role = JwtUtil.getRole(this.requireContext());
+        this.role = UserRole.valueOf(role);
     }
 
     @Override
@@ -46,18 +50,25 @@ public class UserProfileFragment extends Fragment {
         setupRole(view);
         setupInputs(view);
         setupAllCarousels(view);
+        setupFields(view);
         return view;
     }
 
     private void setupRole(View view) {
         MaterialTextView role = view.findViewById(R.id.user_role);
-        if (isEO) {
+        if (this.role == UserRole.EVENT_ORG) {
             role.setText(R.string.you_eo);
             view.findViewById(R.id.eo_update_inputs).setVisibility(View.VISIBLE);
         }
-        else {
+        else if (this.role == UserRole.SPP) {
             role.setText(R.string.you_spp);
             view.findViewById(R.id.spp_update_inputs).setVisibility(View.VISIBLE);
+        }
+        else if (this.role == UserRole.AUTH) {
+            role.setText(R.string.you_au);
+        }
+        else if (this.role == UserRole.ADMIN) {
+            role.setText(R.string.you_admin);
         }
     }
 
@@ -114,6 +125,10 @@ public class UserProfileFragment extends Fragment {
 
         SimpleCarouselAdapter adapter = new SimpleCarouselAdapter(R.drawable.image_placeholder, 4);
         favoritesCarousel.setAdapter(adapter);
+    }
+
+    private void setupFields(View view) {
+
     }
 
 }

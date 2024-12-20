@@ -57,7 +57,7 @@
             android:layout_marginBottom="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email"
+                android:id="@+id/email_user_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
@@ -188,11 +188,15 @@
             layout="@layout/fragment_favourite_products"
             android:id="@+id/favourite_products"/>
 
-
-
-
-
-
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/deactivate_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/deactivate_account"
+            android:textSize="16sp"
+            android:backgroundTint="@color/red_delete"
+            android:layout_marginBottom="5dp"
+            />
 
 
     </LinearLayout>

@@ -87,5 +87,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="error_login">Login failed. Please try again</string>
     <string name="photo_url">Photo URL</string>
+    <string name="you_au">You are an Authenticated User</string>
+    <string name="you_admin">You are an administrator</string>
+    <string name="deactivate_account">Deactivate your account</string>
 
 </resources>

@@ -108,6 +108,7 @@ public class UserProfileFragment extends Fragment {
         fields.add(new Pair<>(view.findViewById(R.id.change_city_layout), view.findViewById(R.id.change_city)));
         fields.add(new Pair<>(view.findViewById(R.id.change_street_layout), view.findViewById(R.id.change_street)));
         fields.add(new Pair<>(view.findViewById(R.id.change_house_number_layout), view.findViewById(R.id.change_house_number)));
+        fields.add(new Pair<>(view.findViewById(R.id.change_profile_pic_layout), view.findViewById(R.id.change_profile_pic)));
 
         if (role == UserRole.EVENT_ORG) {
             fields.add(new Pair<>(view.findViewById(R.id.change_first_name_layout), view.findViewById(R.id.change_first_name)));

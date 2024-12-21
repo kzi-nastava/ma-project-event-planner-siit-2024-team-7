@@ -32,9 +32,12 @@
             />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/change_profile_pic_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/photo_url"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_edit"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
 

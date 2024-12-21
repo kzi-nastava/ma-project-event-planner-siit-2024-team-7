@@ -3,9 +3,15 @@ package rs.ac.uns.eventplanner.team7.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.function.Function;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 
 public class JwtUtil {
+
+    private static final String SECRET_KEY = "ahbsf248761FSDTG532HBaadfjHJSDYgauyasduy672762gbads67gdSDFf76DSDSD";
 
     private static final String PREFS_NAME = "AppPreferences";
     private static final String TOKEN_KEY = "jwt_token";
@@ -40,5 +46,20 @@ public class JwtUtil {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(TOKEN_KEY);
         editor.apply();
+    }
+
+    public static String extractId(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(SECRET_KEY.getBytes()) // Use your backend's signing key
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            return claims.get("id", String.class); // Extract the "id" field
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Handle exceptions appropriately
+        }
     }
 }

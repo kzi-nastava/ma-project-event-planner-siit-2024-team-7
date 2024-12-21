@@ -92,6 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                     Integer userId = loginResponse.getId();
                     UserRole role = loginResponse.getRole();
                     JwtUtil.saveToken(LoginActivity.this, token);
+                    JwtUtil.saveRole(LoginActivity.this, role.toString());
                     startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                 } else {
                     clearFocus();

@@ -19,24 +19,34 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.SimpleCarouselAdapter;
+import rs.ac.uns.eventplanner.team7.dto.user.GetOrganizerResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.user.GetProviderResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.services.UserService;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.DrawableComparator;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class UserProfileFragment extends Fragment {
 
     private UserRole role;
+    private UserService userService;
 
     public UserProfileFragment() {
 
@@ -51,10 +61,11 @@ public class UserProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        userService = ClientUtils.retrofit.create(UserService.class);
         setupRole(view);
         setupInputs(view);
         setupAllCarousels(view);
-        setupFields(view);
+        fillFields(view);
         MaterialButton changePass = view.findViewById(R.id.change_password);
         changePass.setOnClickListener(v -> showChangePasswordDialog(this.requireContext()));
         return view;
@@ -142,8 +153,88 @@ public class UserProfileFragment extends Fragment {
         favoritesCarousel.setAdapter(adapter);
     }
 
-    private void setupFields(View view) {
+    private void fillFields(View view) {
+         Integer userId = JwtUtil.extractId(this.requireContext());
+         String fullValue = "Bearer ";
+         fullValue += JwtUtil.getToken(this.requireContext());
+         if (role == UserRole.EVENT_ORG) {
+             Call<GetOrganizerResponseDTO> call = userService.getOrganizer(fullValue, userId);
+             call.enqueue(new Callback<GetOrganizerResponseDTO>() {
+                 @Override
+                 public void onResponse(Call<GetOrganizerResponseDTO> call, Response<GetOrganizerResponseDTO> response) {
+                     GetOrganizerResponseDTO dto = response.body();
+                     fillFields(view, dto, null);
+                 }
+                 @Override
+                 public void onFailure(Call<GetOrganizerResponseDTO> call, Throwable t) {
+                     Log.d("fail", Objects.requireNonNull(t.getMessage()));
+                 }
+             });
+         }
+         else if (role == UserRole.SPP) {
+             Call<GetProviderResponseDTO> call = userService.getProvider(fullValue, userId);
+             call.enqueue(new Callback<GetProviderResponseDTO>() {
+                 @Override
+                 public void onResponse(Call<GetProviderResponseDTO> call, Response<GetProviderResponseDTO> response) {
+                     GetProviderResponseDTO dto = response.body();
+                     fillFields(view, null, dto);
+                 }
 
+                 @Override
+                 public void onFailure(Call<GetProviderResponseDTO> call, Throwable t) {
+                 }
+             });
+         }
+    }
+
+    private void fillFields(View view, GetOrganizerResponseDTO orgDto, GetProviderResponseDTO proDto) {
+        String email;
+        String phone;
+        String country;
+        String city;
+        String street;
+        String houseNumber;
+        String photo;
+        if (orgDto == null) { // fill with proDto data
+            email = proDto.getEmail();
+            phone = proDto.getPhone();
+            country = proDto.getLocation().getCountry();
+            city = proDto.getLocation().getCity();
+            street = proDto.getLocation().getStreet();
+            houseNumber = proDto.getLocation().getHouseNumber();
+            photo = proDto.getPhotoURL();
+            fillField(view, R.id.change_org_name, proDto.getOrgName());
+            fillField(view, R.id.change_org_desc, proDto.getOrgDesc());
+        }
+        else {
+            email = orgDto.getEmail();
+            phone = orgDto.getPhone();
+            country = orgDto.getLocation().getCountry();
+            city = orgDto.getLocation().getCity();
+            street = orgDto.getLocation().getStreet();
+            houseNumber = orgDto.getLocation().getHouseNumber();
+            photo = orgDto.getPhotoURL();
+            fillField(view, R.id.change_first_name, orgDto.getFirstName());
+            fillField(view, R.id.change_last_name, orgDto.getLastName());
+        }
+        fillField(view, R.id.email_user_profile, email);
+        fillField(view, R.id.change_phone, phone);
+        fillField(view, R.id.change_country, country);
+        fillField(view, R.id.change_city, city);
+        fillField(view, R.id.change_street, street);
+        fillField(view, R.id.change_house_number, houseNumber);
+        fillField(view, R.id.change_profile_pic, photo);
+        ShapeableImageView profile_pic = view.findViewById(R.id.profile_picture);
+        Picasso.get()
+                .load(photo)
+                .placeholder(R.drawable.image_placeholder)
+                .error(R.drawable.image_placeholder)
+                .into(profile_pic);
+    }
+
+    private void fillField(View view, int fieldId, String data) {
+        TextInputEditText layout = view.findViewById(fieldId);
+        layout.setText(data);
     }
 
     public void showChangePasswordDialog(Context context) {

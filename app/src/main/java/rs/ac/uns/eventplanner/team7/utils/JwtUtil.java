@@ -48,15 +48,16 @@ public class JwtUtil {
         editor.apply();
     }
 
-    public static String extractId(String token) {
+    public static Integer extractId(Context context) {
         try {
+            String token = getToken(context);
             Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY.getBytes()) // Use your backend's signing key
+                    .setSigningKey(SECRET_KEY) // Use your backend's signing key
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
 
-            return claims.get("id", String.class); // Extract the "id" field
+            return claims.get("id", Integer.class); // Extract the "id" field
         } catch (Exception e) {
             e.printStackTrace();
             return null; // Handle exceptions appropriately

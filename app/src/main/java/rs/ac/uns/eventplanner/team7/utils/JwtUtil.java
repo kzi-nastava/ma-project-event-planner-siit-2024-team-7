@@ -63,4 +63,8 @@ public class JwtUtil {
             return null; // Handle exceptions appropriately
         }
     }
+
+    public static String getAuthorizationValue(Context context) {
+        return "Bearer " + getToken(context);
+    }
 }

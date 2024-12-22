@@ -90,5 +90,8 @@
     <string name="you_au">You are an Authenticated User</string>
     <string name="you_admin">You are an administrator</string>
     <string name="deactivate_account">Deactivate your account</string>
+    <string name="all_fields_are_required">All fields are required!</string>
+    <string name="new_passwords_do_not_match">New passwords do not match!</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

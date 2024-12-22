@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/org_name"
         android:layout_marginTop="8dp"
+        android:enabled="false"
         app:endIconMode="custom"
         app:endIconDrawable="@drawable/ic_edit"
         android:layout_marginBottom="8dp">

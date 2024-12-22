@@ -6,11 +6,16 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.GetOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderResponseDTO;
 
 public interface UserService {
     @Headers({
@@ -26,6 +31,23 @@ public interface UserService {
     })
     @GET("users/providers/{id}")
     Call<GetProviderResponseDTO> getProvider(@Header("Authorization") String token, @Path("id") Integer id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @PUT("users/organizers/{id}")
+    Call<UpdateOrganizerResponseDTO> updateOrganizer(@Header("Authorization") String token, @Path("id") Integer id,
+                                                     @Body UpdateOrganizerRequestDTO dto);
+
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @PUT("users/providers/{id}")
+    Call<UpdateProviderResponseDTO> updateProvider(@Header("Authorization") String token, @Path("id") Integer id,
+                                                   @Body UpdateProviderRequestDTO dto);
 
 
 }

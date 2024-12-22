@@ -39,6 +39,7 @@
         <include layout="@layout/space_divider"/>
 
         <ImageView
+            android:id="@+id/horizontal_card_image"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             app:srcCompat="@drawable/image_placeholder"

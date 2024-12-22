@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.dto.event.BasicEventDTO;
+import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.model.Event;
 import rs.ac.uns.eventplanner.team7.model.Item;
 import rs.ac.uns.eventplanner.team7.model.Location;
@@ -22,6 +24,7 @@ public class GetOrganizerResponseDTO {
     private Location location;
     private String firstName;
     private String lastName;
-    private Set<Item> favoriteItems;
-    private Set<Event> createdEvents;
+    private Set<BasicItemDTO> favoriteItems;
+    private Set<BasicEventDTO> createdEvents;
+    private Set<BasicEventDTO> favoriteEvents;
 }

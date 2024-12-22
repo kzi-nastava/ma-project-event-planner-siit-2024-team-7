@@ -22,14 +22,18 @@ import com.google.android.material.textview.MaterialTextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.adapters.SimpleCarouselAdapter;
+import rs.ac.uns.eventplanner.team7.adapters.CarouselAdapter;
+import rs.ac.uns.eventplanner.team7.dto.event.BasicEventDTO;
+import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.GetOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.GetProviderResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerRequestDTO;
@@ -59,7 +63,6 @@ public class UserProfileFragment extends Fragment {
         setupRole(view);
         setupInputs(view);
         fillFields(view);
-        setupAllCarousels(view);
 
         MaterialButton changePass = view.findViewById(R.id.change_password);
         changePass.setOnClickListener(v -> showChangePasswordDialog(requireContext()));
@@ -218,23 +221,63 @@ public class UserProfileFragment extends Fragment {
         };
     }
 
-    private void setupAllCarousels(View view) {
-        int[] carouselIds = {
-                R.id.favouriteEventsCarousel,
-                R.id.favouriteServicesCarousel,
-                R.id.favouriteProductsCarousel
-        };
+    private void setupAllCarousels(View view, GetOrganizerResponseDTO orgDto, GetProviderResponseDTO proDto) {
+        Set<BasicItemDTO> favServices;
+        Set<BasicItemDTO> favProducts;
 
-        for (int id : carouselIds) {
-            setupCarousel(view, id);
+        if (role == UserRole.EVENT_ORG) {
+            setupCarousel(view, R.id.favouriteEventsCarousel, orgDto.getFavoriteEvents());
+            favServices = extractFavServices(orgDto.getFavoriteItems());
+            favProducts = extractFavProducts(orgDto.getFavoriteItems());
+            setupCarousel(view, R.id.favouriteServicesCarousel, favServices);
+            setupCarousel(view, R.id.favouriteProductsCarousel, favProducts);
+        }
+        else if (role == UserRole.SPP) {
+            setupCarousel(view, R.id.favouriteEventsCarousel, proDto.getFavoriteEvents());
+            favServices = extractFavServices(proDto.getFavoriteItems());
+            favProducts = extractFavProducts(proDto.getFavoriteItems());
+            setupCarousel(view, R.id.favouriteServicesCarousel, favServices);
+            setupCarousel(view, R.id.favouriteProductsCarousel, favProducts);
         }
     }
 
-    private void setupCarousel(View view, int carouselId) {
+    private Set<BasicItemDTO> extractFavProducts(Set<BasicItemDTO> items) {
+        Set<BasicItemDTO> favProducts = new HashSet<>();
+        for (var item : items) {
+            if (item.getType().equals("products")) {
+                favProducts.add(item);
+            }
+        }
+        return favProducts;
+    }
+
+    private Set<BasicItemDTO> extractFavServices(Set<BasicItemDTO> items) {
+        Set<BasicItemDTO> favServices = new HashSet<>();
+        for (var item : items) {
+            if (item.getType().equals("services")) {
+                favServices.add(item);
+            }
+        }
+        return favServices;
+    }
+
+    private void setupCarousel(View view, int carouselId, Set<?> items) {
         RecyclerView carousel = view.findViewById(carouselId);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
         carousel.setLayoutManager(layoutManager);
-        carousel.setAdapter(new SimpleCarouselAdapter(R.drawable.image_placeholder, 4));
+
+        if (!items.isEmpty()) {
+            if (items.iterator().next() instanceof BasicEventDTO) {
+                // Cast the Set to a Set of BasicEventDTO
+                Set<BasicEventDTO> events = (Set<BasicEventDTO>) items;
+                carousel.setAdapter(new CarouselAdapter(requireContext(), new ArrayList<>(events), "events"));
+            } else if (items.iterator().next() instanceof BasicItemDTO) {
+                // Cast the Set to a Set of BasicItemDTO
+                Set<BasicItemDTO> itemList = (Set<BasicItemDTO>) items;
+                carousel.setAdapter(new CarouselAdapter(requireContext(), new ArrayList<>(itemList), "items"));
+            }
+        }
+
     }
 
     private void fillFields(View view) {
@@ -254,9 +297,11 @@ public class UserProfileFragment extends Fragment {
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if (response.isSuccessful()) {
                     if (isOrganizer) {
-                        fillFields(view, (GetOrganizerResponseDTO) response.body(), null);
+                        GetOrganizerResponseDTO dto = (GetOrganizerResponseDTO) response.body();
+                        fillFields(view, dto, null);
                     } else {
-                        fillFields(view, null, (GetProviderResponseDTO) response.body());
+                        GetProviderResponseDTO dto = (GetProviderResponseDTO) response.body();
+                        fillFields(view, null, dto);
                     }
                 }
             }
@@ -275,6 +320,8 @@ public class UserProfileFragment extends Fragment {
 
             fillField(view, R.id.change_first_name, orgDto.getFirstName());
             fillField(view, R.id.change_last_name, orgDto.getLastName());
+
+            setupAllCarousels(view, orgDto, proDto);
         } else if (proDto != null) {
             populateFields(view, proDto.getEmail(), proDto.getPhone(), proDto.getLocation().getCountry(),
                     proDto.getLocation().getCity(), proDto.getLocation().getStreet(), proDto.getLocation().getHouseNumber(),
@@ -282,6 +329,8 @@ public class UserProfileFragment extends Fragment {
 
             fillField(view, R.id.change_org_name, proDto.getOrgName());
             fillField(view, R.id.change_org_desc, proDto.getOrgDesc());
+
+            setupAllCarousels(view, null, proDto);
         }
     }
 
@@ -295,11 +344,13 @@ public class UserProfileFragment extends Fragment {
         fillField(view, R.id.change_profile_pic, photoURL);
 
         ShapeableImageView profilePic = view.findViewById(R.id.profile_picture);
-        Picasso.get()
-                .load(photoURL)
-                .placeholder(R.drawable.image_placeholder)
-                .error(R.drawable.image_placeholder)
-                .into(profilePic);
+        if (!photoURL.isEmpty()) {
+            Picasso.get()
+                    .load(photoURL)
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_placeholder)
+                    .into(profilePic);
+        }
     }
 
     private void fillField(View view, int fieldId, String data) {

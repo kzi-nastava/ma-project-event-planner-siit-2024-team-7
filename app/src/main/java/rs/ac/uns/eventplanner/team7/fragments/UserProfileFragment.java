@@ -19,7 +19,10 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.squareup.picasso.Picasso;
+
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,6 +43,7 @@ import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.utils.CurrentDayDecorator;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
@@ -49,6 +53,7 @@ public class UserProfileFragment extends Fragment {
 
     private UserRole role;
     private UserService userService;
+    private MaterialCalendarView calendarView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,14 +65,23 @@ public class UserProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         userService = ClientUtils.retrofit.create(UserService.class);
 
+        calendarView = view.findViewById(R.id.calendarView);
+        addEventDots();
+
         setupRole(view);
         setupInputs(view);
         fillFields(view);
+
 
         MaterialButton changePass = view.findViewById(R.id.change_password);
         changePass.setOnClickListener(v -> showChangePasswordDialog(requireContext()));
 
         return view;
+    }
+
+    private void addEventDots() {
+        calendarView.addDecorator(new CurrentDayDecorator(LocalDate.now(), R.color.red_delete));
+        calendarView.addDecorator(new CurrentDayDecorator(LocalDate.now().minusDays(1), R.color.red_delete));
     }
 
     @Override
@@ -191,8 +205,7 @@ public class UserProfileFragment extends Fragment {
                 dto.getLocation().setStreet(value);
             } else if (fieldId == R.id.change_house_number_layout) {
                 dto.getLocation().setHouseNumber(value);
-            }
-            else if (fieldId == R.id.change_org_desc_layout) {
+            } else if (fieldId == R.id.change_org_desc_layout) {
                 dto.setOrgDesc(value);
             } else if (fieldId == R.id.change_profile_pic_layout) {
                 dto.setPhotoURL(value);

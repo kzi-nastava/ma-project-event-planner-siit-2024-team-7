@@ -197,6 +197,12 @@
             layout="@layout/fragment_favourite_products"
             android:id="@+id/favourite_products"/>
 
+        <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:mcv_showOtherDates="none" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/deactivate_account"
             android:layout_width="wrap_content"

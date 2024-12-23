@@ -83,7 +83,7 @@ public class HomeActivity extends AppCompatActivity {
             else {
                 popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
             }
-            setAccountClickListener();
+            setAccountClickListener(popupMenu);
 
             popupMenu.show();
         } else if (item.getItemId() == R.id.nav_logout) {

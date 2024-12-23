@@ -87,9 +87,9 @@ public class UserProfileFragment extends Fragment {
         fillFields(view);
 
         MaterialButton changePass = view.findViewById(R.id.change_password);
-        changePass.setOnClickListener(v -> showChangePasswordDialog(requireContext()));
+        changePass.setOnClickListener(v -> showChangePasswordDialog());
         MaterialButton deactivate = view.findViewById(R.id.deactivate_account);
-        deactivate.setOnClickListener(v -> showConfirmDeactivationDialog(requireContext()));
+        deactivate.setOnClickListener(v -> showConfirmDeactivationDialog());
 
         return view;
     }
@@ -463,131 +463,13 @@ public class UserProfileFragment extends Fragment {
         field.setText(data);
     }
 
-    private void showChangePasswordDialog(Context context) {
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_change_password, null);
-        TextInputEditText etOldPassword = dialogView.findViewById(R.id.et_old_password);
-        TextInputEditText etNewPassword = dialogView.findViewById(R.id.et_new_password);
-        TextInputEditText etConfirmPassword = dialogView.findViewById(R.id.et_confirm_password);
-        MaterialTextView errorMsg = dialogView.findViewById(R.id.change_pass_error);
-
-        AlertDialog dialog = new AlertDialog.Builder(context)
-                .setView(dialogView)
-                .setPositiveButton(R.string.change_pass, null) // Set to null to override default behavior
-                .setNegativeButton(R.string.cancel, (d, which) -> d.dismiss())
-                .create();
-
-        dialog.show();
-
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            String oldPassword = Objects.requireNonNull(etOldPassword.getText()).toString().trim();
-            String newPassword = Objects.requireNonNull(etNewPassword.getText()).toString().trim();
-            String confirmPassword = Objects.requireNonNull(etConfirmPassword.getText()).toString().trim();
-
-            if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
-                errorMsg.setText(R.string.all_fields_are_required);
-                errorMsg.setVisibility(View.VISIBLE);
-                return;
-            }
-            if (!newPassword.equals(confirmPassword)) {
-                errorMsg.setText(R.string.new_passwords_do_not_match);
-                errorMsg.setVisibility(View.VISIBLE);
-                return; // keeps the dialog open
-            }
-
-            if (role == UserRole.EVENT_ORG) {
-                UpdateOrganizerRequestDTO dto = new UpdateOrganizerRequestDTO();
-                dto.setOldPassword(oldPassword);
-                dto.setNewPassword1(newPassword);
-                dto.setNewPassword2(confirmPassword);
-                userService.updateOrganizer(JwtUtil.getAuthorizationValue(requireContext()), JwtUtil.extractId(requireContext()), dto)
-                        .enqueue((Callback<UpdateOrganizerResponseDTO>) createPasswordChangeCallback(errorMsg, dialog));
-            }
-            if (role == UserRole.SPP) {
-                UpdateProviderRequestDTO dto = new UpdateProviderRequestDTO();
-                dto.setOldPassword(oldPassword);
-                dto.setNewPassword1(newPassword);
-                dto.setNewPassword2(confirmPassword);
-                userService.updateProvider(JwtUtil.getAuthorizationValue(requireContext()), JwtUtil.extractId(requireContext()), dto)
-                        .enqueue((Callback<UpdateProviderResponseDTO>) createPasswordChangeCallback(errorMsg, dialog));
-            }
-        });
+    private void showChangePasswordDialog() {
+        ChangePasswordFragment fragment = ChangePasswordFragment.newInstance(role);
+        fragment.show(getParentFragmentManager(), "ChangePasswordFragment");
     }
 
-    private Callback<?> createPasswordChangeCallback(MaterialTextView errorMsg, AlertDialog dialog) {
-        return new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
-                if (response.isSuccessful()) {
-                    dialog.dismiss(); // Close dialog on success
-                    errorMsg.setVisibility(GONE);
-                } else {
-                    try {
-                        String errorBody = response.errorBody().string();
-                        JSONObject jsonObject = new JSONObject(errorBody);
-                        String message = jsonObject.getString("message");
-
-                        errorMsg.setText(message);
-                    } catch (Exception e) {
-                        Log.e("ErrorParsing", "Failed to parse error response", e);
-                    }
-                    errorMsg.setVisibility(View.VISIBLE);
-                }
-            }
-            @Override
-            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
-                errorMsg.setText(t.getMessage());
-                errorMsg.setVisibility(View.VISIBLE);
-            }
-        };
+    private void showConfirmDeactivationDialog() {
+        ConfirmDeactivationFragment fragment = ConfirmDeactivationFragment.newInstance(role);
+        fragment.show(getParentFragmentManager(), "ConfirmDeactivationFragment");
     }
-
-    private void showConfirmDeactivationDialog(Context context) {
-        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_deactivation_confirmation, null);
-        AlertDialog dialog = new AlertDialog.Builder(context)
-                .setView(dialogView)
-                .setPositiveButton(R.string.yes, null)
-                .setNegativeButton(R.string.cancel, (d, which) -> d.dismiss())
-                .create();
-        dialog.show();
-
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            Integer userId = JwtUtil.extractId(context);
-            MaterialTextView msg = dialogView.findViewById(R.id.deactivation_message);
-            if (role == UserRole.EVENT_ORG) {
-                userService.deactivateOrganizer(JwtUtil.getAuthorizationValue(requireContext()), JwtUtil.extractId(requireContext()))
-                        .enqueue(createDeactivationCallBack(msg, dialog));
-            }
-            else if (role == UserRole.SPP) {
-                userService.deactivateProvider(JwtUtil.getAuthorizationValue(requireContext()), JwtUtil.extractId(requireContext()))
-                        .enqueue(createDeactivationCallBack(msg, dialog));
-            }
-        });
-    }
-
-    private Callback<Object> createDeactivationCallBack(MaterialTextView errorMsg, AlertDialog dialog) {
-        return new Callback<Object>() {
-            @Override
-            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
-                if (response.isSuccessful()) {
-                    dialog.dismiss();
-                    startActivity(new Intent(requireActivity(), LoginActivity.class));
-                } else {
-                    try {
-                        if (response.code() == 400) {
-                            String message = response.errorBody().string();
-                            errorMsg.setText(message.substring(12, message.length()-2));
-                            errorMsg.setVisibility(View.VISIBLE);
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-            @Override
-            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
-
-            }
-        };
-    }
-
 }

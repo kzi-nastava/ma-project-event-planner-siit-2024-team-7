@@ -1,5 +1,7 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
+import static android.view.View.GONE;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +10,8 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,10 +23,13 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.squareup.picasso.Picasso;
 
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,7 +41,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.adapters.CalendarAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.CarouselAdapter;
+import rs.ac.uns.eventplanner.team7.dto.BusynessDTO;
 import rs.ac.uns.eventplanner.team7.dto.event.BasicEventDTO;
 import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.GetOrganizerResponseDTO;
@@ -54,6 +63,7 @@ public class UserProfileFragment extends Fragment {
     private UserRole role;
     private UserService userService;
     private MaterialCalendarView calendarView;
+    private List<BusynessDTO> futureBusyness;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +76,8 @@ public class UserProfileFragment extends Fragment {
         userService = ClientUtils.retrofit.create(UserService.class);
 
         calendarView = view.findViewById(R.id.calendarView);
-        addEventDots();
+        calendarView.setSelectedDate(LocalDate.now());
+        addEventDots(view);
 
         setupRole(view);
         setupInputs(view);
@@ -79,9 +90,63 @@ public class UserProfileFragment extends Fragment {
         return view;
     }
 
-    private void addEventDots() {
-        calendarView.addDecorator(new CurrentDayDecorator(LocalDate.now(), R.color.red_delete));
-        calendarView.addDecorator(new CurrentDayDecorator(LocalDate.now().minusDays(1), R.color.red_delete));
+    private void addEventDots(View view) {
+        Integer userId = JwtUtil.extractId(requireContext());
+        Call<List<BusynessDTO>> call = userService.getBusyness(JwtUtil.getAuthorizationValue(requireContext()), userId);
+        call.enqueue(new Callback<List<BusynessDTO>>() {
+            @Override
+            public void onResponse(Call<List<BusynessDTO>> call, Response<List<BusynessDTO>> response) {
+                if (response.isSuccessful()) {
+                    List<BusynessDTO> dtos = response.body();
+                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                    futureBusyness = dtos;
+                    for (var dto : dtos) {
+                        LocalDate date = LocalDate.parse(dto.getDate(), formatter);
+                        calendarView.addDecorator(new CurrentDayDecorator(date, R.color.red_delete));
+                    }
+                }
+
+                calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
+                    @Override
+                    public void onDateSelected(MaterialCalendarView widget, CalendarDay date, boolean selected) {
+                        LocalDate selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+
+                        // Filter events by the selected date
+                        List<BusynessDTO> filteredEvents = new ArrayList<>();
+                        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                        for (BusynessDTO dto : futureBusyness) {
+                            LocalDate eventDate = LocalDate.parse(dto.getDate(), formatter);
+                            if (eventDate.equals(selectedDate)) {
+                                filteredEvents.add(dto);
+                            }
+                        }
+
+                        // Update the RecyclerView with filtered events
+                        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext())); // For vertical layout
+                        if (recyclerView.getAdapter() == null) {
+                            CalendarAdapter adapter = new CalendarAdapter(requireContext(), filteredEvents);
+                            recyclerView.setAdapter(adapter);
+                        } else {
+                            CalendarAdapter adapter = (CalendarAdapter) recyclerView.getAdapter();
+                            adapter.updateEvents(filteredEvents);  // Update the data in the adapter
+                        }
+
+                        TextView futureActivities = view.findViewById(R.id.future_activities);
+                        if (filteredEvents.isEmpty()) {
+                            futureActivities.setVisibility(View.GONE);
+                        } else {
+                            futureActivities.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<List<BusynessDTO>> call, Throwable t) {
+                // Handle failure
+            }
+        });
     }
 
     @Override
@@ -429,7 +494,7 @@ public class UserProfileFragment extends Fragment {
             public void onResponse(Call<Object> call, Response<Object> response) {
                 if (response.isSuccessful()) {
                     dialog.dismiss(); // Close dialog on success
-                    errorMsg.setVisibility(View.GONE);
+                    errorMsg.setVisibility(GONE);
 
                 } else {
                     errorMsg.setText(response.message());

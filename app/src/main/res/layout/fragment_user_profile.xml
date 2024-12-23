@@ -203,6 +203,21 @@
             android:layout_height="match_parent"
             app:mcv_showOtherDates="none" />
 
+        <TextView
+            android:id="@+id/future_activities"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Your future activities: "
+            android:visibility="gone"/>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="1dp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/deactivate_account"
             android:layout_width="wrap_content"

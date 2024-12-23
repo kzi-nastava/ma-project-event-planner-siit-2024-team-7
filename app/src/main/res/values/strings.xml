@@ -95,5 +95,7 @@
     <string name="cancel">Cancel</string>
     <string name="deactivation_confirmation">You are about to deactivate for account. Are you sure?</string>
     <string name="yes">Yes</string>
+    <string name="openDrawer">Open</string>
+    <string name="closeDrawer">Close</string>
 
 </resources>

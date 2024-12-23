@@ -1,5 +1,6 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,10 +10,14 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
@@ -21,60 +26,54 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
 import rs.ac.uns.eventplanner.team7.fragments.UserProfileFragment;
+import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class HomeActivity extends AppCompatActivity {
 
     private boolean isGuest;
+    private UserRole role;
+    private DrawerLayout drawerLayout;
+    private BottomNavigationView bottomNavigationView;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         isGuest = getIntent().getBooleanExtra("isGuest", false);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        role = UserRole.valueOf(JwtUtil.getRole(this));
+
+        // Initialize the DrawerLayout and Toolbar
+        drawerLayout = findViewById(R.id.drawer_layout);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        navbarSetup();
+        setupBottomNavbar();
+
+        // Check if the user is an admin or not
+        if (role == UserRole.ADMIN) {
+            setupAdminNav();
+        }
+
         loadFragment(new HomeFragment());
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
+        if (role != UserRole.ADMIN) {
+            getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (role == UserRole.ADMIN) {
+            drawerLayout.openDrawer(GravityCompat.START);
+            return true;
+        }
         if (item.getItemId() == R.id.nav_account) {
             View profileMenuItemView = findViewById(R.id.nav_account);
             PopupMenu popupMenu = new PopupMenu(this, profileMenuItemView);
@@ -84,53 +83,80 @@ public class HomeActivity extends AppCompatActivity {
             else {
                 popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
             }
-
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(@NonNull MenuItem item) {
-                    if (item.getItemId() == R.id.nav_logout) { //logout action
-                        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        return true;
-                    }
-                    if (item.getItemId() == R.id.nav_my_account) {
-                        Fragment userProfileFragment = new UserProfileFragment();
-                        loadFragment(userProfileFragment);
-                    }
-                    if (item.getItemId() == R.id.nav_sign_in) {
-                        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        return true;
-                    }
-                    if (item.getItemId() == R.id.nav_sign_up) {
-                        Intent intent = new Intent(HomeActivity.this, RegistrationActivity.class);
-                        startActivity(intent);
-                        return true;
-                    }
-                    return false;
-                }
-            });
+            setAccountClickListener();
 
             popupMenu.show();
+        } else if (item.getItemId() == R.id.nav_logout) {
+            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
-    private void navbarSetup() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+    private void setAccountClickListener(PopupMenu popupMenu) {
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem item) {
+                if (item.getItemId() == R.id.nav_logout) { //logout action
+                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    return true;
+                }
+                if (item.getItemId() == R.id.nav_my_account) {
+                    Fragment userProfileFragment = new UserProfileFragment();
+                    loadFragment(userProfileFragment);
+                }
+                if (item.getItemId() == R.id.nav_sign_in) {
+                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+                if (item.getItemId() == R.id.nav_sign_up) {
+                    Intent intent = new Intent(HomeActivity.this, RegistrationActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
 
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frameLayout, fragment)
+                .commit();
+    }
+
+    private void setupAdminNav() {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = findViewById(R.id.navigationView);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            // Handle drawer item clicks
+            if (item.getItemId() == R.id.event_type) {
+            }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        });
+    }
+
+    private void setupBottomNavbar() {
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
-                Toolbar toolbar = findViewById(R.id.toolbar);
-                // add the cases here
                 if (item.getItemId() == R.id.nav_home) {
                     selectedFragment = new HomeFragment();
                     toolbar.setTitle(item.getTitle());
-                }
-                else if (item.getItemId() == R.id.nav_service) {
+                } else if (item.getItemId() == R.id.nav_service) {
                     selectedFragment = new SPPServicesBaseFragment();
                     toolbar.setTitle(item.getTitle());
                 }
@@ -140,13 +166,5 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             }
         });
-
     }
-
-    private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout, fragment)
-                .commit();
-    }
-
 }

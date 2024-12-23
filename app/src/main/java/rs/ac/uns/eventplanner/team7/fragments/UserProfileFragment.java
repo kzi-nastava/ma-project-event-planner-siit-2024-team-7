@@ -339,38 +339,34 @@ public class UserProfileFragment extends Fragment {
 
         if (role == UserRole.EVENT_ORG) {
             setupCarousel(view, R.id.favouriteEventsCarousel, orgDto.getFavoriteEvents());
-            favServices = extractFavServices(orgDto.getFavoriteItems());
-            favProducts = extractFavProducts(orgDto.getFavoriteItems());
+            favServices = extractItems(orgDto.getFavoriteItems(), "services");
+            favProducts = extractItems(orgDto.getFavoriteItems(), "products");
             setupCarousel(view, R.id.favouriteServicesCarousel, favServices);
             setupCarousel(view, R.id.favouriteProductsCarousel, favProducts);
+            view.findViewById(R.id.my_events).setVisibility(View.VISIBLE);
+            setupCarousel(view, R.id.myEventsCarousel, orgDto.getCreatedEvents());
         }
         else if (role == UserRole.SPP) {
             setupCarousel(view, R.id.favouriteEventsCarousel, proDto.getFavoriteEvents());
-            favServices = extractFavServices(proDto.getFavoriteItems());
-            favProducts = extractFavProducts(proDto.getFavoriteItems());
+            favServices = extractItems(proDto.getFavoriteItems(), "services");
+            favProducts = extractItems(proDto.getFavoriteItems(), "products");
             setupCarousel(view, R.id.favouriteServicesCarousel, favServices);
             setupCarousel(view, R.id.favouriteProductsCarousel, favProducts);
+            view.findViewById(R.id.my_services).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.my_products).setVisibility(View.VISIBLE);
+            setupCarousel(view, R.id.myServicesCarousel, extractItems(proDto.getItems(), "services"));
+            setupCarousel(view, R.id.myProductsCarousel, extractItems(proDto.getItems(), "products"));
         }
     }
 
-    private Set<BasicItemDTO> extractFavProducts(Set<BasicItemDTO> items) {
-        Set<BasicItemDTO> favProducts = new HashSet<>();
+    private Set<BasicItemDTO> extractItems(Set<BasicItemDTO> items, String itemType) {
+        Set<BasicItemDTO> favItems = new HashSet<>();
         for (var item : items) {
-            if (item.getType().equals("products")) {
-                favProducts.add(item);
+            if (item.getType().equals(itemType)) {
+                favItems.add(item);
             }
         }
-        return favProducts;
-    }
-
-    private Set<BasicItemDTO> extractFavServices(Set<BasicItemDTO> items) {
-        Set<BasicItemDTO> favServices = new HashSet<>();
-        for (var item : items) {
-            if (item.getType().equals("services")) {
-                favServices.add(item);
-            }
-        }
-        return favServices;
+        return favItems;
     }
 
     private void setupCarousel(View view, int carouselId, Set<?> items) {
@@ -453,7 +449,7 @@ public class UserProfileFragment extends Fragment {
         fillField(view, R.id.change_profile_pic, photoURL);
 
         ShapeableImageView profilePic = view.findViewById(R.id.profile_picture);
-        if (!photoURL.isEmpty()) {
+        if (photoURL != null && !photoURL.isEmpty()) {
             Picasso.get()
                     .load(photoURL)
                     .placeholder(R.drawable.image_placeholder)
@@ -577,9 +573,11 @@ public class UserProfileFragment extends Fragment {
                     startActivity(new Intent(requireActivity(), LoginActivity.class));
                 } else {
                     try {
-                        String message = response.errorBody().string();
-                        errorMsg.setText(message.substring(12, message.length()-2));
-                        errorMsg.setVisibility(View.VISIBLE);
+                        if (response.code() == 400) {
+                            String message = response.errorBody().string();
+                            errorMsg.setText(message.substring(12, message.length()-2));
+                            errorMsg.setVisibility(View.VISIBLE);
+                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

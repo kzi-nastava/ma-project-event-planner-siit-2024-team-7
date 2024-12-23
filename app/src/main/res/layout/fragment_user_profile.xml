@@ -186,6 +186,21 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <include
+            layout="@layout/fragment_my_events"
+            android:id="@+id/my_events"
+            android:visibility="gone"/>
+
+        <include
+            layout="@layout/fragment_my_services"
+            android:id="@+id/my_services"
+            android:visibility="gone"/>
+
+        <include
+            layout="@layout/fragment_my_products"
+            android:id="@+id/my_products"
+            android:visibility="gone"/>
+
+        <include
             layout="@layout/fragment_favourite_events"
             android:id="@+id/favourite_events"/>
 

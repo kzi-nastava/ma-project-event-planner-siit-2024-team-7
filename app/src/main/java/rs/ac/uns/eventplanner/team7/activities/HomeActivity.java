@@ -1,6 +1,5 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -23,6 +22,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.fragments.EventTypeListFragment;
 import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
 import rs.ac.uns.eventplanner.team7.fragments.UserProfileFragment;
@@ -139,8 +139,8 @@ public class HomeActivity extends AppCompatActivity {
 
         navigationView = findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(item -> {
-            // Handle drawer item clicks
             if (item.getItemId() == R.id.event_type) {
+                loadFragment(new EventTypeListFragment());
             }
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;

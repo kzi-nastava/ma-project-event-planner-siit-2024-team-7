@@ -11,14 +11,14 @@ import android.view.ViewGroup;
 import rs.ac.uns.eventplanner.team7.R;
 
 
-public class EventTypeList extends Fragment {
+public class EventTypeListFragment extends Fragment {
 
-    public EventTypeList() {
+    public EventTypeListFragment() {
         // Required empty public constructor
     }
 
-    public static EventTypeList newInstance(String param1, String param2) {
-        EventTypeList fragment = new EventTypeList();
+    public static EventTypeListFragment newInstance(String param1, String param2) {
+        EventTypeListFragment fragment = new EventTypeListFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

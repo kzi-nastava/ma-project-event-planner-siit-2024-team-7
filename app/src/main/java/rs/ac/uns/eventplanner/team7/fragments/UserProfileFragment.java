@@ -25,6 +25,7 @@ import com.google.android.material.textview.MaterialTextView;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 
@@ -49,6 +50,7 @@ import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.Location;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
@@ -73,71 +75,16 @@ public class UserProfileFragment extends Fragment {
         userService = ClientUtils.retrofit.create(UserService.class);
 
         calendarView = view.findViewById(R.id.calendarView);
-        calendarView.setSelectedDate(LocalDate.now());
-        addEventDots(view);
 
-        setupRole(view);
-        setupInputs(view);
+        setupCalendar(view);
+        setupRoleText(view);
+        setupInputIcons(view);
         fillFields(view);
-
 
         MaterialButton changePass = view.findViewById(R.id.change_password);
         changePass.setOnClickListener(v -> showChangePasswordDialog(requireContext()));
 
         return view;
-    }
-
-    private void addEventDots(View view) {
-        Integer userId = JwtUtil.extractId(requireContext());
-        Call<List<BusynessDTO>> call = userService.getBusyness(JwtUtil.getAuthorizationValue(requireContext()), userId);
-        call.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<List<BusynessDTO>> call, @NonNull Response<List<BusynessDTO>> response) {
-                if (response.isSuccessful()) {
-                    List<BusynessDTO> dtos = response.body();
-                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                    futureBusyness = dtos;
-                    for (var dto : dtos) {
-                        LocalDate date = LocalDate.parse(dto.getDate(), formatter);
-                        calendarView.addDecorator(new CurrentDayDecorator(date, R.color.red_delete));
-                    }
-                }
-
-                calendarView.setOnDateChangedListener((widget, date, selected) -> {
-                    LocalDate selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
-
-                    List<BusynessDTO> filteredEvents = new ArrayList<>();
-                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                    for (BusynessDTO dto : futureBusyness) {
-                        LocalDate eventDate = LocalDate.parse(dto.getDate(), formatter);
-                        if (eventDate.equals(selectedDate)) {
-                            filteredEvents.add(dto);
-                        }
-                    }
-
-                    RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(requireContext())); // For vertical layout
-                    if (recyclerView.getAdapter() == null) {
-                        CalendarAdapter adapter = new CalendarAdapter(requireContext(), filteredEvents);
-                        recyclerView.setAdapter(adapter);
-                    } else {
-                        CalendarAdapter adapter = (CalendarAdapter) recyclerView.getAdapter();
-                        adapter.updateEvents(filteredEvents);
-                    }
-
-                    TextView futureActivities = view.findViewById(R.id.future_activities);
-                    if (filteredEvents.isEmpty()) {
-                        futureActivities.setVisibility(View.GONE);
-                    } else {
-                        futureActivities.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<BusynessDTO>> call, @NonNull Throwable t) {
-            }
-        });
     }
 
     @Override
@@ -147,7 +94,69 @@ public class UserProfileFragment extends Fragment {
         this.role = UserRole.valueOf(roleString);
     }
 
-    private void setupRole(View view) {
+    private void setupCalendar(View view) {
+        calendarView.setSelectedDate(LocalDate.now());
+        Integer userId = JwtUtil.extractId(requireContext());
+        Call<List<BusynessDTO>> call = userService.getBusyness(JwtUtil.getAuthorizationValue(requireContext()), userId);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<BusynessDTO>> call, @NonNull Response<List<BusynessDTO>> response) {
+                if (response.isSuccessful()) {
+                    List<BusynessDTO> dtos = response.body();
+                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                    futureBusyness = dtos;
+                    for (var dto : dtos) { // add dots to the calendar
+                        LocalDate date = LocalDate.parse(dto.getDate(), formatter);
+                        calendarView.addDecorator(new CurrentDayDecorator(date, R.color.red_delete));
+                    }
+                }
+
+                calendarView.setOnDateChangedListener((widget, date, selected) -> {
+                    LocalDate selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+                    List<BusynessDTO> filteredEvents = filterEvents(selectedDate);
+
+                    RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(requireContext())); // for vertical layout
+                    if (recyclerView.getAdapter() == null) {
+                        CalendarAdapter adapter = new CalendarAdapter(requireContext(), filteredEvents);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        CalendarAdapter adapter = (CalendarAdapter) recyclerView.getAdapter();
+                        adapter.updateEvents(filteredEvents);
+                    }
+
+                    setFutureActivitiesVisibility(view, filteredEvents);
+                });
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<BusynessDTO>> call, @NonNull Throwable t) {
+            }
+        });
+    }
+
+    private void setFutureActivitiesVisibility(View view, List<BusynessDTO> filteredEvents) {
+        TextView futureActivities = view.findViewById(R.id.future_activities);
+        if (filteredEvents.isEmpty()) {
+            futureActivities.setVisibility(View.GONE);
+        } else {
+            futureActivities.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private List<BusynessDTO> filterEvents(LocalDate selectedDate) {
+        List<BusynessDTO> filteredEvents = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        for (BusynessDTO dto : futureBusyness) {
+            LocalDate eventDate = LocalDate.parse(dto.getDate(), formatter);
+            if (eventDate.equals(selectedDate)) {
+                filteredEvents.add(dto);
+            }
+        }
+        return filteredEvents;
+    }
+
+    private void setupRoleText(View view) {
         MaterialTextView roleTextView = view.findViewById(R.id.user_role);
         int visibility;
 
@@ -171,8 +180,8 @@ public class UserProfileFragment extends Fragment {
         }
     }
 
-    private void setupInputs(View view) {
-        List<Pair<TextInputLayout, TextInputEditText>> fields = initializeFields(view);
+    private void setupInputIcons(View view) {
+        List<Pair<TextInputLayout, TextInputEditText>> fields = getFields(view);
         int editIconRes = R.drawable.ic_edit;
         int checkIconRes = R.drawable.ic_check;
 
@@ -185,7 +194,7 @@ public class UserProfileFragment extends Fragment {
         }
     }
 
-    private List<Pair<TextInputLayout, TextInputEditText>> initializeFields(View view) {
+    private List<Pair<TextInputLayout, TextInputEditText>> getFields(View view) {
         List<Pair<TextInputLayout, TextInputEditText>> fields = new ArrayList<>();
 
         fields.add(new Pair<>(view.findViewById(R.id.change_phone_layout), view.findViewById(R.id.change_phone)));
@@ -225,51 +234,78 @@ public class UserProfileFragment extends Fragment {
     private void updateField(int fieldId, String value) {
         Integer userId = JwtUtil.extractId(requireContext());
         String authHeader = JwtUtil.getAuthorizationValue(requireContext());
+        TextInputLayout field = requireView().findViewById(fieldId);
+        if (value.isEmpty()) {
+            field.setError("Value can't be empty!");
+        } else {
+            field.setError(null);
+        }
 
         if (role == UserRole.EVENT_ORG) {
             UpdateOrganizerRequestDTO dto = new UpdateOrganizerRequestDTO();
+            Location location = getCurrentLocationData();
+
+            if (fieldId == R.id.change_country_layout) {
+                location.setCountry(value);
+            } else if (fieldId == R.id.change_city_layout) {
+                location.setCity(value);
+            } else if (fieldId == R.id.change_street_layout) {
+                location.setStreet(value);
+            } else if (fieldId == R.id.change_house_number_layout) {
+                location.setHouseNumber(value);
+            }
+            dto.setLocation(location);
+
             if (fieldId == R.id.change_phone_layout) {
                 dto.setPhone(value);
-            } else if (fieldId == R.id.change_country_layout) {
-                dto.getLocation().setCountry(value);
-            } else if (fieldId == R.id.change_city_layout) {
-                dto.getLocation().setCity(value);
-            } else if (fieldId == R.id.change_street_layout) {
-                dto.getLocation().setStreet(value);
-            } else if (fieldId == R.id.change_house_number_layout) {
-                dto.getLocation().setHouseNumber(value);
             } else if (fieldId == R.id.change_first_name_layout) {
                 dto.setFirstName(value);
             } else if (fieldId == R.id.change_last_name_layout) {
                 dto.setLastName(value);
             } else if (fieldId == R.id.change_profile_pic_layout) {
                 dto.setPhotoURL(value);
-            } else {
-                return;
             }
-
             userService.updateOrganizer(authHeader, userId, dto).enqueue((Callback<UpdateOrganizerResponseDTO>) createUpdateFieldCallback());
         } else if (role == UserRole.SPP) {
             UpdateProviderRequestDTO dto = new UpdateProviderRequestDTO();
+            Location location = getCurrentLocationData(); // Retrieve the full location data
+
+            if (fieldId == R.id.change_country_layout) {
+                location.setCountry(value);
+            } else if (fieldId == R.id.change_city_layout) {
+                location.setCity(value);
+            } else if (fieldId == R.id.change_street_layout) {
+                location.setStreet(value);
+            } else if (fieldId == R.id.change_house_number_layout) {
+                location.setHouseNumber(value);
+            }
+            dto.setLocation(location);
+
             if (fieldId == R.id.change_phone_layout) {
                 dto.setPhone(value);
-            } else if (fieldId == R.id.change_country_layout) {
-                dto.getLocation().setCountry(value);
-            } else if (fieldId == R.id.change_city_layout) {
-                dto.getLocation().setCity(value);
-            } else if (fieldId == R.id.change_street_layout) {
-                dto.getLocation().setStreet(value);
-            } else if (fieldId == R.id.change_house_number_layout) {
-                dto.getLocation().setHouseNumber(value);
             } else if (fieldId == R.id.change_org_desc_layout) {
                 dto.setOrgDesc(value);
             } else if (fieldId == R.id.change_profile_pic_layout) {
                 dto.setPhotoURL(value);
-            } else {
-                return;
             }
             userService.updateProvider(authHeader, userId, dto).enqueue((Callback<UpdateProviderResponseDTO>) createUpdateFieldCallback());
         }
+    }
+
+
+    private Location getCurrentLocationData() {
+        Location location = new Location();
+
+        TextInputEditText city = requireView().findViewById(R.id.change_city);
+        TextInputEditText country = requireView().findViewById(R.id.change_country);
+        TextInputEditText street = requireView().findViewById(R.id.change_street);
+        TextInputEditText houseNumber = requireView().findViewById(R.id.change_house_number);
+        location.setCountry(Objects.requireNonNull(country.getText()).toString());
+        location.setCity(Objects.requireNonNull(city.getText()).toString());
+        location.setStreet(Objects.requireNonNull(street.getText()).toString());
+        location.setHouseNumber(Objects.requireNonNull(houseNumber.getText()).toString());
+
+        return location;
     }
 
     private Callback<?> createUpdateFieldCallback() {
@@ -344,7 +380,6 @@ public class UserProfileFragment extends Fragment {
                 carousel.setAdapter(new CarouselAdapter(requireContext(), new ArrayList<>(itemList), "items"));
             }
         }
-
     }
 
     private void fillFields(View view) {
@@ -365,10 +400,10 @@ public class UserProfileFragment extends Fragment {
                 if (response.isSuccessful()) {
                     if (isOrganizer) {
                         GetOrganizerResponseDTO dto = (GetOrganizerResponseDTO) response.body();
-                        fillFields(view, dto, null);
+                        fillFieldsFromDto(view, dto, null);
                     } else {
                         GetProviderResponseDTO dto = (GetProviderResponseDTO) response.body();
-                        fillFields(view, null, dto);
+                        fillFieldsFromDto(view, null, dto);
                     }
                 }
             }
@@ -379,9 +414,9 @@ public class UserProfileFragment extends Fragment {
         };
     }
 
-    private void fillFields(View view, GetOrganizerResponseDTO orgDto, GetProviderResponseDTO proDto) {
+    private void fillFieldsFromDto(View view, GetOrganizerResponseDTO orgDto, GetProviderResponseDTO proDto) {
         if (orgDto != null) {
-            populateFields(view, orgDto.getEmail(), orgDto.getPhone(), orgDto.getLocation().getCountry(),
+            fillCommonFields(view, orgDto.getEmail(), orgDto.getPhone(), orgDto.getLocation().getCountry(),
                     orgDto.getLocation().getCity(), orgDto.getLocation().getStreet(), orgDto.getLocation().getHouseNumber(),
                     orgDto.getPhotoURL());
 
@@ -390,7 +425,7 @@ public class UserProfileFragment extends Fragment {
 
             setupAllCarousels(view, orgDto, proDto);
         } else if (proDto != null) {
-            populateFields(view, proDto.getEmail(), proDto.getPhone(), proDto.getLocation().getCountry(),
+            fillCommonFields(view, proDto.getEmail(), proDto.getPhone(), proDto.getLocation().getCountry(),
                     proDto.getLocation().getCity(), proDto.getLocation().getStreet(), proDto.getLocation().getHouseNumber(),
                     proDto.getPhotoURL());
 
@@ -401,7 +436,7 @@ public class UserProfileFragment extends Fragment {
         }
     }
 
-    private void populateFields(View view, String email, String phone, String country, String city, String street, String houseNumber, String photoURL) {
+    private void fillCommonFields(View view, String email, String phone, String country, String city, String street, String houseNumber, String photoURL) {
         fillField(view, R.id.email_user_profile, email);
         fillField(view, R.id.change_phone, phone);
         fillField(view, R.id.change_country, country);
@@ -440,7 +475,6 @@ public class UserProfileFragment extends Fragment {
 
         dialog.show();
 
-        // Handle positive button click explicitly
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String oldPassword = Objects.requireNonNull(etOldPassword.getText()).toString().trim();
             String newPassword = Objects.requireNonNull(etNewPassword.getText()).toString().trim();
@@ -454,10 +488,9 @@ public class UserProfileFragment extends Fragment {
             if (!newPassword.equals(confirmPassword)) {
                 errorMsg.setText(R.string.new_passwords_do_not_match);
                 errorMsg.setVisibility(View.VISIBLE);
-                return; // Keep the dialog open
+                return; // keeps the dialog open
             }
 
-            // Proceed with password update logic
             if (role == UserRole.EVENT_ORG) {
                 UpdateOrganizerRequestDTO dto = new UpdateOrganizerRequestDTO();
                 dto.setOldPassword(oldPassword);
@@ -482,17 +515,26 @@ public class UserProfileFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
                 if (response.isSuccessful()) {
+                    Log.d("Im", "if");
                     dialog.dismiss(); // Close dialog on success
                     errorMsg.setVisibility(GONE);
-
                 } else {
-                    errorMsg.setText(response.message());
-                    errorMsg.setVisibility(View.VISIBLE);
+                    Log.d("Im", "ELSE");
+                    try {
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String message = jsonObject.getString("message");
 
+                        errorMsg.setText(message);
+                    } catch (Exception e) {
+                        Log.e("ErrorParsing", "Failed to parse error response", e);
+                    }
+                    errorMsg.setVisibility(View.VISIBLE);
                 }
             }
             @Override
             public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
+                Log.d("Im", "Failure");
                 errorMsg.setText(t.getMessage());
                 errorMsg.setVisibility(View.VISIBLE);
             }

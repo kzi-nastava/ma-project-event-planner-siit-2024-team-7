@@ -10,7 +10,6 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,9 +22,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
-import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.squareup.picasso.Picasso;
 
 import org.threeten.bp.LocalDate;
@@ -52,10 +49,10 @@ import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderResponseDTO;
-import rs.ac.uns.eventplanner.team7.utils.CurrentDayDecorator;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.CurrentDayDecorator;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class UserProfileFragment extends Fragment {
@@ -93,9 +90,9 @@ public class UserProfileFragment extends Fragment {
     private void addEventDots(View view) {
         Integer userId = JwtUtil.extractId(requireContext());
         Call<List<BusynessDTO>> call = userService.getBusyness(JwtUtil.getAuthorizationValue(requireContext()), userId);
-        call.enqueue(new Callback<List<BusynessDTO>>() {
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<List<BusynessDTO>> call, Response<List<BusynessDTO>> response) {
+            public void onResponse(@NonNull Call<List<BusynessDTO>> call, @NonNull Response<List<BusynessDTO>> response) {
                 if (response.isSuccessful()) {
                     List<BusynessDTO> dtos = response.body();
                     DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -106,45 +103,39 @@ public class UserProfileFragment extends Fragment {
                     }
                 }
 
-                calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
-                    @Override
-                    public void onDateSelected(MaterialCalendarView widget, CalendarDay date, boolean selected) {
-                        LocalDate selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+                calendarView.setOnDateChangedListener((widget, date, selected) -> {
+                    LocalDate selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
 
-                        // Filter events by the selected date
-                        List<BusynessDTO> filteredEvents = new ArrayList<>();
-                        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                        for (BusynessDTO dto : futureBusyness) {
-                            LocalDate eventDate = LocalDate.parse(dto.getDate(), formatter);
-                            if (eventDate.equals(selectedDate)) {
-                                filteredEvents.add(dto);
-                            }
+                    List<BusynessDTO> filteredEvents = new ArrayList<>();
+                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                    for (BusynessDTO dto : futureBusyness) {
+                        LocalDate eventDate = LocalDate.parse(dto.getDate(), formatter);
+                        if (eventDate.equals(selectedDate)) {
+                            filteredEvents.add(dto);
                         }
+                    }
 
-                        // Update the RecyclerView with filtered events
-                        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext())); // For vertical layout
-                        if (recyclerView.getAdapter() == null) {
-                            CalendarAdapter adapter = new CalendarAdapter(requireContext(), filteredEvents);
-                            recyclerView.setAdapter(adapter);
-                        } else {
-                            CalendarAdapter adapter = (CalendarAdapter) recyclerView.getAdapter();
-                            adapter.updateEvents(filteredEvents);  // Update the data in the adapter
-                        }
+                    RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(requireContext())); // For vertical layout
+                    if (recyclerView.getAdapter() == null) {
+                        CalendarAdapter adapter = new CalendarAdapter(requireContext(), filteredEvents);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        CalendarAdapter adapter = (CalendarAdapter) recyclerView.getAdapter();
+                        adapter.updateEvents(filteredEvents);
+                    }
 
-                        TextView futureActivities = view.findViewById(R.id.future_activities);
-                        if (filteredEvents.isEmpty()) {
-                            futureActivities.setVisibility(View.GONE);
-                        } else {
-                            futureActivities.setVisibility(View.VISIBLE);
-                        }
+                    TextView futureActivities = view.findViewById(R.id.future_activities);
+                    if (filteredEvents.isEmpty()) {
+                        futureActivities.setVisibility(View.GONE);
+                    } else {
+                        futureActivities.setVisibility(View.VISIBLE);
                     }
                 });
             }
 
             @Override
-            public void onFailure(Call<List<BusynessDTO>> call, Throwable t) {
-                // Handle failure
+            public void onFailure(@NonNull Call<List<BusynessDTO>> call, @NonNull Throwable t) {
             }
         });
     }
@@ -282,9 +273,9 @@ public class UserProfileFragment extends Fragment {
     }
 
     private Callback<?> createUpdateFieldCallback() {
-        return new Callback<Object>() {
+        return new Callback<>() {
             @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
+            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
                 if (response.isSuccessful()) {
                     Log.d("UserProfileFragment", "Field updated successfully");
                 } else {
@@ -293,7 +284,7 @@ public class UserProfileFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Object> call, Throwable t) {
+            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
                 Log.d("UserProfileFragment", "Error updating field: " + t.getMessage());
             }
         };
@@ -346,11 +337,9 @@ public class UserProfileFragment extends Fragment {
 
         if (!items.isEmpty()) {
             if (items.iterator().next() instanceof BasicEventDTO) {
-                // Cast the Set to a Set of BasicEventDTO
                 Set<BasicEventDTO> events = (Set<BasicEventDTO>) items;
                 carousel.setAdapter(new CarouselAdapter(requireContext(), new ArrayList<>(events), "events"));
             } else if (items.iterator().next() instanceof BasicItemDTO) {
-                // Cast the Set to a Set of BasicItemDTO
                 Set<BasicItemDTO> itemList = (Set<BasicItemDTO>) items;
                 carousel.setAdapter(new CarouselAdapter(requireContext(), new ArrayList<>(itemList), "items"));
             }
@@ -370,9 +359,9 @@ public class UserProfileFragment extends Fragment {
     }
 
     private Callback<?> createFillCallback(View view, boolean isOrganizer) {
-        return new Callback<Object>() {
+        return new Callback<>() {
             @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
+            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
                 if (response.isSuccessful()) {
                     if (isOrganizer) {
                         GetOrganizerResponseDTO dto = (GetOrganizerResponseDTO) response.body();
@@ -384,7 +373,7 @@ public class UserProfileFragment extends Fragment {
                 }
             }
             @Override
-            public void onFailure(Call<Object> call, Throwable t) {
+            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
                 Log.d("UserProfileFragment", Objects.requireNonNull(t.getMessage()));
             }
         };
@@ -489,9 +478,9 @@ public class UserProfileFragment extends Fragment {
     }
 
     private Callback<?> createPasswordChangeCallback(MaterialTextView errorMsg, AlertDialog dialog) {
-        return new Callback<Object>() {
+        return new Callback<>() {
             @Override
-            public void onResponse(Call<Object> call, Response<Object> response) {
+            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
                 if (response.isSuccessful()) {
                     dialog.dismiss(); // Close dialog on success
                     errorMsg.setVisibility(GONE);
@@ -503,7 +492,7 @@ public class UserProfileFragment extends Fragment {
                 }
             }
             @Override
-            public void onFailure(Call<Object> call, Throwable t) {
+            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
                 errorMsg.setText(t.getMessage());
                 errorMsg.setVisibility(View.VISIBLE);
             }

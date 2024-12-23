@@ -93,5 +93,7 @@
     <string name="all_fields_are_required">All fields are required!</string>
     <string name="new_passwords_do_not_match">New passwords do not match!</string>
     <string name="cancel">Cancel</string>
+    <string name="deactivation_confirmation">You are about to deactivate for account. Are you sure?</string>
+    <string name="yes">Yes</string>
 
 </resources>

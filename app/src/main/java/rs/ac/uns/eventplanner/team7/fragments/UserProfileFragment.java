@@ -4,6 +4,7 @@ import static android.view.View.GONE;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
@@ -25,10 +26,12 @@ import com.google.android.material.textview.MaterialTextView;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,9 +42,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.activities.LoginActivity;
 import rs.ac.uns.eventplanner.team7.adapters.CalendarAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.CarouselAdapter;
 import rs.ac.uns.eventplanner.team7.dto.BusynessDTO;
+import rs.ac.uns.eventplanner.team7.dto.ErrorMessageDTO;
 import rs.ac.uns.eventplanner.team7.dto.event.BasicEventDTO;
 import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.GetOrganizerResponseDTO;
@@ -83,6 +88,8 @@ public class UserProfileFragment extends Fragment {
 
         MaterialButton changePass = view.findViewById(R.id.change_password);
         changePass.setOnClickListener(v -> showChangePasswordDialog(requireContext()));
+        MaterialButton deactivate = view.findViewById(R.id.deactivate_account);
+        deactivate.setOnClickListener(v -> showConfirmDeactivationDialog(requireContext()));
 
         return view;
     }
@@ -515,11 +522,9 @@ public class UserProfileFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
                 if (response.isSuccessful()) {
-                    Log.d("Im", "if");
                     dialog.dismiss(); // Close dialog on success
                     errorMsg.setVisibility(GONE);
                 } else {
-                    Log.d("Im", "ELSE");
                     try {
                         String errorBody = response.errorBody().string();
                         JSONObject jsonObject = new JSONObject(errorBody);
@@ -534,9 +539,55 @@ public class UserProfileFragment extends Fragment {
             }
             @Override
             public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
-                Log.d("Im", "Failure");
                 errorMsg.setText(t.getMessage());
                 errorMsg.setVisibility(View.VISIBLE);
+            }
+        };
+    }
+
+    private void showConfirmDeactivationDialog(Context context) {
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_deactivation_confirmation, null);
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .setPositiveButton(R.string.yes, null)
+                .setNegativeButton(R.string.cancel, (d, which) -> d.dismiss())
+                .create();
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            Integer userId = JwtUtil.extractId(context);
+            MaterialTextView msg = dialogView.findViewById(R.id.deactivation_message);
+            if (role == UserRole.EVENT_ORG) {
+                userService.deactivateOrganizer(JwtUtil.getAuthorizationValue(requireContext()), JwtUtil.extractId(requireContext()))
+                        .enqueue(createDeactivationCallBack(msg, dialog));
+            }
+            else if (role == UserRole.SPP) {
+                userService.deactivateProvider(JwtUtil.getAuthorizationValue(requireContext()), JwtUtil.extractId(requireContext()))
+                        .enqueue(createDeactivationCallBack(msg, dialog));
+            }
+        });
+    }
+
+    private Callback<Object> createDeactivationCallBack(MaterialTextView errorMsg, AlertDialog dialog) {
+        return new Callback<Object>() {
+            @Override
+            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
+                if (response.isSuccessful()) {
+                    dialog.dismiss();
+                    startActivity(new Intent(requireActivity(), LoginActivity.class));
+                } else {
+                    try {
+                        String message = response.errorBody().string();
+                        errorMsg.setText(message.substring(12, message.length()-2));
+                        errorMsg.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
+
             }
         };
     }

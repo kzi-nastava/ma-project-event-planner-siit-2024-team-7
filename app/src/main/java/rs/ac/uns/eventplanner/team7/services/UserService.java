@@ -4,6 +4,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -11,6 +12,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import rs.ac.uns.eventplanner.team7.dto.BusynessDTO;
+import rs.ac.uns.eventplanner.team7.dto.ErrorMessageDTO;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.GetOrganizerResponseDTO;
@@ -59,4 +61,17 @@ public interface UserService {
     @GET("users/{id}/busyness")
     Call<List<BusynessDTO>> getBusyness(@Header("Authorization") String token, @Path("id") Integer id);
 
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @DELETE("users/organizers/{id}")
+    Call<Object> deactivateOrganizer(@Header("Authorization") String token, @Path("id") Integer id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @DELETE("users/providers/{id}")
+    Call<Object> deactivateProvider(@Header("Authorization") String token, @Path("id") Integer id);
 }

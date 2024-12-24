@@ -97,5 +97,7 @@
     <string name="yes">Yes</string>
     <string name="openDrawer">Open</string>
     <string name="closeDrawer">Close</string>
+    <string name="all_event_types">All Event Types</string>
+    <string name="create_new_event_type">Create new Event Type</string>
 
 </resources>

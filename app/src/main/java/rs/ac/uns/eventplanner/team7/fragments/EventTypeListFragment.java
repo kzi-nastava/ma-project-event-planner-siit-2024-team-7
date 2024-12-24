@@ -1,37 +1,73 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.adapters.EventTypeCardAdapter;
+import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
+import rs.ac.uns.eventplanner.team7.services.EventTypeService;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 
 public class EventTypeListFragment extends Fragment {
 
-    public EventTypeListFragment() {
-        // Required empty public constructor
-    }
-
-    public static EventTypeListFragment newInstance(String param1, String param2) {
-        EventTypeListFragment fragment = new EventTypeListFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private RecyclerView recyclerView;
+    private EventTypeCardAdapter adapter;
+    private List<GetEventTypeResponseDTO> eventTypes;
+    private EventTypeService eventTypeService;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_all_event_types, container, false);
+
+        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        eventTypeService = ClientUtils.retrofit.create(EventTypeService.class);
+
+        eventTypes = new ArrayList<>();
+        adapter = new EventTypeCardAdapter(requireContext(), eventTypes);
+        recyclerView.setAdapter(adapter);
+
+
+        fetchData();
+
+        return view;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_event_type_list, container, false);
+    private void fetchData() {
+        Call<List<GetEventTypeResponseDTO>> call = eventTypeService.getAll(JwtUtil.getAuthorizationValue(requireContext()));
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<GetEventTypeResponseDTO>> call, @NonNull Response<List<GetEventTypeResponseDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    eventTypes.clear();
+                    eventTypes.addAll(response.body());
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<GetEventTypeResponseDTO>> call, @NonNull Throwable t) {
+
+            }
+        });
     }
 }
+

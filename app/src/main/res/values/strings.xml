@@ -99,5 +99,13 @@
     <string name="closeDrawer">Close</string>
     <string name="all_event_types">All Event Types</string>
     <string name="create_new_event_type">Create new Event Type</string>
+    <string name="create_event_type">Create event type</string>
+    <string name="event_type_name">Event type name</string>
+    <string name="event_type_description">Event type description</string>
+    <string name="search_for_categories">Search for categories...</string>
+    <string name="button">button</string>
+    <string name="reset_results">Reset results</string>
+    <string name="search_results">Search results:</string>
+    <string name="selected_categories">Selected categories:</string>
 
 </resources>

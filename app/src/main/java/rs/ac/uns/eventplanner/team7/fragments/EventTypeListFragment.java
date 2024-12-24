@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +47,20 @@ public class EventTypeListFragment extends Fragment {
         adapter = new EventTypeCardAdapter(requireContext(), eventTypes);
         recyclerView.setAdapter(adapter);
 
-
         fetchData();
+
+        MaterialButton create = view.findViewById(R.id.create_event_type);
+        create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new CreateEventTypeFragment();
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frameLayout, fragment, "CreateEventTypeFragmentTag")
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
         return view;
     }

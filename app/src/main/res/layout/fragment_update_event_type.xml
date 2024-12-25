@@ -43,7 +43,12 @@
                 android:id="@+id/update_event_type_desc"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:inputType="text" />
+                android:lines="8"
+                android:minLines="1"
+                android:maxLines="10"
+                android:scrollbars="vertical"
+                android:gravity="top|start"
+            android:inputType="textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <FrameLayout

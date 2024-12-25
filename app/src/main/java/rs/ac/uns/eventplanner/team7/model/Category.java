@@ -5,29 +5,32 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.model.enums.CategoryStatus;
 
 
 @Getter @Setter
+@AllArgsConstructor
 public class Category implements Parcelable {
 
+    private Integer id;
     private String name;
     private String description;
-    private boolean isActive;
+    protected CategoryStatus status;
 
     public Category() {}
 
-    public Category(String name, String description, boolean isActive) {
+    public Category(String name, String description) {
         this.name = name;
         this.description = description;
-        this.isActive = isActive;
     }
 
     protected Category(Parcel in) {
         name = in.readString();
         description = in.readString();
-        isActive = in.readByte() != 0;
     }
 
     public static final Creator<Category> CREATOR = new Creator<>() {
@@ -51,6 +54,5 @@ public class Category implements Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(description);
-        dest.writeByte((byte) (isActive ? 1 : 0));
     }
 }

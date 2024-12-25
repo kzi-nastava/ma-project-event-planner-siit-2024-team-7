@@ -17,7 +17,9 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import lombok.Setter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,6 +36,7 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
     private List<CategoryResponseDTO> addableCategories;
     private List<CategoryResponseDTO> selectedCategories;
     private CategorySearchAdapter searchAdapter;
+    private CategorySelectAdapter selectAdapter;
     private String lastSearch;
     private SearchView searchView;
     private CategoryService categoryService;
@@ -45,6 +48,13 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
 
     private CategorySelectionListener listener;
 
+    public interface CategoriesFetchedListener {
+        void onCategoriesFetched(List<CategoryResponseDTO> categories);
+    }
+
+    @Setter
+    private CategoriesFetchedListener categoriesFetchedListener;
+
     public EventTypeCategoryManipulationFragment() {
         // Required empty public constructor
     }
@@ -52,6 +62,7 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
     public static EventTypeCategoryManipulationFragment newInstance() {
         return new EventTypeCategoryManipulationFragment();
     }
+
 
     public void setCategorySelectionListener(CategorySelectionListener listener) {
         this.listener = listener;
@@ -68,12 +79,15 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
         RecyclerView selectedRecyclerView = view.findViewById(R.id.selected_categories_recycler_view);
         selectedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        searchRecyclerView.setHasFixedSize(true);
+        selectedRecyclerView.setHasFixedSize(true);
+
         categoryService = ClientUtils.retrofit.create(CategoryService.class);
 
         addableCategories = new ArrayList<>();
         selectedCategories = new ArrayList<>();
 
-        CategorySelectAdapter selectAdapter = new CategorySelectAdapter(getContext(), selectedCategories, addableCategories);
+        selectAdapter = new CategorySelectAdapter(getContext(), selectedCategories, addableCategories);
         searchAdapter = new CategorySearchAdapter(getContext(), addableCategories, selectedCategories, selectAdapter);
 
         searchRecyclerView.setAdapter(searchAdapter);
@@ -97,6 +111,9 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     searchAdapter.updateData(response.body());
                     addableCategories = response.body();
+                    if (categoriesFetchedListener != null) {
+                        categoriesFetchedListener.onCategoriesFetched(addableCategories);
+                    }
                 }
             }
 
@@ -138,5 +155,15 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
 
     public void notifyChange() {
         searchAdapter.notifyDataSetChanged();
+    }
+
+    public void notifyChange(List<CategoryResponseDTO> selectedCategories) {
+        selectAdapter.updateData(selectedCategories);
+        List<CategoryResponseDTO> filteredAddableCategories = addableCategories.stream()
+                .filter(category -> selectedCategories.stream()
+                        .noneMatch(selected -> selected.getId().equals(category.getId())))
+                .collect(Collectors.toList());
+
+        searchAdapter.updateData(filteredAddableCategories);
     }
 }

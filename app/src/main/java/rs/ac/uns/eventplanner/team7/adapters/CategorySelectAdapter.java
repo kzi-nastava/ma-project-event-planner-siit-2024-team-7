@@ -20,6 +20,7 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.fragments.CreateEventTypeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.EventTypeCategoryManipulationFragment;
+import rs.ac.uns.eventplanner.team7.fragments.UpdateEventTypeFragment;
 
 public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAdapter.ViewHolder> {
 
@@ -61,7 +62,17 @@ public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAd
 
                 if (parentFragment instanceof CreateEventTypeFragment) {
                     EventTypeCategoryManipulationFragment fragment = (EventTypeCategoryManipulationFragment)
-                            ((CreateEventTypeFragment) parentFragment).getChildFragmentManager()
+                            parentFragment.getChildFragmentManager()
+                                    .findFragmentByTag("EventTypeCategoryManipulationFragmentTag");
+
+                    if (fragment != null) {
+                        fragment.notifyChange();
+                    }
+                }
+
+                if (parentFragment instanceof UpdateEventTypeFragment) {
+                    EventTypeCategoryManipulationFragment fragment = (EventTypeCategoryManipulationFragment)
+                            parentFragment.getChildFragmentManager()
                                     .findFragmentByTag("EventTypeCategoryManipulationFragmentTag");
 
                     if (fragment != null) {

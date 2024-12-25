@@ -57,8 +57,8 @@ public class CreateEventTypeFragment extends Fragment {
 
         // Load the EventTypeCategoryManipulationFragment into a child container
         EventTypeCategoryManipulationFragment categoryFragment = EventTypeCategoryManipulationFragment.newInstance();
-        categoryFragment.setCategorySelectionListener(selectedCategories -> {
-            this.selectedCategories = selectedCategories; // Update selected categories
+        categoryFragment.setCategorySelectionListener((selectedCategories) -> {
+            this.selectedCategories = selectedCategories;
         });
 
         getChildFragmentManager().beginTransaction()
@@ -89,7 +89,7 @@ public class CreateEventTypeFragment extends Fragment {
         // Add selected categories to the DTO
         dto.setRecommendedCategories(new ArrayList<>());
         for (var cat : selectedCategories) {
-            Category category = new Category(cat.getName(), cat.getDescription(), true);
+            Category category = new Category(cat.getId(), cat.getName(), cat.getDescription(), cat.getStatus());
             dto.getRecommendedCategories().add(category);
         }
 

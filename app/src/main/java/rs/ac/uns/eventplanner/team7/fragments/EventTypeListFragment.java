@@ -50,16 +50,13 @@ public class EventTypeListFragment extends Fragment {
         fetchData();
 
         MaterialButton create = view.findViewById(R.id.create_event_type);
-        create.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragment fragment = new CreateEventTypeFragment();
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.frameLayout, fragment, "CreateEventTypeFragmentTag")
-                        .addToBackStack(null)
-                        .commit();
-            }
+        create.setOnClickListener(v -> {
+            Fragment fragment = new CreateEventTypeFragment();
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.frameLayout, fragment, "CreateEventTypeFragmentTag")
+                    .addToBackStack(null)
+                    .commit();
         });
 
         return view;

@@ -33,7 +33,7 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class CreateEventTypeFragment extends Fragment {
 
-    private List<CategoryResponseDTO> selectedCategories; // Categories selected in the child fragment
+    private List<CategoryResponseDTO> selectedCategories;
     private EventTypeService eventTypeService;
 
     public CreateEventTypeFragment() {

@@ -53,11 +53,9 @@ public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAd
             addableCategories.add(category);
             notifyDataSetChanged();
 
-            // Ensure the context is a FragmentActivity
             if (context instanceof FragmentActivity) {
                 FragmentActivity activity = (FragmentActivity) context;
 
-                // Find the parent fragment that holds the child fragment
                 Fragment parentFragment = activity.getSupportFragmentManager()
                         .findFragmentById(R.id.frameLayout);
 

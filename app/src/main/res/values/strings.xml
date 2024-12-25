@@ -107,5 +107,7 @@
     <string name="reset_results">Reset results</string>
     <string name="search_results">Search results:</string>
     <string name="selected_categories">Selected categories:</string>
+    <string name="update_event_type">Update event type</string>
+    <string name="more">More...</string>
 
 </resources>

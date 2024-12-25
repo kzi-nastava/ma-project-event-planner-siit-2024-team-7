@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
@@ -16,6 +19,9 @@ import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
+import rs.ac.uns.eventplanner.team7.fragments.CreateEventTypeFragment;
+import rs.ac.uns.eventplanner.team7.fragments.EventTypeCategoryManipulationFragment;
+import rs.ac.uns.eventplanner.team7.fragments.UpdateEventTypeFragment;
 
 public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdapter.ViewHolder> {
     private final Context context;
@@ -43,7 +49,8 @@ public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdap
         holder.subtitleView.setVisibility(View.GONE);
         holder.descriptionView.setText(dto.getDescription());
         holder.imageView.setVisibility(View.GONE);
-        holder.moreInfoButton.setText("Update");
+        holder.moreInfoButton.setText(R.string.more);
+        holder.setOnClickListener(dto.getId());
     }
 
 
@@ -67,12 +74,25 @@ public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdap
             descriptionView = itemView.findViewById(R.id.card_description);
             moreInfoButton = itemView.findViewById(R.id.card_more_info_button);
 
-            // Optionally, set a listener for the button
-            if (moreInfoButton == null) { //happens if there is no fav item/event
-                return;
-            }
+        }
+
+        public void setOnClickListener(Integer id) {
+            if (moreInfoButton == null) return;
+
             moreInfoButton.setOnClickListener(v -> {
-                // TODO: redirect to event details/item details page
+                Fragment fragment = new UpdateEventTypeFragment();
+                Bundle args = new Bundle();
+                args.putInt("eventTypeId", id);
+                fragment.setArguments(args);
+                if (context instanceof FragmentActivity) {
+                    FragmentActivity activity = (FragmentActivity) context;
+
+                    activity.getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.frameLayout, fragment, "UpdateEventTypeFragmentTag")
+                            .addToBackStack(null)
+                            .commit();
+                }
             });
         }
     }

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
 import lombok.Setter;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,6 +35,7 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class EventTypeCategoryManipulationFragment extends Fragment {
 
     private List<CategoryResponseDTO> addableCategories;
+    @Getter
     private List<CategoryResponseDTO> selectedCategories;
     private CategorySearchAdapter searchAdapter;
     private CategorySelectAdapter selectAdapter;
@@ -41,7 +43,6 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
     private SearchView searchView;
     private CategoryService categoryService;
 
-    // Interface for communicating with the host fragment or activity
     public interface CategorySelectionListener {
         void onCategoriesSelected(List<CategoryResponseDTO> selectedCategories);
     }

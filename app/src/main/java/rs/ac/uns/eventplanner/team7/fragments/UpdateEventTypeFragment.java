@@ -5,11 +5,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
@@ -71,6 +73,8 @@ public class UpdateEventTypeFragment extends Fragment {
         addableCategories = new ArrayList<>();
         eventTypeService = ClientUtils.retrofit.create(EventTypeService.class);
 
+        MaterialButton updateButton = view.findViewById(R.id.update_event_type);
+        updateButton.setOnClickListener(v -> update());
 
         return view;
     }
@@ -113,5 +117,10 @@ public class UpdateEventTypeFragment extends Fragment {
             selectedCategories.add(catDto);
         }
         categoryFragment.notifyChange(selectedCategories);
+    }
+
+    private void update() {
+        Log.d("SIZE", String.valueOf(selectedCategories.size()));
+        Log.d("SIZE2", String.valueOf(categoryFragment.getSelectedCategories().size()));
     }
 }

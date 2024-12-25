@@ -75,7 +75,7 @@ public class CreateEventTypeFragment extends Fragment {
         searchRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         RecyclerView selectedRecyclerView = view.findViewById(R.id.selected_categories_recycler_view);
-        selectedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        selectedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         categoryService = ClientUtils.retrofit.create(CategoryService.class);
 
@@ -144,6 +144,8 @@ public class CreateEventTypeFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                Log.d("SELECTED", selectedCategories.toString());
+                Log.d("ADDABLE", addableCategories.toString());
                 if (newText.equals(lastSearch)) {
                     onQueryTextSubmit(lastSearch);
                 }
@@ -155,7 +157,7 @@ public class CreateEventTypeFragment extends Fragment {
 
     public void notifyItemRemoved() {
         if (searchAdapter != null) {
-            searchAdapter.updateData(addableCategories);
+            searchAdapter.notifyDataSetChanged();
             searchView.setQuery(lastSearch, true);
         }
     }

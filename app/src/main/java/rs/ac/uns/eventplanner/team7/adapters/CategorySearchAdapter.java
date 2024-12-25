@@ -57,7 +57,6 @@ public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAd
         holder.subtitleView.setVisibility(View.GONE);
         holder.fabView.setImageResource(R.drawable.baseline_add_24);  // Add button
 
-        // Add category to selected list when "add" FAB is clicked
         holder.fabView.setOnClickListener(v -> {
             if (!selectedCategories.contains(category)) {
                 selectedCategories.add(category);

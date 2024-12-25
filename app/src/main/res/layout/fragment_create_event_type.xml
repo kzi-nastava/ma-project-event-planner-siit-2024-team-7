@@ -83,11 +83,10 @@
             android:layout_marginTop="15dp"
             android:text="@string/selected_categories"/>
 
-        <androidx.recyclerview.widget.RecyclerView
+        <rs.ac.uns.eventplanner.team7.utils.ExpandedRecyclerView
             android:id="@+id/selected_categories_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:scrollbars="vertical" />
 
         <com.google.android.material.textview.MaterialTextView

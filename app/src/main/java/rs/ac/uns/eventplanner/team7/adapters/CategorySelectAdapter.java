@@ -19,6 +19,7 @@ import java.util.List;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.fragments.CreateEventTypeFragment;
+import rs.ac.uns.eventplanner.team7.fragments.EventTypeCategoryManipulationFragment;
 
 public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAdapter.ViewHolder> {
 
@@ -51,21 +52,28 @@ public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAd
             selectedCategories.remove(category);
             addableCategories.add(category);
             notifyDataSetChanged();
-            if (context instanceof Activity) {
-                Activity activity = (Activity) context;
-                // Use the AndroidX FragmentManager
-                androidx.fragment.app.FragmentManager fragmentManager =
-                        ((FragmentActivity) activity).getSupportFragmentManager();
 
-                CreateEventTypeFragment fragment = (CreateEventTypeFragment) fragmentManager
-                        .findFragmentByTag("CreateEventTypeFragmentTag");
+            // Ensure the context is a FragmentActivity
+            if (context instanceof FragmentActivity) {
+                FragmentActivity activity = (FragmentActivity) context;
 
-                if (fragment != null) {
-                    fragment.notifyItemRemoved();
+                // Find the parent fragment that holds the child fragment
+                Fragment parentFragment = activity.getSupportFragmentManager()
+                        .findFragmentById(R.id.frameLayout);
+
+                if (parentFragment instanceof CreateEventTypeFragment) {
+                    EventTypeCategoryManipulationFragment fragment = (EventTypeCategoryManipulationFragment)
+                            ((CreateEventTypeFragment) parentFragment).getChildFragmentManager()
+                                    .findFragmentByTag("EventTypeCategoryManipulationFragmentTag");
+
+                    if (fragment != null) {
+                        fragment.notifyChange();
+                    }
                 }
             }
         });
     }
+
 
     @Override
     public int getItemCount() {

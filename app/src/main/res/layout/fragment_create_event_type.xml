@@ -46,48 +46,11 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/category_search_view"
+        <FrameLayout
+            android:id="@+id/category_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:iconifiedByDefault="false"
-            android:background="@drawable/searchview_border"
-            android:queryHint="@string/search_for_categories"
             android:layout_marginTop="16dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/reset_search_results"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/reset_results"/>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/search_results"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/search_categories_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:scrollbars="vertical" />
-
-        <include
-            layout="@layout/divider_thin" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="@string/selected_categories"/>
-
-        <rs.ac.uns.eventplanner.team7.utils.ExpandedRecyclerView
-            android:id="@+id/selected_categories_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="vertical" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/error_msg"

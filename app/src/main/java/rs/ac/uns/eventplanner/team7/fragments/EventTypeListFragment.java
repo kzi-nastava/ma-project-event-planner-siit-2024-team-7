@@ -1,12 +1,10 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +33,6 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class    EventTypeListFragment extends Fragment {
 
-    private RecyclerView recyclerView;
     private EventTypeCardAdapter adapter;
     private List<GetEventTypeResponseDTO> eventTypes;
     private EventTypeService eventTypeService;
@@ -44,7 +41,7 @@ public class    EventTypeListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_all_event_types, container, false);
 
-        recyclerView = view.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         eventTypeService = ClientUtils.retrofit.create(EventTypeService.class);
 
@@ -62,11 +59,14 @@ public class    EventTypeListFragment extends Fragment {
         MaterialButton create = view.findViewById(R.id.create_event_type);
         create.setOnClickListener(v -> {
             Fragment fragment = new CreateEventTypeFragment();
-            getActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frameLayout, fragment, "CreateEventTypeFragmentTag")
-                    .addToBackStack(null)
-                    .commit();
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frameLayout, fragment, "CreateEventTypeFragmentTag")
+                        .addToBackStack(null)
+                        .commit();
+            }
+
         });
 
         return view;

@@ -21,8 +21,6 @@ import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
-import rs.ac.uns.eventplanner.team7.fragments.CreateEventTypeFragment;
-import rs.ac.uns.eventplanner.team7.fragments.EventTypeCategoryManipulationFragment;
 import rs.ac.uns.eventplanner.team7.fragments.UpdateEventTypeFragment;
 
 public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdapter.ViewHolder> {

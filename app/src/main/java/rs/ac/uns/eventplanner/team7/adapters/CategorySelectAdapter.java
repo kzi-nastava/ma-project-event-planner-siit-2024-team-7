@@ -1,6 +1,5 @@
 package rs.ac.uns.eventplanner.team7.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +24,8 @@ import rs.ac.uns.eventplanner.team7.fragments.UpdateEventTypeFragment;
 public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAdapter.ViewHolder> {
 
     private final Context context;
-    private List<CategoryResponseDTO> selectedCategories;
-    private List<CategoryResponseDTO> addableCategories;
+    private final List<CategoryResponseDTO> selectedCategories;
+    private final List<CategoryResponseDTO> addableCategories;
 
     public CategorySelectAdapter(Context context, List<CategoryResponseDTO> categories, List<CategoryResponseDTO> addableCategories) {
         this.context = context;

@@ -3,17 +3,14 @@ package rs.ac.uns.eventplanner.team7.fragments;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -22,18 +19,17 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.UpdateEventTypeRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.UpdateEventTypeResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;
-import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
@@ -42,7 +38,6 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class UpdateEventTypeFragment extends Fragment {
 
     private List<CategoryResponseDTO> selectedCategories;
-    private List<CategoryResponseDTO> addableCategories;
     private Integer eventTypeId;
     private EventTypeService eventTypeService;
     private EventTypeCategoryManipulationFragment categoryFragment;
@@ -53,7 +48,6 @@ public class UpdateEventTypeFragment extends Fragment {
     }
 
     public static UpdateEventTypeFragment newInstance() {
-
         return new UpdateEventTypeFragment();
     }
 
@@ -72,9 +66,7 @@ public class UpdateEventTypeFragment extends Fragment {
 
         categoryFragment = EventTypeCategoryManipulationFragment.newInstance();
         categoryFragment.setCategoriesFetchedListener(categories -> {
-            this.addableCategories = categories;
             fillFields(view);
-
         });
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.category_fragment_container, categoryFragment, "EventTypeCategoryManipulationFragmentTag")
@@ -86,7 +78,6 @@ public class UpdateEventTypeFragment extends Fragment {
         loadingMsg.setVisibility(View.VISIBLE);
 
         selectedCategories = new ArrayList<>();
-        addableCategories = new ArrayList<>();
         eventTypeService = ClientUtils.retrofit.create(EventTypeService.class);
 
         MaterialButton updateButton = view.findViewById(R.id.update_event_type);
@@ -141,7 +132,7 @@ public class UpdateEventTypeFragment extends Fragment {
         UpdateEventTypeRequestDTO requestDTO = new UpdateEventTypeRequestDTO();
         TextInputLayout descLayout = requireView().findViewById(R.id.update_event_type_desc_layout);
         TextInputEditText descInput = requireView().findViewById(R.id.update_event_type_desc);
-        if (descInput.getText().toString().isEmpty()) {
+        if (Objects.requireNonNull(descInput.getText()).toString().isEmpty()) {
             descLayout.setError("Field is required");
             return;
         }
@@ -176,7 +167,7 @@ public class UpdateEventTypeFragment extends Fragment {
     private void setupDeleteButton(View view) {
         MaterialButton deleteButton = view.findViewById(R.id.delete_event_type);
         if (!isActive) {
-            deleteButton.setText("Reactivate event type");
+            deleteButton.setText(R.string.reactivate_event_type);
             deleteButton.setBackgroundColor(getResources().getColor(R.color.blue_200));
 
             Pair<AlertDialog, View> dialogData = createDialog();
@@ -184,7 +175,7 @@ public class UpdateEventTypeFragment extends Fragment {
             View dialogView = dialogData.second;
 
             MaterialTextView msg = dialogView.findViewById(R.id.event_type_deactivation_msg);
-            msg.setText("You are about to reactivate this event type. Are you sure?");
+            msg.setText(R.string.reactivate_message);
 
             dialog.setOnShowListener(d -> {
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {

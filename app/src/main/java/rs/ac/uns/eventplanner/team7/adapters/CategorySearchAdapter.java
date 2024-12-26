@@ -23,8 +23,8 @@ import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
 public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAdapter.ViewHolder> {
 
     private final Context context;
-    private List<CategoryResponseDTO> categories;
-    private List<CategoryResponseDTO> selectedCategories;  // List of selected categories
+    private final List<CategoryResponseDTO> categories;
+    private final List<CategoryResponseDTO> selectedCategories;  // List of selected categories
     private final CategorySelectAdapter selectAdapter;  // Reference to the select adapter
 
 

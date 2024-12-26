@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,7 +49,7 @@ public class CreateEventTypeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        selectedCategories = new ArrayList<>(); // Initialize the selected categories list
+        selectedCategories = new ArrayList<>();
     }
 
     @Override
@@ -121,7 +123,7 @@ public class CreateEventTypeFragment extends Fragment {
                         errorMsg.setText(message);
                         errorMsg.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
                     }
                 }
             }

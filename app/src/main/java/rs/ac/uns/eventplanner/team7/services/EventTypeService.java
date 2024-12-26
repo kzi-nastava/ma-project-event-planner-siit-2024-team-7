@@ -4,6 +4,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -44,4 +45,11 @@ public interface EventTypeService {
     })
     @PUT("event_types/{id}")
     Call<UpdateEventTypeResponseDTO> update(@Header("Authorization") String token, @Path("id") Integer id, @Body UpdateEventTypeRequestDTO dto);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @DELETE("event_types/{id}")
+    Call<Void> delete(@Header("Authorization") String token, @Path("id") Integer id);
 }

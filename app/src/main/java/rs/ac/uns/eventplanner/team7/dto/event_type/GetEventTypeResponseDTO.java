@@ -16,6 +16,6 @@ public class GetEventTypeResponseDTO {
     private Integer id;
     private String name;
     private String description;
-    private boolean isActive;
+    private boolean active;
     private List<Category> recommendedCategories;
 }

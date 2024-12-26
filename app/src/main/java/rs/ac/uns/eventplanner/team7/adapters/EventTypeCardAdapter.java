@@ -9,11 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -45,6 +47,9 @@ public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdap
             return;
         }
         GetEventTypeResponseDTO dto = eventTypes.get(position);
+        if (!dto.isActive()) {
+            holder.cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.grey));
+        }
         holder.titleView.setText(dto.getName());
         holder.subtitleView.setVisibility(View.GONE);
         holder.descriptionView.setText(dto.getDescription());
@@ -65,6 +70,7 @@ public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdap
         TextView subtitleView;
         TextView descriptionView;
         MaterialButton moreInfoButton;
+        MaterialCardView cardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -73,6 +79,7 @@ public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdap
             subtitleView = itemView.findViewById(R.id.card_subtitle);
             descriptionView = itemView.findViewById(R.id.card_description);
             moreInfoButton = itemView.findViewById(R.id.card_more_info_button);
+            cardView = itemView.findViewById(R.id.normal_card);
 
         }
 

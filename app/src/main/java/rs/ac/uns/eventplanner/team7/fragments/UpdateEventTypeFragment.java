@@ -162,8 +162,7 @@ public class UpdateEventTypeFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<UpdateEventTypeResponseDTO> call, @NonNull Response<UpdateEventTypeResponseDTO> response) {
                 if (response.isSuccessful()) {
-                    Fragment fragment = new EventTypeListFragment();
-                    navigateToEventTypeList();
+                    navigateToEventTypeList("Event type updated successfully!");
                 }
             }
 
@@ -222,7 +221,7 @@ public class UpdateEventTypeFragment extends Fragment {
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     dialog.dismiss();
-                    navigateToEventTypeList();
+                    navigateToEventTypeList("Event type deactivated successfully!");
                 }
                 else {
                     dialog.dismiss();
@@ -246,8 +245,11 @@ public class UpdateEventTypeFragment extends Fragment {
     }
 
 
-    private void navigateToEventTypeList() {
+    private void navigateToEventTypeList(String msg) {
         Fragment fragment = new EventTypeListFragment();
+        Bundle args = new Bundle();
+        args.putString("snackbar_message", msg);
+        fragment.setArguments(args);
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frameLayout, fragment)

@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +31,7 @@ import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 
-public class EventTypeListFragment extends Fragment {
+public class    EventTypeListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private EventTypeCardAdapter adapter;
@@ -60,6 +63,24 @@ public class EventTypeListFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Check if a message was passed and show the Snackbar
+        if (getArguments() != null && getArguments().containsKey("snackbar_message")) {
+            String message = getArguments().getString("snackbar_message");
+            Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE);
+
+            snackbar.setAction("OK", v -> {
+                snackbar.dismiss();
+            });
+
+            snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.white));
+            snackbar.show();
+        }
     }
 
     private void fetchData() {

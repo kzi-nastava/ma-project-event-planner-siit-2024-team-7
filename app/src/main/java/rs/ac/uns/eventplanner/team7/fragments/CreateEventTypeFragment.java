@@ -103,6 +103,9 @@ public class CreateEventTypeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     // Navigate back to the event type list
                     Fragment fragment = new EventTypeListFragment();
+                    Bundle args = new Bundle();
+                    args.putString("snackbar_message", "Event type created successfully!");
+                    fragment.setArguments(args);
                     requireActivity().getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.frameLayout, fragment)

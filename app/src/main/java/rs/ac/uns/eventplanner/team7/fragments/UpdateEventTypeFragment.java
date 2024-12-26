@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -51,10 +52,9 @@ public class UpdateEventTypeFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static UpdateEventTypeFragment newInstance(String param1, String param2) {
-        UpdateEventTypeFragment fragment = new UpdateEventTypeFragment();
+    public static UpdateEventTypeFragment newInstance() {
 
-        return fragment;
+        return new UpdateEventTypeFragment();
     }
 
     @Override
@@ -79,18 +79,18 @@ public class UpdateEventTypeFragment extends Fragment {
         getChildFragmentManager().beginTransaction()
                 .replace(R.id.category_fragment_container, categoryFragment, "EventTypeCategoryManipulationFragmentTag")
                 .commit();
-//        categoryFragment.notifyChange();
+
+        LinearLayout content = view.findViewById(R.id.content_view);
+        MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
+        content.setVisibility(View.GONE);
+        loadingMsg.setVisibility(View.VISIBLE);
+
         selectedCategories = new ArrayList<>();
         addableCategories = new ArrayList<>();
         eventTypeService = ClientUtils.retrofit.create(EventTypeService.class);
 
         MaterialButton updateButton = view.findViewById(R.id.update_event_type);
         updateButton.setOnClickListener(v -> update(isActive));
-
-//        setupDeleteButton(view);
-
-
-
         return view;
     }
 
@@ -194,6 +194,12 @@ public class UpdateEventTypeFragment extends Fragment {
             });
 
             deleteButton.setOnClickListener(v -> dialog.show());
+
+            // set the content
+            LinearLayout content = view.findViewById(R.id.content_view);
+            MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
+            content.setVisibility(View.VISIBLE);
+            loadingMsg.setVisibility(View.GONE);
         } else {
             deleteButton.setOnClickListener(v -> delete());
         }

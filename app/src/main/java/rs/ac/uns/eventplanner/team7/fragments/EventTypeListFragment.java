@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +52,12 @@ public class    EventTypeListFragment extends Fragment {
         adapter = new EventTypeCardAdapter(requireContext(), eventTypes);
         recyclerView.setAdapter(adapter);
 
-        fetchData();
+        LinearLayout content = view.findViewById(R.id.content_view);
+        MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
+        content.setVisibility(View.GONE);
+        loadingMsg.setVisibility(View.VISIBLE);
+
+        fetchData(view);
 
         MaterialButton create = view.findViewById(R.id.create_event_type);
         create.setOnClickListener(v -> {
@@ -83,7 +90,7 @@ public class    EventTypeListFragment extends Fragment {
         }
     }
 
-    private void fetchData() {
+    private void fetchData(View view) {
         Call<List<GetEventTypeResponseDTO>> call = eventTypeService.getAll(JwtUtil.getAuthorizationValue(requireContext()));
         call.enqueue(new Callback<>() {
             @Override
@@ -92,6 +99,11 @@ public class    EventTypeListFragment extends Fragment {
                     eventTypes.clear();
                     eventTypes.addAll(response.body());
                     adapter.notifyDataSetChanged();
+
+                    LinearLayout content = view.findViewById(R.id.content_view);
+                    MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
+                    content.setVisibility(View.VISIBLE);
+                    loadingMsg.setVisibility(View.GONE);
                 }
             }
 

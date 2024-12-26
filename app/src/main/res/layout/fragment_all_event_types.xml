@@ -14,6 +14,23 @@
         android:text="@string/all_event_types"
         android:textSize="24sp"/>
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/loading_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loading data..."
+        android:textSize="18sp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/content_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/create_event_type"
         android:layout_width="wrap_content"
@@ -29,5 +46,7 @@
         android:layout_gravity="center_horizontal"
         android:clipToPadding="false"
         android:scrollbars="vertical" />
+
+    </LinearLayout>
 
 </LinearLayout>

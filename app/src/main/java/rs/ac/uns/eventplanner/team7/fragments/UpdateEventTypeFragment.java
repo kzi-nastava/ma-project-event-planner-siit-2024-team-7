@@ -196,13 +196,14 @@ public class UpdateEventTypeFragment extends Fragment {
             deleteButton.setOnClickListener(v -> dialog.show());
 
             // set the content
-            LinearLayout content = view.findViewById(R.id.content_view);
-            MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
-            content.setVisibility(View.VISIBLE);
-            loadingMsg.setVisibility(View.GONE);
+
         } else {
             deleteButton.setOnClickListener(v -> delete());
         }
+        LinearLayout content = view.findViewById(R.id.content_view);
+        MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
+        content.setVisibility(View.VISIBLE);
+        loadingMsg.setVisibility(View.GONE);
     }
 
     private void delete() {

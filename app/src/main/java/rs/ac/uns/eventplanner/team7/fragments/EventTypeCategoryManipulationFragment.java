@@ -37,6 +37,7 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
     private List<CategoryResponseDTO> addableCategories;
     @Getter
     private List<CategoryResponseDTO> selectedCategories;
+    private List<CategoryResponseDTO> originalCategories;
     private CategorySearchAdapter searchAdapter;
     private CategorySelectAdapter selectAdapter;
     private String lastSearch;
@@ -99,7 +100,14 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
         setupSearchView();
 
         MaterialButton resetResults = view.findViewById(R.id.reset_search_results);
-        resetResults.setOnClickListener(v -> searchAdapter.updateData(addableCategories));
+        resetResults.setOnClickListener(v -> {
+
+            addableCategories = originalCategories.stream()
+                    .filter(category -> selectedCategories.stream()
+                            .noneMatch(selected -> selected.getId().equals(category.getId())))
+                    .collect(Collectors.toList());
+            searchAdapter.updateData(addableCategories);
+        });
 
         return view;
     }
@@ -112,6 +120,7 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     searchAdapter.updateData(response.body());
                     addableCategories = response.body();
+                    originalCategories = response.body();
                     if (categoriesFetchedListener != null) {
                         categoriesFetchedListener.onCategoriesFetched(addableCategories);
                     }

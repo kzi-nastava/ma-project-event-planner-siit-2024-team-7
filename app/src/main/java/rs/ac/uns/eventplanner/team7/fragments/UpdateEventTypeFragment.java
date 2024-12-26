@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.event_type.UpdateEventTypeRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.event_type.UpdateEventTypeResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
@@ -35,6 +40,7 @@ public class UpdateEventTypeFragment extends Fragment {
     private Integer eventTypeId;
     private EventTypeService eventTypeService;
     private EventTypeCategoryManipulationFragment categoryFragment;
+    private boolean isActive;
 
     public UpdateEventTypeFragment() {
         // Required empty public constructor
@@ -91,6 +97,7 @@ public class UpdateEventTypeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     GetEventTypeResponseDTO dto = response.body();
                     if (dto != null) {
+                        isActive = dto.isActive();
                         fillFields(view, dto);
                     }
                 }
@@ -120,7 +127,46 @@ public class UpdateEventTypeFragment extends Fragment {
     }
 
     private void update() {
-        Log.d("SIZE", String.valueOf(selectedCategories.size()));
-        Log.d("SIZE2", String.valueOf(categoryFragment.getSelectedCategories().size()));
+        this.selectedCategories = categoryFragment.getSelectedCategories();
+        UpdateEventTypeRequestDTO requestDTO = new UpdateEventTypeRequestDTO();
+        TextInputLayout descLayout = requireView().findViewById(R.id.update_event_type_desc_layout);
+        TextInputEditText descInput = requireView().findViewById(R.id.update_event_type_desc);
+        if (descInput.getText().toString().isEmpty()) {
+            descLayout.setError("Field is required");
+            return;
+        }
+        requestDTO.setDescription(descInput.getText().toString());
+        requestDTO.setActive(isActive);
+        requestDTO.setRecommendedCategories(new ArrayList<>());
+        for (var cat : this.selectedCategories) {
+            Category category = new Category(cat.getId(), cat.getName(), cat.getDescription(), cat.getStatus());
+            requestDTO.getRecommendedCategories().add(category);
+        }
+
+        Call<UpdateEventTypeResponseDTO> call = eventTypeService.update(JwtUtil.getAuthorizationValue(requireContext()), eventTypeId, requestDTO);
+        call.enqueue(updateCallback());
     }
+
+    private Callback<UpdateEventTypeResponseDTO> updateCallback() {
+        return new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<UpdateEventTypeResponseDTO> call, @NonNull Response<UpdateEventTypeResponseDTO> response) {
+                if (response.isSuccessful()) {
+                    Fragment fragment = new EventTypeListFragment();
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.frameLayout, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<UpdateEventTypeResponseDTO> call, @NonNull Throwable t) {
+
+            }
+        };
+    }
+
+
 }

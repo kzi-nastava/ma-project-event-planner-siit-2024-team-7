@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        checkRedirection();
 
         MaterialTextView signUp = findViewById(R.id.signupLink);
         signUp.setOnClickListener(v -> {
@@ -65,5 +67,18 @@ public class LoginActivity extends AppCompatActivity {
         passwordInput.setText("");
         usernameInput.clearFocus();
         passwordInput.clearFocus();
+        checkRedirection();
     }
+
+    private void checkRedirection() {
+        Uri data = getIntent().getData();
+        if (data != null) {
+            String email = data.getQueryParameter("email");
+            if (email != null)  {
+                TextInputEditText emailInput = findViewById(R.id.usernameInput);
+                emailInput.setText(email);
+            }
+        }
+    }
+
 }

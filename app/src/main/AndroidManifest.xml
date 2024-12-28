@@ -12,17 +12,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EventPlanner"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31"
-        android:usesCleartextTraffic="true">
+        tools:ignore="DiscouragedApi">
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:screenOrientation="nosensor">
+                <intent-filter>
+                    <action android:name="android.intent.action.VIEW" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+
+                    <data
+                        android:scheme="eventifi"
+                        android:host="login" />
+                </intent-filter>
+        </activity>
         <activity
             android:name=".activities.RegistrationActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="eventifi"
+                    android:host="register" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activities.SplashScreenActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="nosensor">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +58,8 @@
         <activity
             android:name=".activities.HomeActivity"
             android:label="Home"
-            android:exported="false"/>
+            android:exported="false"
+            android:screenOrientation="nosensor"/>
     </application>
 
 </manifest>

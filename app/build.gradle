@@ -39,27 +39,26 @@ android {
 
 dependencies {
 
-    implementation libs.lombok
-    implementation libs.appcompat
-    implementation libs.activity
-    implementation libs.constraintlayout
-    implementation libs.material
-    implementation libs.annotation
-    implementation libs.lifecycle.livedata.ktx
-    implementation libs.lifecycle.viewmodel.ktx
-    implementation libs.navigation.fragment
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-    implementation 'com.squareup.picasso:picasso:2.8'
-    implementation 'com.github.prolificinteractive:material-calendarview:2.0.0'
-    implementation 'com.jakewharton.threetenabp:threetenabp:1.4.8'
-    testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-
+    annotationProcessor libs.lombok
+    implementation libs.activity
+    implementation libs.annotation
+    implementation libs.appcompat
+    implementation libs.constraintlayout
+    implementation libs.converter.gson
+    implementation libs.jjwt.api
+    implementation libs.lombok
+    implementation libs.lifecycle.livedata.ktx
+    implementation libs.lifecycle.viewmodel.ktx
+    implementation libs.logging.interceptor
+    implementation libs.material
+    implementation libs.material.calendarview
+    implementation libs.navigation.fragment
+    implementation libs.retrofit
+    implementation libs.picasso
+    implementation libs.threetenabp
+    runtimeOnly libs.jjwt.impl
+    runtimeOnly libs.jjwt.jackson
+    testImplementation libs.junit
 }

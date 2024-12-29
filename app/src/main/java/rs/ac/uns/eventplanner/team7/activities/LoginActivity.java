@@ -1,7 +1,7 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -12,10 +12,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
-
-import java.util.Objects;
-
-import javax.crypto.EncryptedPrivateKeyInfo;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,9 +32,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         authService = ClientUtils.retrofit.create(AuthService.class);
         setupNavigation();
+        checkRedirection();
     }
 
     @Override
@@ -49,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         usernameLayout.setError(null);
         passwordLayout.setError(null);
         clearFocus();
+        checkRedirection();
     }
 
     private void setupNavigation() {
@@ -115,6 +112,17 @@ public class LoginActivity extends AppCompatActivity {
         passwordInput.setText("");
         usernameInput.clearFocus();
         passwordInput.clearFocus();
+    }
+
+    private void checkRedirection() {
+        Uri data = getIntent().getData();
+        if (data != null) {
+            String email = data.getQueryParameter("email");
+            if (email != null)  {
+                TextInputEditText emailInput = findViewById(R.id.usernameInput);
+                emailInput.setText(email);
+            }
+        }
     }
 
 }

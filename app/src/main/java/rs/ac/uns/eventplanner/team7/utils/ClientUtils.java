@@ -24,7 +24,7 @@ public class ClientUtils {
     }
 
 
-    public static Retrofit retrofit = new Retrofit.Builder()
+    public static final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(API_PATH)
             .addConverterFactory(GsonConverterFactory.create())
             .client(test())

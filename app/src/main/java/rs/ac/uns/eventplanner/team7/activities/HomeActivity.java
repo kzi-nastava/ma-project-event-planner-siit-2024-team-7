@@ -2,36 +2,36 @@ package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.Toolbar;
-
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
+import rs.ac.uns.eventplanner.team7.fragments.UserProfileFragment;
 
 public class HomeActivity extends AppCompatActivity {
 
     private boolean isGuest;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         isGuest = getIntent().getBooleanExtra("isGuest", false);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navbarSetup();
         loadFragment(new HomeFragment());
     }
@@ -92,6 +92,11 @@ public class HomeActivity extends AppCompatActivity {
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         return true;
+                    }
+                    if (item.getItemId() == R.id.nav_my_account) {
+                        Fragment userProfileFragment = new UserProfileFragment();
+                        loadFragment(userProfileFragment);
+                        toolbar.setTitle(R.string.profile);
                     }
                     if (item.getItemId() == R.id.nav_sign_in) {
                         Intent intent = new Intent(HomeActivity.this, LoginActivity.class);

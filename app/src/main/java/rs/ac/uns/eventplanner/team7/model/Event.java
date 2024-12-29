@@ -17,15 +17,18 @@ import rs.ac.uns.eventplanner.team7.utils.DateConverter;
 
 @Getter @Setter
 public class Event implements Parcelable {
-
+    private Integer id;
     private String name;
     private String description;
+    private String coverImage;
     private int maxParticipants;
+    private int currentParticipants;
     private LocalDateTime date;
     private Location place;
     private EventVisibility visibility;
     private EventType type;
     private List<Activity> activities;
+    // budget not here
 
     public Event() {}
 

@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,12 +14,20 @@ public class Location implements Parcelable {
 
     private double lat;
     private double lon;
+    private String country;
+    private String city;
+    private String street;
+    private String houseNumber;
 
     public Location() {}
 
-    public Location(double lat, double lon) {
+    public Location(double lat, double lon, String country, String city, String street, String houseNumber) {
         this.lat = lat;
         this.lon = lon;
+        this.city = city;
+        this.country = country;
+        this.street = street;
+        this.houseNumber = houseNumber;
     }
 
     protected Location(Parcel in) {

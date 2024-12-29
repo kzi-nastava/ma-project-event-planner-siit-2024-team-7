@@ -31,6 +31,7 @@ public class HomeActivity extends AppCompatActivity {
         isGuest = getIntent().getBooleanExtra("isGuest", false);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navbarSetup();
         loadFragment(new HomeFragment());
     }

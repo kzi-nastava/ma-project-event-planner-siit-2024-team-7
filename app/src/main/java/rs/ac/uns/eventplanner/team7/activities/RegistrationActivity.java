@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -10,26 +11,24 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.Objects;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.auth.LoginResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.auth.RegisterRequestDTO;
 import rs.ac.uns.eventplanner.team7.model.Location;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.AuthService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
-
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textview.MaterialTextView;
-
-import java.util.Objects;
 
 public class RegistrationActivity extends AppCompatActivity {
 
+    private String token; // used for auth user registration
     private String selectedRole;
     private AuthService authService;
 
@@ -42,6 +41,7 @@ public class RegistrationActivity extends AppCompatActivity {
         setupLoginNavigation();
         MaterialButton regButton = findViewById(R.id.register_button);
         regButton.setOnClickListener(v -> registerOnClick());
+        checkRedirection();
     }
 
     @Override
@@ -52,11 +52,13 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
+        checkRedirection();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        checkRedirection();
     }
 
     @Override
@@ -231,4 +233,17 @@ public class RegistrationActivity extends AppCompatActivity {
         return true;
     }
 
+    private void checkRedirection() {
+        Uri data = getIntent().getData();
+        if (data != null) {
+            String email = data.getQueryParameter("email");
+            String token = data.getQueryParameter("token");
+            if (email != null && token != null)  {
+                TextInputEditText emailInput = findViewById(R.id.email);
+                emailInput.setText(email);
+                this.token = token;
+                // TODO handle auth user registration case here
+            }
+        }
+    }
 }

@@ -1,10 +1,6 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
-import static android.view.View.GONE;
-
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
@@ -26,12 +22,9 @@ import com.google.android.material.textview.MaterialTextView;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,11 +35,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.activities.LoginActivity;
 import rs.ac.uns.eventplanner.team7.adapters.CalendarAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.CarouselAdapter;
 import rs.ac.uns.eventplanner.team7.dto.BusynessDTO;
-import rs.ac.uns.eventplanner.team7.dto.ErrorMessageDTO;
 import rs.ac.uns.eventplanner.team7.dto.event.BasicEventDTO;
 import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.GetOrganizerResponseDTO;
@@ -83,6 +74,15 @@ public class UserProfileFragment extends Fragment {
 
         setupCalendar(view);
         setupRoleText(view);
+
+        if (role == UserRole.ADMIN) {
+            View userInputs = view.findViewById(R.id.user_profile_inputs);
+            userInputs.setVisibility(View.GONE);
+            MaterialButton deactivateButton = view.findViewById(R.id.deactivate_account);
+            deactivateButton.setVisibility(View.GONE);
+            return view;
+        }
+
         setupInputIcons(view);
         fillFields(view);
 

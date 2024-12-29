@@ -2,8 +2,6 @@ package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,15 +9,14 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-
-import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.Toolbar;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.fragments.EventTypeListFragment;
@@ -32,11 +29,11 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class HomeActivity extends AppCompatActivity {
 
     private boolean isGuest;
+    private Toolbar toolbar;
     private UserRole role;
     private DrawerLayout drawerLayout;
     private BottomNavigationView bottomNavigationView;
     private NavigationView navigationView;
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +45,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Initialize the DrawerLayout and Toolbar
         drawerLayout = findViewById(R.id.drawer_layout);
-        toolbar = findViewById(R.id.toolbar);
+        this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupBottomNavbar();
 
@@ -109,6 +106,7 @@ public class HomeActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.nav_my_account) {
                     Fragment userProfileFragment = new UserProfileFragment();
                     loadFragment(userProfileFragment);
+                    toolbar.setTitle(R.string.profile);
                 }
                 if (item.getItemId() == R.id.nav_sign_in) {
                     Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
@@ -123,12 +121,6 @@ public class HomeActivity extends AppCompatActivity {
                 return false;
             }
         });
-    }
-
-    private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout, fragment)
-                .commit();
     }
 
     private void setupAdminNav() {
@@ -166,5 +158,13 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             }
         });
+
     }
+
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frameLayout, fragment)
+                .commit();
+    }
+
 }

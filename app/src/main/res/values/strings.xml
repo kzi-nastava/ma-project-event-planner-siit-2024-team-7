@@ -95,6 +95,7 @@
     <string name="cancel">Cancel</string>
     <string name="deactivation_confirmation">You are about to deactivate for account. Are you sure?</string>
     <string name="yes">Yes</string>
+    <string name="profile">Profile</string>
     <string name="openDrawer">Open</string>
     <string name="closeDrawer">Close</string>
     <string name="all_event_types">All Event Types</string>
@@ -102,13 +103,13 @@
     <string name="create_event_type">Create event type</string>
     <string name="event_type_name">Event type name</string>
     <string name="event_type_description">Event type description</string>
-    <string name="search_for_categories">Search for categories...</string>
+    <string name="search_for_categories">Search for categories…</string>
     <string name="button">button</string>
     <string name="reset_results">Reset results</string>
     <string name="search_results">Search results:</string>
     <string name="selected_categories">Selected categories:</string>
     <string name="update_event_type">Update event type</string>
-    <string name="more">More...</string>
+    <string name="more">More…</string>
     <string name="delete_event_type">Delete event type</string>
     <string name="reactivate_event_type">Reactivate event type</string>
     <string name="reactivate_message">You are about to reactivate this event type. Are you sure?</string>

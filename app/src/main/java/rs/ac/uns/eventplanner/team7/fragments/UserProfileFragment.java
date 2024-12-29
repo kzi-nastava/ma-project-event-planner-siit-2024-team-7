@@ -74,16 +74,17 @@ public class UserProfileFragment extends Fragment {
 
         setupCalendar(view);
         setupRoleText(view);
+
         if (role == UserRole.ADMIN) {
             View userInputs = view.findViewById(R.id.user_profile_inputs);
             userInputs.setVisibility(View.GONE);
             MaterialButton deactivateButton = view.findViewById(R.id.deactivate_account);
             deactivateButton.setVisibility(View.GONE);
+            return view;
         }
-        else {
-            setupInputIcons(view);
-            fillFields(view);
-        }
+
+        setupInputIcons(view);
+        fillFields(view);
 
         MaterialButton changePass = view.findViewById(R.id.change_password);
         changePass.setOnClickListener(v -> showChangePasswordDialog());

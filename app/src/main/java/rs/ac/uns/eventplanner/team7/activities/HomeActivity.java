@@ -27,10 +27,8 @@ import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class HomeActivity extends AppCompatActivity {
-
-    private boolean isGuest;
     private Toolbar toolbar;
-    private UserRole role;
+    private UserRole role = UserRole.GUEST;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
@@ -39,8 +37,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        isGuest = getIntent().getBooleanExtra("isGuest", false);
-        role = UserRole.valueOf(JwtUtil.getRole(this));
+        boolean isGuest = getIntent().getBooleanExtra("isGuest", false);
+        if (!isGuest) role =  UserRole.valueOf(JwtUtil.getRole(this));
 
         // Initialize the DrawerLayout and Toolbar
         drawerLayout = findViewById(R.id.home_drawer_layout);
@@ -70,48 +68,50 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        if (item.getItemId() == R.id.nav_account) {
+        if (item.getItemId() == R.id.nav_chats) {
+            // TODO
+        } else if (item.getItemId() == R.id.nav_notifications) {
+            // TODO
+        } else if (item.getItemId() == R.id.nav_account) {
             View profileMenuItemView = findViewById(R.id.nav_account);
             PopupMenu popupMenu = new PopupMenu(this, profileMenuItemView);
-            if (isGuest) { //inflate it with guest menu
+            if (role == UserRole.GUEST) { //inflate it with guest menu
                 popupMenu.getMenuInflater().inflate(R.menu.guest_profile_menu, popupMenu.getMenu());
             } else {
                 popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
             }
             setAccountClickListener(popupMenu);
             popupMenu.show();
-        } else if (item.getItemId() == R.id.nav_logout) {
-            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        JwtUtil.clearToken(HomeActivity.this);
+        JwtUtil.clearRole(HomeActivity.this);
+    }
+
     private void setAccountClickListener(PopupMenu popupMenu) {
         popupMenu.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.nav_logout) {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_logout || itemId == R.id.nav_sign_in) {
                 Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
+                finish();
                 return true;
             }
-            if (item.getItemId() == R.id.nav_my_account) {
+            if (itemId == R.id.nav_my_account) {
                 loadFragment(new UserProfileFragment());
                 toolbar.setTitle(R.string.profile);
                 return true;
             }
-            if (item.getItemId() == R.id.nav_sign_in) {
-                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                startActivity(intent);
-                return true;
-            }
-            if (item.getItemId() == R.id.nav_sign_up) {
-                Intent intent = new Intent(HomeActivity.this, RegistrationActivity.class);
-                startActivity(intent);
+            if (itemId == R.id.nav_sign_up) {
+                startActivity(new Intent(HomeActivity.this, RegistrationActivity.class));
+                finish();
                 return true;
             }
             return false;

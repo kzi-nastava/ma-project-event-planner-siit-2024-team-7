@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/event_type"
-        android:title="Event Type"
+        android:title="@string/event_type_menu_item"
         android:icon="@drawable/baseline_apps_24"/>
 
 </menu>

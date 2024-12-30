@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
@@ -17,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textview.MaterialTextView;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.fragments.EventTypeListFragment;
@@ -32,7 +32,6 @@ public class HomeActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private UserRole role;
     private DrawerLayout drawerLayout;
-    private BottomNavigationView bottomNavigationView;
     private NavigationView navigationView;
 
     @Override
@@ -44,44 +43,43 @@ public class HomeActivity extends AppCompatActivity {
         role = UserRole.valueOf(JwtUtil.getRole(this));
 
         // Initialize the DrawerLayout and Toolbar
-        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout = findViewById(R.id.home_drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setupBottomNavbar();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Check if the user is an admin or not
         if (role == UserRole.ADMIN) {
             setupAdminNav();
         }
-
+        setupBottomNavbar();
         loadFragment(new HomeFragment());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (role != UserRole.ADMIN) {
-            getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        if (role == UserRole.ADMIN) {
+            MenuItem chatItem = menu.findItem(R.id.nav_chats);
+            if (chatItem != null) {
+                menu.removeItem(R.id.nav_chats);
+            }
         }
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (role == UserRole.ADMIN) {
-            drawerLayout.openDrawer(GravityCompat.START);
-            return true;
-        }
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
         if (item.getItemId() == R.id.nav_account) {
             View profileMenuItemView = findViewById(R.id.nav_account);
             PopupMenu popupMenu = new PopupMenu(this, profileMenuItemView);
             if (isGuest) { //inflate it with guest menu
                 popupMenu.getMenuInflater().inflate(R.menu.guest_profile_menu, popupMenu.getMenu());
-            }
-            else {
+            } else {
                 popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
             }
             setAccountClickListener(popupMenu);
-
             popupMenu.show();
         } else if (item.getItemId() == R.id.nav_logout) {
             Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
@@ -94,45 +92,41 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setAccountClickListener(PopupMenu popupMenu) {
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(@NonNull MenuItem item) {
-                if (item.getItemId() == R.id.nav_logout) { //logout action
-                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    return true;
-                }
-                if (item.getItemId() == R.id.nav_my_account) {
-                    Fragment userProfileFragment = new UserProfileFragment();
-                    loadFragment(userProfileFragment);
-                    toolbar.setTitle(R.string.profile);
-                }
-                if (item.getItemId() == R.id.nav_sign_in) {
-                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    return true;
-                }
-                if (item.getItemId() == R.id.nav_sign_up) {
-                    Intent intent = new Intent(HomeActivity.this, RegistrationActivity.class);
-                    startActivity(intent);
-                    return true;
-                }
-                return false;
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.nav_logout) {
+                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                return true;
             }
+            if (item.getItemId() == R.id.nav_my_account) {
+                loadFragment(new UserProfileFragment());
+                toolbar.setTitle(R.string.profile);
+                return true;
+            }
+            if (item.getItemId() == R.id.nav_sign_in) {
+                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            if (item.getItemId() == R.id.nav_sign_up) {
+                Intent intent = new Intent(HomeActivity.this, RegistrationActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            return false;
         });
     }
 
     private void setupAdminNav() {
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        MaterialTextView headerText = navigationView.getHeaderView(0).findViewById(R.id.nav_header_user_name);
+        headerText.setText(R.string.admin_options);
+        navigationView.inflateMenu(R.menu.admin_nav_drawer_menu);
 
-        navigationView = findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.event_type) {
                 loadFragment(new EventTypeListFragment());
+                toolbar.setTitle(item.getTitle());
             }
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
@@ -140,25 +134,21 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupBottomNavbar() {
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment selectedFragment = null;
-                if (item.getItemId() == R.id.nav_home) {
-                    selectedFragment = new HomeFragment();
-                    toolbar.setTitle(item.getTitle());
-                } else if (item.getItemId() == R.id.nav_service) {
-                    selectedFragment = new SPPServicesBaseFragment();
-                    toolbar.setTitle(item.getTitle());
-                }
-                if (selectedFragment != null) {
-                    loadFragment(selectedFragment);
-                }
-                return true;
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
+            if (item.getItemId() == R.id.nav_home) {
+                selectedFragment = new HomeFragment();
+                toolbar.setTitle(item.getTitle());
+            } else if (item.getItemId() == R.id.nav_service) {
+                selectedFragment = new SPPServicesBaseFragment();
+                toolbar.setTitle(item.getTitle());
             }
+            if (selectedFragment != null) {
+                loadFragment(selectedFragment);
+            }
+            return true;
         });
-
     }
 
     private void loadFragment(Fragment fragment) {

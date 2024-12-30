@@ -113,5 +113,7 @@
     <string name="delete_event_type">Delete event type</string>
     <string name="reactivate_event_type">Reactivate event type</string>
     <string name="reactivate_message">You are about to reactivate this event type. Are you sure?</string>
+    <string name="admin_options">Admin Management</string>
+    <string name="event_type_menu_item">Event Type</string>
 
 </resources>

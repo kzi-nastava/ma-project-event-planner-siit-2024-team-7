@@ -57,11 +57,13 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        MenuItem chatItem = menu.findItem(R.id.nav_chats);
+        MenuItem notificationsItem = menu.findItem(R.id.nav_notifications);
         if (role == UserRole.ADMIN) {
-            MenuItem chatItem = menu.findItem(R.id.nav_chats);
-            if (chatItem != null) {
-                menu.removeItem(R.id.nav_chats);
-            }
+            chatItem.setVisible(false);
+        } else if (role == UserRole.GUEST) {
+            chatItem.setVisible(false);
+            notificationsItem.setVisible(false);
         }
         return true;
     }

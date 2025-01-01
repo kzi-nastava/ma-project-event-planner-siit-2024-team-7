@@ -1,11 +1,16 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
+import static android.widget.Toast.LENGTH_LONG;
+import static android.widget.Toast.LENGTH_SHORT;
+import static rs.ac.uns.eventplanner.team7.utils.ClientUtils.retrofit;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
@@ -13,26 +18,30 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.util.Objects;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.invitation.InvitationAcceptanceDTO;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.AuthService;
-import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private AuthService authService;
+    private final AuthService authService = retrofit.create(AuthService.class);
+    private final InvitationService invitationService = retrofit.create(InvitationService.class);
+    private InvitationAcceptanceDTO invitationDto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        authService = ClientUtils.retrofit.create(AuthService.class);
         setupNavigation();
         checkRedirection();
     }
@@ -70,20 +79,21 @@ public class LoginActivity extends AppCompatActivity {
     private void handleLogin() {
         TextInputEditText emailInput = findViewById(R.id.usernameInput);
         TextInputEditText passwordInput = findViewById(R.id.passwordInput);
-        String email = emailInput.getText().toString().trim();
-        String password = passwordInput.getText().toString().trim();
+        String email = Objects.requireNonNull(emailInput.getText()).toString().trim();
+        String password = Objects.requireNonNull(passwordInput.getText()).toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter email and password", LENGTH_SHORT).show();
             return;
         }
 
         LoginRequestDTO loginRequest = new LoginRequestDTO(email, password);
 
         Call<LoginResponseDTO> call = authService.login(loginRequest);
-        call.enqueue(new Callback<LoginResponseDTO>() {
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<LoginResponseDTO> call, Response<LoginResponseDTO> response) {
+            public void onResponse(@NonNull Call<LoginResponseDTO> call,
+                                   @NonNull Response<LoginResponseDTO> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponseDTO loginResponse = response.body();
                     String token = loginResponse.getToken();
@@ -91,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                     UserRole role = loginResponse.getRole();
                     JwtUtil.saveToken(LoginActivity.this, token);
                     JwtUtil.saveRole(LoginActivity.this, role.toString());
+                    if (invitationDto != null) handleInvitationAccepting();
                     startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                     finish();
                 } else {
@@ -101,8 +112,31 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<LoginResponseDTO> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<LoginResponseDTO> call, @NonNull Throwable t) {
+                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void handleInvitationAccepting() {
+        invitationService.acceptInvitation(invitationDto).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this,
+                            "You have successfully accepted the invitation!", LENGTH_LONG).show();
+                    return;
+                }
+                if (response.code() == 400) {
+                    Toast.makeText(LoginActivity.this, response.body(), LENGTH_SHORT).show();
+                } else if (response.code() == 404) {
+                    Toast.makeText(LoginActivity.this, "Invitation not found!", LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+
             }
         });
     }
@@ -116,15 +150,19 @@ public class LoginActivity extends AppCompatActivity {
         passwordInput.clearFocus();
     }
 
+    /// Redirection can occur when accepting invitations
     private void checkRedirection() {
         Uri data = getIntent().getData();
-        if (data != null) {
+        if (data == null) return;
+        try {
             String email = data.getQueryParameter("email");
-            if (email != null)  {
-                TextInputEditText emailInput = findViewById(R.id.usernameInput);
-                emailInput.setText(email);
-            }
-        }
+            Integer eventId = Integer.parseInt(data.getQueryParameter("email"));
+            String token = data.getQueryParameter("email");
+            if (email == null || token == null) return;
+            TextInputEditText emailInput = findViewById(R.id.usernameInput);
+            emailInput.setText(email);
+            invitationDto = new InvitationAcceptanceDTO(email, eventId, token);
+        } catch (NumberFormatException ignored) {}
     }
 
 }

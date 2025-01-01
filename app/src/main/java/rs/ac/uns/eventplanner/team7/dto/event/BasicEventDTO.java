@@ -1,7 +1,5 @@
 package rs.ac.uns.eventplanner.team7.dto.event;
 
-import java.time.LocalDateTime;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

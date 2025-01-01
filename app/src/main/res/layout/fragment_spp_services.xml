@@ -15,34 +15,19 @@
         >
         <include
             android:id="@+id/service_card_1"
-            layout="@layout/normal_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"/>
+            layout="@layout/normal_card" />
         <include
             android:id="@+id/service_card_2"
-            layout="@layout/normal_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"/>
+            layout="@layout/normal_card"/>
         <include
             android:id="@+id/service_card_3"
-            layout="@layout/normal_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"/>
+            layout="@layout/normal_card" />
         <include
             android:id="@+id/service_card_4"
-            layout="@layout/normal_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"/>
+            layout="@layout/normal_card" />
         <include
             android:id="@+id/service_card_5"
-            layout="@layout/normal_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"/>
+            layout="@layout/normal_card" />
     </LinearLayout>
 
 </ScrollView>

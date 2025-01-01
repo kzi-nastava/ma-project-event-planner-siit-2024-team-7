@@ -13,18 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/all_services_products"
-        android:textSize="28sp"
-        android:layout_marginTop="20dp"
-        android:layout_marginHorizontal="5dp"
+        android:textSize="20sp"
+        android:paddingTop="4dp"
         android:textAlignment="center"/>
-
-    <SearchView
-        android:id="@+id/event_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_background"
-        android:layout_margin="15dp"
-        android:hint="@string/search_bar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,7 +28,8 @@
         app:layout_constraintVertical_bias="0.001"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="10dp"
         >
 
         <com.google.android.material.button.MaterialButton

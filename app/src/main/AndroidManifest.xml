@@ -58,8 +58,18 @@
         <activity
             android:name=".activities.HomeActivity"
             android:label="Home"
-            android:exported="false"
-            android:screenOrientation="nosensor"/>
+            android:exported="true"
+            android:screenOrientation="nosensor">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="eventifi"
+                    android:host="home" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

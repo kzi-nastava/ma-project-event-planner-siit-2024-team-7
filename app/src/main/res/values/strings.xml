@@ -10,8 +10,9 @@
     <string name="welcome_message">Welcome</string>
     <string name="sign_up_message">Sign up here</string>
     <string name="register_as">Register As:</string>
-    <string name="register_eo">Register As Event Organizer</string>
-    <string name="register_spp">Register As Service and Product Provider</string>
+    <string name="register_eo">Register As Organizer</string>
+    <string name="register_spp">Register As Provider</string>
+    <string name="register_auth">Register As Auth user</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -115,5 +116,6 @@
     <string name="reactivate_message">You are about to reactivate this event type. Are you sure?</string>
     <string name="admin_options">Admin Management</string>
     <string name="event_type_menu_item">Event Type</string>
-
+    <string name="show">Show</string>
+    <string name="auth_user">Authenticated user</string>
 </resources>

@@ -1,14 +1,20 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
+import static android.widget.Toast.LENGTH_SHORT;
+import static rs.ac.uns.eventplanner.team7.utils.ClientUtils.retrofit;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
@@ -21,27 +27,27 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.auth.RegisterRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.auth.ValidateQuickRegistrationDTO;
 import rs.ac.uns.eventplanner.team7.model.Location;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.AuthService;
-import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    private String token; // used for auth user registration
+    private String authToken;
     private String selectedRole;
-    private AuthService authService;
+    private final Location address = new Location();
+    private final AuthService authService = retrofit.create(AuthService.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        authService = ClientUtils.retrofit.create(AuthService.class);
         setupRadio();
         setupLoginNavigation();
         MaterialButton regButton = findViewById(R.id.register_button);
         regButton.setOnClickListener(v -> registerOnClick());
-        checkRedirection();
+        checkRedirection(true);
     }
 
     @Override
@@ -52,13 +58,13 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        checkRedirection();
+        checkRedirection(false);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkRedirection();
+        checkRedirection(false);
     }
 
     @Override
@@ -78,107 +84,83 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void setupLoginNavigation() {
         TextView signIn = findViewById(R.id.sign_in_reg);
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
-                startActivity(intent);
-            }
+        signIn.setOnClickListener(v -> {
+            Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
+            startActivity(intent);
         });
     }
 
     private void setupRadio(){
         RadioGroup radioGroup = findViewById(R.id.register_rg);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.rb_service_provider) { // if spp is selected
-                    findViewById(R.id.eoinputs).setVisibility(View.GONE);
-                    findViewById(R.id.sppinputs).setVisibility(View.VISIBLE);
-                    MaterialButton regButton = findViewById(R.id.register_button);
-                    selectedRole = "SPP";
-                    regButton.setEnabled(true);
-                    regButton.setText(R.string.register_spp);
-                }
-                if (checkedId == R.id.rb_event_organizer) { // if eo is selected
-                    findViewById(R.id.eoinputs).setVisibility(View.VISIBLE);
-                    findViewById(R.id.sppinputs).setVisibility(View.GONE);
-                    MaterialButton regButton = findViewById(R.id.register_button);
-                    selectedRole = "EVENT_ORG";
-                    regButton.setEnabled(true);
-                    regButton.setText(R.string.register_eo);
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb_service_provider) { // if spp is selected
+                findViewById(R.id.eoinputs).setVisibility(View.GONE);
+                findViewById(R.id.sppinputs).setVisibility(View.VISIBLE);
+                MaterialButton regButton = findViewById(R.id.register_button);
+                selectedRole = "SPP";
+                regButton.setEnabled(true);
+                regButton.setText(R.string.register_spp);
+            }
+            if (checkedId == R.id.rb_event_organizer) { // if eo is selected
+                findViewById(R.id.eoinputs).setVisibility(View.VISIBLE);
+                findViewById(R.id.sppinputs).setVisibility(View.GONE);
+                MaterialButton regButton = findViewById(R.id.register_button);
+                selectedRole = "EVENT_ORG";
+                regButton.setEnabled(true);
+                regButton.setText(R.string.register_eo);
 
-                }
+            }
+            if (checkedId == R.id.rb_auth) {
+                MaterialButton regButton = findViewById(R.id.register_button);
+                selectedRole = "AUTH";
+                regButton.setEnabled(true);
+                regButton.setText(R.string.register_eo);
             }
         });
     }
 
     public void registerOnClick() {
         String country = validateRequiredField(R.id.country, "Country is required");
+        address.setCountry(validateRequiredField(R.id.country, "Country is required"));
         String city = validateRequiredField(R.id.city, "City is required");
+        address.setCity(city);
         String street = validateRequiredField(R.id.street, "Street is required");
+        address.setStreet(street);
         String houseNumber = validateRequiredField(R.id.house_number, "House number is required");
+        address.setHouseNumber(houseNumber);
         String email = validateRequiredField(R.id.email, "Email is required");
         String pass1 = validateRequiredField(R.id.password, "Password is required");
         String pass2 = validateRequiredField(R.id.password_confirm, "Password confirmation is required");
         String phone = validateRequiredField(R.id.phone_number, "Phone number is required");
         TextInputEditText photoInput = findViewById(R.id.photo_url);
         String photoURL = Objects.requireNonNull(photoInput.getText()).toString().trim();
-        String orgName = "";
-        String orgDesc = "";
-        String firstName = "";
-        String lastName = "";
 
         if (country == null || city == null || street == null || houseNumber == null ||
-                email == null || pass1 == null || pass2 == null) {
-            return;
-        }
+                email == null || pass1 == null || pass2 == null) return;
 
-        if (selectedRole.equals("SPP")) {
-            orgName = validateRequiredField(R.id.org_name, "Organization name is required");
-            orgDesc = validateRequiredField(R.id.org_desc, "Organization description is required");
-            if (orgName == null || orgDesc == null) {
-                return;
-            }
-        } else if (selectedRole.equals("EVENT_ORG")) {
-            firstName = validateRequiredField(R.id.first_name, "First name is required");
-            lastName = validateRequiredField(R.id.last_name, "Last name is required");
-            if (firstName == null || lastName == null) {
-                return;
-            }
-        }
+        if (!validatePassword(pass1, pass2)) return;
+        if (!validateEmail(email)) return;
+        if (!validatePhone(phone)) return;
 
-        if (!validatePassword(pass1, pass2)){
-            return;
-        }
-        if (!validateEmail(email)) {
-            return;
-        }
-        if (!validatePhone(phone)) {
-            return;
-        }
-
-        UserRole role = Enum.valueOf(UserRole.class, selectedRole);
-        Location loc = new Location(0, 0 , country, city, street, houseNumber);
-        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(email, pass1, pass2, role, photoURL, phone, loc,
-                firstName, lastName, orgName, orgDesc);
-
-        authService.register(registerRequestDTO).enqueue(new Callback<Void>() {
+        RegisterRequestDTO dto = prepareRequest(email, pass1, pass2, photoURL, phone);
+        if (dto == null) return;
+        authService.register(dto).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
                     startActivity(intent);
                 } else {
                     finish();
                     startActivity(getIntent());
-                    Toast.makeText(RegistrationActivity.this, "Error during the registration", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegistrationActivity.this, "Error during the registration",
+                            LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(RegistrationActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Toast.makeText(RegistrationActivity.this, "Network error: " + t.getMessage(), LENGTH_SHORT).show();
             }
         });
     }
@@ -233,17 +215,85 @@ public class RegistrationActivity extends AppCompatActivity {
         return true;
     }
 
-    private void checkRedirection() {
+    private void checkRedirection(boolean validateToken) {
         Uri data = getIntent().getData();
         if (data != null) {
             String email = data.getQueryParameter("email");
             String token = data.getQueryParameter("token");
-            if (email != null && token != null)  {
-                TextInputEditText emailInput = findViewById(R.id.email);
-                emailInput.setText(email);
-                this.token = token;
-                // TODO handle auth user registration case here
+            if (email == null || token == null) {
+                Toast.makeText(RegistrationActivity.this,
+                        "Missing required information. Redirecting to login", LENGTH_SHORT).show();
+                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                return;
             }
+            TextInputEditText emailInput = findViewById(R.id.email);
+            emailInput.setText(email);
+            this.authToken = token;
+            if (!validateToken) return;
+            validateToken(email);
+            selectAuthButton();
         }
+    }
+
+    private void validateToken(String email) {
+        ValidateQuickRegistrationDTO dto = new ValidateQuickRegistrationDTO(email, this.authToken);
+        authService.validateQuickRegistration(dto).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) Toast.makeText(RegistrationActivity.this,
+                            "Token is valid", LENGTH_SHORT).show();
+                else {
+                    Toast.makeText(RegistrationActivity.this,
+                            "Invalid auth token. Redirecting to login", LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Toast.makeText(RegistrationActivity.this, "Network error: " + t.getMessage(),
+                        LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Nullable
+    private RegisterRequestDTO prepareRequest(String email, String pass1, String pass2,
+                                              String photoURL, String phone) {
+        switch (selectedRole) {
+            case "SPP":
+                String orgName = validateRequiredField(R.id.org_name,
+                        "Organization name is required");
+                String orgDesc = validateRequiredField(R.id.org_desc,
+                        "Organization description is required");
+                if (orgName == null || orgDesc == null) return null;
+                return new RegisterRequestDTO(email, pass1, pass2, UserRole.SPP, photoURL, phone,
+                        address, orgName, orgDesc);
+            case "EVENT_ORG":
+                String firstName = validateRequiredField(R.id.first_name,
+                        "First name is required");
+                String lastName = validateRequiredField(R.id.last_name,
+                        "Last name is required");
+                if (firstName == null || lastName == null) return null;
+                return new RegisterRequestDTO(email, pass1, pass2, UserRole.SPP, photoURL, phone,
+                        address, firstName, lastName);
+            case "AUTH": return new RegisterRequestDTO(email, pass1, pass2, photoURL, phone,
+                    address, authToken);
+            default: return new RegisterRequestDTO(); // will never occur
+        }
+    }
+
+    private void selectAuthButton() {
+        RadioButton radioButtonAuth = findViewById(R.id.rb_auth);
+        radioButtonAuth.setVisibility(View.VISIBLE);
+        radioButtonAuth.toggle();
+        RadioButton radioButtonEO = findViewById(R.id.rb_event_organizer);
+        radioButtonEO.setVisibility(View.GONE);
+        RadioButton radioButtonSPP = findViewById(R.id.rb_service_provider);
+        radioButtonSPP.setVisibility(View.GONE);
     }
 }

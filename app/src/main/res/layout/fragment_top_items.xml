@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.TopEventsFragment"
@@ -15,32 +16,21 @@
         android:textSize="20sp"
         android:paddingTop="4dp"
         android:textAlignment="center"/>
-    <!--    <ListView-->
-    <!--        android:layout_margin="5dp"-->
-    <!--        android:id="@android:id/list"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        tools:listitem="@layout/normal_card"-->
-    <!--        android:divider="@android:color/transparent"-->
-    <!--        android:dividerHeight="15sp"-->
-    <!--        />-->
-    <ScrollView
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/top_items_message_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="100dp"
+        android:gravity="center"
+        android:text="@string/fetching_data"
+        />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="15dp">
-            <include layout="@layout/normal_card"/>
-            <include layout="@layout/normal_card"/>
-            <include layout="@layout/normal_card"/>
-            <include layout="@layout/normal_card"/>
-            <include layout="@layout/normal_card"/>
-
-        </LinearLayout>
-
-    </ScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/top_items_recycler_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/normal_card"/>
 
 </LinearLayout>

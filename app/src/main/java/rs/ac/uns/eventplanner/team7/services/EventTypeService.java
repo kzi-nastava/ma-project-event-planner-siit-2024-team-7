@@ -52,4 +52,11 @@ public interface EventTypeService {
     })
     @DELETE("event_types/{id}")
     Call<Void> delete(@Header("Authorization") String token, @Path("id") Integer id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("event_types/all_names")
+    Call<List<String>> findAllNames();
 }

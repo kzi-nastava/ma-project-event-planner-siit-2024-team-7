@@ -57,4 +57,8 @@ public class Location implements Parcelable {
         dest.writeDouble(lat);
         dest.writeDouble(lon);
     }
+
+    public String toAddressString() {
+        return String.format("%s %s, %s", street, houseNumber, city);
+    }
 }

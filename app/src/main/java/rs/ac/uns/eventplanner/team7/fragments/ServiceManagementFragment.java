@@ -36,7 +36,7 @@ public class ServiceManagementFragment extends Fragment {
         back.setOnClickListener(v -> {
             SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
             requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.frameLayout, fragment)
+                    .replace(R.id.home_main_fragment_container, fragment)
                     .commit();
         });
 

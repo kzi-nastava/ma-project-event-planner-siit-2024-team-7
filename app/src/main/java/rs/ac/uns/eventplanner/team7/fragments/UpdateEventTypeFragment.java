@@ -250,7 +250,7 @@ public class UpdateEventTypeFragment extends Fragment {
         fragment.setArguments(args);
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.frameLayout, fragment)
+                .replace(R.id.home_main_fragment_container, fragment)
                 .addToBackStack(null)
                 .commit();
     }

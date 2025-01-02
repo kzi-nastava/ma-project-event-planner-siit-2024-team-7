@@ -62,7 +62,7 @@ public class    EventTypeListFragment extends Fragment {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.frameLayout, fragment, "CreateEventTypeFragmentTag")
+                        .replace(R.id.home_main_fragment_container, fragment, "CreateEventTypeFragmentTag")
                         .addToBackStack(null)
                         .commit();
             }

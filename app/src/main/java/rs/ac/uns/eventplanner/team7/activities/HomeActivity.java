@@ -50,8 +50,9 @@ public class HomeActivity extends AppCompatActivity {
         if (role == UserRole.ADMIN) {
             setupAdminNav();
         }
-        setupBottomNavbar();
-        loadFragment(new HomeFragment());
+        if (role != UserRole.GUEST) {
+            setupBottomNavbar();
+        }
     }
 
     @Override
@@ -137,7 +138,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupBottomNavbar() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+        bottomNavigationView.setVisibility(View.VISIBLE);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             if (item.getItemId() == R.id.nav_home) {
                 selectedFragment = new HomeFragment();
@@ -155,7 +157,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout, fragment)
+                .replace(R.id.home_main_fragment_container, fragment)
+//                .addToBackStack(null) // TODO look into this, make back button on top nav functional
                 .commit();
     }
 

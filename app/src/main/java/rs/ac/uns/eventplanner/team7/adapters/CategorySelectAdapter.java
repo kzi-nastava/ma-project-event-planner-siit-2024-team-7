@@ -57,7 +57,7 @@ public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAd
                 FragmentActivity activity = (FragmentActivity) context;
 
                 Fragment parentFragment = activity.getSupportFragmentManager()
-                        .findFragmentById(R.id.frameLayout);
+                        .findFragmentById(R.id.home_main_fragment_container);
 
                 if (parentFragment instanceof CreateEventTypeFragment) {
                     EventTypeCategoryManipulationFragment fragment = (EventTypeCategoryManipulationFragment)

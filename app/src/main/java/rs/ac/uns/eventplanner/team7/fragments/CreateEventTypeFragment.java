@@ -1,14 +1,13 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -36,7 +35,7 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class CreateEventTypeFragment extends Fragment {
 
     private List<CategoryResponseDTO> selectedCategories;
-    private EventTypeService eventTypeService;
+    private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
 
     public CreateEventTypeFragment() {
         // Required empty public constructor
@@ -68,7 +67,6 @@ public class CreateEventTypeFragment extends Fragment {
                 .commit();
 
         // Set up the create button for creating the event type
-        eventTypeService = ClientUtils.retrofit.create(EventTypeService.class);
         MaterialButton createButton = view.findViewById(R.id.create_event_type);
         createButton.setOnClickListener(v -> {
             Call<CreateEventTypeResponseDTO> call = eventTypeService.create(
@@ -110,7 +108,7 @@ public class CreateEventTypeFragment extends Fragment {
                     fragment.setArguments(args);
                     requireActivity().getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.frameLayout, fragment)
+                            .replace(R.id.home_main_fragment_container, fragment)
                             .addToBackStack(null)
                             .commit();
                 } else {

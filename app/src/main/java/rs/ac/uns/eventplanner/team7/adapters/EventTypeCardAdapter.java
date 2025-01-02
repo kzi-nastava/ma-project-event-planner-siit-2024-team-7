@@ -94,7 +94,7 @@ public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdap
 
                     activity.getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.frameLayout, fragment, "UpdateEventTypeFragmentTag")
+                            .replace(R.id.home_main_fragment_container, fragment, "UpdateEventTypeFragmentTag")
                             .addToBackStack(null)
                             .commit();
                 }

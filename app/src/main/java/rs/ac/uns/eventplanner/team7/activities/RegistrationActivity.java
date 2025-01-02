@@ -1,7 +1,6 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static rs.ac.uns.eventplanner.team7.utils.ClientUtils.retrofit;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -31,13 +30,14 @@ import rs.ac.uns.eventplanner.team7.dto.auth.ValidateQuickRegistrationDTO;
 import rs.ac.uns.eventplanner.team7.model.Location;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.AuthService;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
 public class RegistrationActivity extends AppCompatActivity {
 
     private String authToken;
     private String selectedRole;
     private final Location address = new Location();
-    private final AuthService authService = retrofit.create(AuthService.class);
+    private final AuthService authService = ClientUtils.injectService(AuthService.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

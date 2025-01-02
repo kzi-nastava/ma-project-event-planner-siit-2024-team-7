@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +30,7 @@ public class ConfirmDeactivationFragment extends DialogFragment {
 
     private static final String ARG_ROLE = "user_role";
 
-    private UserService userService; // Inject or initialize
+    private final UserService userService = ClientUtils.injectService(UserService.class);
     private UserRole role;
 
     // Factory method to create an instance with the role argument
@@ -49,8 +48,6 @@ public class ConfirmDeactivationFragment extends DialogFragment {
         if (getArguments() != null) {
             role = (UserRole) getArguments().getSerializable(ARG_ROLE);
         }
-        userService = ClientUtils.retrofit.create(UserService.class);
-
     }
 
     @NonNull

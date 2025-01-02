@@ -1,17 +1,15 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -42,7 +40,7 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
     private CategorySelectAdapter selectAdapter;
     private String lastSearch;
     private SearchView searchView;
-    private CategoryService categoryService;
+    private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
     public interface CategorySelectionListener {
         void onCategoriesSelected(List<CategoryResponseDTO> selectedCategories);
@@ -83,8 +81,6 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
 
         searchRecyclerView.setHasFixedSize(true);
         selectedRecyclerView.setHasFixedSize(true);
-
-        categoryService = ClientUtils.retrofit.create(CategoryService.class);
 
         addableCategories = new ArrayList<>();
         selectedCategories = new ArrayList<>();

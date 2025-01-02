@@ -35,7 +35,7 @@ public class ChangePasswordFragment extends DialogFragment {
 
     private static final String ARG_ROLE = "user_role";
 
-    private UserService userService; // Inject or initialize
+    private final UserService userService = ClientUtils.injectService(UserService.class);
     private UserRole role;
 
     // Factory method to create an instance with the role argument
@@ -53,7 +53,6 @@ public class ChangePasswordFragment extends DialogFragment {
         if (getArguments() != null) {
             role = (UserRole) getArguments().getSerializable(ARG_ROLE);
         }
-        userService = ClientUtils.retrofit.create(UserService.class);
     }
 
     @NonNull

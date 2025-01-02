@@ -56,7 +56,7 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class UserProfileFragment extends Fragment {
 
     private UserRole role;
-    private UserService userService;
+    private final UserService userService = ClientUtils.injectService(UserService.class);
     private MaterialCalendarView calendarView;
     private List<BusynessDTO> futureBusyness;
 
@@ -68,7 +68,6 @@ public class UserProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
-        userService = ClientUtils.retrofit.create(UserService.class);
 
         calendarView = view.findViewById(R.id.calendarView);
 

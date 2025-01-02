@@ -31,11 +31,11 @@ import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 
-public class    EventTypeListFragment extends Fragment {
+public class EventTypeListFragment extends Fragment {
 
     private EventTypeCardAdapter adapter;
     private List<GetEventTypeResponseDTO> eventTypes;
-    private EventTypeService eventTypeService;
+    private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,7 +43,6 @@ public class    EventTypeListFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        eventTypeService = ClientUtils.retrofit.create(EventTypeService.class);
 
         eventTypes = new ArrayList<>();
         adapter = new EventTypeCardAdapter(requireContext(), eventTypes);

@@ -39,7 +39,7 @@ public class UpdateEventTypeFragment extends Fragment {
 
     private List<CategoryResponseDTO> selectedCategories;
     private Integer eventTypeId;
-    private EventTypeService eventTypeService;
+    private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
     private EventTypeCategoryManipulationFragment categoryFragment;
     private boolean isActive;
 
@@ -78,7 +78,6 @@ public class UpdateEventTypeFragment extends Fragment {
         loadingMsg.setVisibility(View.VISIBLE);
 
         selectedCategories = new ArrayList<>();
-        eventTypeService = ClientUtils.retrofit.create(EventTypeService.class);
 
         MaterialButton updateButton = view.findViewById(R.id.update_event_type);
         updateButton.setOnClickListener(v -> update(isActive));

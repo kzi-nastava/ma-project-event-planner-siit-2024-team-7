@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.dto.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.Item;
 import rs.ac.uns.eventplanner.team7.model.Product;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class BasicItemDTO {
+public class BasicItemDTO implements BasicCard {
 
     protected Integer id;
     protected String type;
@@ -25,5 +26,15 @@ public class BasicItemDTO {
         name = item.getName();
         price = item.getPricing().getPrice();
         coverImage = item.getImages().isEmpty() ? null : new ArrayList<>(item.getImages()).get(0);
+    }
+
+    @Override
+    public String getTitle() {
+        return name;
+    }
+
+    @Override
+    public String getSubtitle() {
+        return String.valueOf(price);
     }
 }

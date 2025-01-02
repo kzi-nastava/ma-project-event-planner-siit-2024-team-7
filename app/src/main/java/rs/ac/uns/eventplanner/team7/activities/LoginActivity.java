@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         guestButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             intent.putExtra("isGuest", true);
+            JwtUtil.saveCity(LoginActivity.this, "all");
             startActivity(intent);
             finish();
         });
@@ -101,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                     UserRole role = loginResponse.getRole();
                     JwtUtil.saveToken(LoginActivity.this, token);
                     JwtUtil.saveRole(LoginActivity.this, role.toString());
+                    JwtUtil.saveCity(LoginActivity.this, loginResponse.getCity());
                     if (invitationDto != null) handleInvitationAccepting();
                     startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                     finish();

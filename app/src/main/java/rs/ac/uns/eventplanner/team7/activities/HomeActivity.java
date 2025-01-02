@@ -92,9 +92,10 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         JwtUtil.clearToken(HomeActivity.this);
         JwtUtil.clearRole(HomeActivity.this);
+        JwtUtil.clearCity(HomeActivity.this);
+        super.onDestroy();
     }
 
     private void setAccountClickListener(PopupMenu popupMenu) {

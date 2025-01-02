@@ -3,11 +3,8 @@ package rs.ac.uns.eventplanner.team7.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.function.Function;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 
 public class JwtUtil {
 
@@ -16,6 +13,8 @@ public class JwtUtil {
     private static final String PREFS_NAME = "AppPreferences";
     private static final String TOKEN_KEY = "jwt_token";
     private static final String ROLE = "role";
+
+    private static final String CITY = "city";
 
     public static void saveToken(Context context, String token) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -31,6 +30,13 @@ public class JwtUtil {
         editor.apply();
     }
 
+    public static void saveCity(Context context, String city) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(CITY, city);
+        editor.apply();
+    }
+
     public static String getRole(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(ROLE, null);
@@ -39,6 +45,11 @@ public class JwtUtil {
     public static String getToken(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(TOKEN_KEY, null);
+    }
+
+    public static String getCity(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(CITY, null);
     }
 
     public static void clearToken(Context context) {
@@ -52,6 +63,12 @@ public class JwtUtil {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(ROLE);
+        editor.apply();
+    }
+    public static void clearCity(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(CITY);
         editor.apply();
     }
 

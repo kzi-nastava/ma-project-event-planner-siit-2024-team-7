@@ -7,6 +7,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -82,6 +83,12 @@ public class UpdateEventTypeFragment extends Fragment {
 
         MaterialButton updateButton = view.findViewById(R.id.update_event_type);
         updateButton.setOnClickListener(v -> update(isActive));
+
+        ImageView back = view.findViewById(R.id.back_button);
+        back.setOnClickListener(v -> requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frameLayout, new EventTypeListFragment())
+                .commit());
+
         return view;
     }
 

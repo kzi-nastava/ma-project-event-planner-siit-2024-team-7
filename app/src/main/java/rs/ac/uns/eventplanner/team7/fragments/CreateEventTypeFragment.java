@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -77,6 +78,11 @@ public class CreateEventTypeFragment extends Fragment {
             );
             call.enqueue(createCallback());
         });
+
+        ImageView back = view.findViewById(R.id.back_button);
+        back.setOnClickListener(v -> requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frameLayout, new EventTypeListFragment())
+                .commit());
 
         return view;
     }

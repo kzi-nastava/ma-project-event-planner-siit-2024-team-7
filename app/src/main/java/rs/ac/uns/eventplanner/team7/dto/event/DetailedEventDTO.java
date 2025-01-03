@@ -29,6 +29,6 @@ public class DetailedEventDTO extends BasicEventDTO implements DetailedCard {
 
     @Override
     public String getSubtitle() {
-        return String.format("%s\n%s", date, place.toAddressString());
+        return String.format("%s\n%s", super.getSubtitle(), place.toAddressString());
     }
 }

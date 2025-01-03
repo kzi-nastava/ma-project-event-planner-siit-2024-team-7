@@ -44,8 +44,8 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         }
         if (type.equals("events")) {
             BasicEventDTO event = (BasicEventDTO) items.get(position);
-            holder.titleView.setText(event.getName());
-            holder.subtitleView.setText(event.getDate());
+            holder.titleView.setText(event.getTitle());
+            holder.subtitleView.setText(event.getSubtitle());
             holder.descriptionView.setText("");
             Picasso.get()
                     .load(event.getCoverImage())

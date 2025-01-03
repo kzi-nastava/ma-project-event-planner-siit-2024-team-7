@@ -1,5 +1,9 @@
 package rs.ac.uns.eventplanner.team7.dto.event;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,13 +18,13 @@ public class BasicEventDTO implements BasicCard {
     protected Integer id;
     protected String name;
     protected String coverImage;
-    protected String date;
+    protected LocalDateTime date;
 
     public BasicEventDTO(Event event) {
         id = event.getId();
         name = event.getName();
         coverImage = event.getCoverImage();
-        date = event.getDate().toString();
+        date = event.getDate();
     }
 
     @Override
@@ -30,7 +34,7 @@ public class BasicEventDTO implements BasicCard {
 
     @Override
     public String getSubtitle() {
-        return date;
+        return date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
     }
 }
 

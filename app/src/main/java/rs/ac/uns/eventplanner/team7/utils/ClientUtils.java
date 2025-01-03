@@ -1,5 +1,9 @@
 package rs.ac.uns.eventplanner.team7.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -21,9 +25,13 @@ import rs.ac.uns.eventplanner.team7.services.UserService;
 public final class ClientUtils {
     private static final String API_PATH = "http://" + BuildConfig.IP_ADDR +":8080/api/";
 
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
+            .create();
+
     private static final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(API_PATH)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(test())
             .build();
     private static final Map<Class<?>, Object> serviceImplementations = new HashMap<>() {{

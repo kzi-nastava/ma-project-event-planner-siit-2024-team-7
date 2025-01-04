@@ -1,12 +1,19 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -14,87 +21,219 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import lombok.Getter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.utils.MaterialDatePickerBuilder;
+import rs.ac.uns.eventplanner.team7.model.interfaces.FilterActionsListener;
+import rs.ac.uns.eventplanner.team7.services.EventService;
+import rs.ac.uns.eventplanner.team7.services.EventTypeService;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.DateConverter;
+import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class EventFiltersFragment extends BottomSheetDialogFragment {
 
-    private TextInputEditText startDateInput;
-    private TextInputEditText endDateInput;
-    private MaterialDatePicker<Long> beginDatePicker;
-    private MaterialDatePicker<Long> endDatePicker;
-    private long beginDate;
-    private long endDate;
-
+    private final EventService eventService = ClientUtils.injectService(EventService.class);
+    private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
+    private TextInputEditText eventNameInput, dateRangeInput, maxParticipantsInput,
+            descriptionInput;
+    private MaterialDatePicker<Pair<Long, Long>> dateRangePicker;
+    private long beginDate, endDate;
+    private final long minDate;
+    private final long maxDate;
+    private AutoCompleteTextView eventTypeDropdown;
+    private AutoCompleteTextView eventLocationDropdown;
+    @Getter
+    private final Map<String, String> filters;
+    private FilterActionsListener listener;
 
     public EventFiltersFragment() {
-        long today = MaterialDatePicker.todayInUtcMilliseconds();
-        beginDate = today;
-        endDate = today;
+        var today = LocalDateTime.now();
+        var max = today.plusMonths(6);
+        minDate = DateConverter.toLong(today);
+        maxDate = DateConverter.toLong(max);
+        beginDate = minDate;
+        endDate = minDate;
+        filters = new HashMap<>();
+    }
+
+    public EventFiltersFragment(FilterActionsListener listener) {
+        this();
+        this.listener = listener;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_filters, container, false);
+        dateRangeInput = view.findViewById(R.id.event_date_range_input);
+        eventNameInput = view.findViewById(R.id.event_name_filter);
+        maxParticipantsInput = view.findViewById(R.id.event_max_participants_filter);
+        descriptionInput = view.findViewById(R.id.event_description_filter);
+        eventTypeDropdown = view.findViewById(R.id.event_type_filter);
+        eventLocationDropdown = view.findViewById(R.id.event_location_filter);
         initDatePickers(view);
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        fetchEventTypeNames();
+        fetchCities();
+        String userCity = JwtUtil.getCity(requireContext());
+        filters.put("city", userCity);
+
+        ImageButton closeButton = view.findViewById(R.id.event_filters_close_button);
+        closeButton.setOnClickListener(v -> dismiss());
+
+        MaterialButton applyFiltersButton = view.findViewById(R.id.apply_event_filters_button);
+        applyFiltersButton.setOnClickListener(v -> {
+            applyFilters();
+            dismiss();
+        });
+
+        MaterialButton resetFiltersButton = view.findViewById(R.id.reset_event_filters_button);
+        resetFiltersButton.setOnClickListener(v -> {
+            resetFilters();
+            dismiss();
+        });
+    }
+
+    private void applyFilters() {
+        filters.clear();
+        String eventName = eventNameInput.getEditableText().toString();
+        if (!eventName.isEmpty()) filters.put("name", eventName);
+
+        String dateRange = dateRangeInput.getEditableText().toString();
+        if (!dateRange.isEmpty()) {
+            String[] dates = dateRange.split(" / ");
+            filters.put("beginDate", dates[0]);
+            filters.put("endDate", dates[1]);
+        }
+
+        String maxParticipants = maxParticipantsInput.getEditableText().toString();
+        if (!maxParticipants.isEmpty()) filters.put("maxParticipants", maxParticipants);
+
+        String description = descriptionInput.getEditableText().toString();
+        if (!description.isEmpty()) filters.put("description", description);
+
+        String typeName = eventTypeDropdown.getEditableText().toString();
+        if (!typeName.isEmpty()) filters.put("typeName", typeName);
+
+        String city = eventLocationDropdown.getEditableText().toString();
+        if (!city.isEmpty()) filters.put("city", city);
+        if (filters.isEmpty()) {
+            dismiss();
+            return;
+        }
+        listener.onFiltersApplied();
+    }
+
+    private void resetFilters() {
+        if (filters.isEmpty()) {
+            dismiss();
+            return;
+        }
+        filters.clear();
+        dateRangeInput.setText("");
+        eventNameInput.setText("");
+        maxParticipantsInput.setText("");
+        descriptionInput.setText("");
+        eventTypeDropdown.setText("");
+        eventTypeDropdown.clearListSelection();
+        eventLocationDropdown.setText("");
+        eventLocationDropdown.clearListSelection();
+        listener.onFiltersReset();
+    }
+
     private void initDatePickers(View view) {
-        startDateInput = view.findViewById(R.id.event_begin_date_input);
-        endDateInput = view.findViewById(R.id.event_end_date_input);
-
-        TextInputLayout beginDateLayout = view.findViewById(R.id.event_begin_date_layout);
-        TextInputLayout endDateLayout = view.findViewById(R.id.event_end_date_layout);
-
+        TextInputLayout dateRangeLayout = view.findViewById(R.id.event_date_range_layout);
         setupDatePickers();
-
-        beginDateLayout.setEndIconOnClickListener(v -> beginDatePicker.show(getChildFragmentManager(), "beginDate"));
-        endDateLayout.setEndIconOnClickListener(v -> endDatePicker.show(getChildFragmentManager(), "endDate"));
-
-        startDateInput.setOnClickListener(v -> beginDatePicker.show(getChildFragmentManager(), "beginDate"));
-        endDateInput.setOnClickListener(v -> endDatePicker.show(getChildFragmentManager(), "endDate"));
+        dateRangeLayout.setEndIconOnClickListener(v -> dateRangePicker.show(getChildFragmentManager(), "dateRangePicker"));
     }
 
     private void setupDatePickers() {
+        var constraintsBuilder = new CalendarConstraints.Builder()
+                .setStart(minDate)
+                .setEnd(maxDate)
+                .setValidator(DateValidatorPointForward.now());
+        long today = MaterialDatePicker.todayInUtcMilliseconds();
+        dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText(R.string.select_event_range_message)
+                .setSelection(Pair.create(today, today))
+                .setCalendarConstraints(constraintsBuilder.build())
+                .build();
 
-        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder()
-                .setStart(beginDate)
-                .setValidator(DateValidatorPointForward.from(beginDate));
-
-        beginDatePicker = MaterialDatePickerBuilder.build("Select Begin Date", constraintsBuilder);
-        endDatePicker = MaterialDatePickerBuilder.build("Select End Date", constraintsBuilder);
-
-        beginDatePicker.addOnPositiveButtonClickListener(selection -> {
-            beginDate = selection;
-            updateDateField(startDateInput, beginDate);
-
-            if (endDate < beginDate) {
-                endDate = beginDate;
-                updateDateField(endDateInput, endDate);
-            }
-        });
-
-        endDatePicker.addOnPositiveButtonClickListener(selection -> {
-            endDate = selection;
-            updateDateField(endDateInput, endDate);
-
-            if (endDate < beginDate) {
-                beginDate = endDate;
-                updateDateField(startDateInput, beginDate);
+        dateRangePicker.addOnPositiveButtonClickListener(selection -> {
+            if (selection != null) {
+                beginDate = selection.first != null ? selection.first : minDate;
+                endDate = selection.second != null ? selection.second : maxDate;
+                formatDateRange();
             }
         });
     }
 
-    private void updateDateField(TextInputEditText dateInput, long dateInMillis) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(dateInMillis);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
-        String selectedDate = sdf.format(calendar.getTime());
-        dateInput.setText(selectedDate);
+    private void formatDateRange() {
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String startDate = sdf.format(new Date(beginDate));
+        String endDate = sdf.format(new Date(this.endDate));
+        dateRangeInput.setText(String.format("%s / %s", startDate, endDate));
+    }
+
+    private void fetchEventTypeNames() {
+        eventTypeService.findAllNames().enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<String>> call,
+                                   @NonNull Response<List<String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<String> eventTypes = new ArrayList<>(response.body());
+                    eventTypes.add(0, "All");
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_list_item_1,
+                            eventTypes
+                    );
+                    eventTypeDropdown.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {}
+        });
+    }
+
+    private void fetchCities() {
+        eventService.findAllCities().enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<String>> call,
+                                   @NonNull Response<List<String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<String> locations = new ArrayList<>(response.body());
+                    locations.add(0, "All");
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_list_item_1,
+                            locations
+                    );
+                    eventLocationDropdown.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {}
+        });
     }
 }

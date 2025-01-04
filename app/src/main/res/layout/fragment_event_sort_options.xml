@@ -26,6 +26,7 @@
         <include layout="@layout/space_divider"/>
 
         <RadioGroup
+            android:id="@+id/event_sort_direction_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -52,11 +53,12 @@
 
         <include layout="@layout/space_divider"/>
 
-        <include layout="@layout/view_close_button"/>
+        <include android:id="@+id/event_sort_options_close_button" layout="@layout/view_close_button"/>
 
     </LinearLayout>
 
     <RadioGroup
+        android:id="@+id/event_sort_options_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="15dp"
@@ -119,6 +121,7 @@
         android:gravity="center"
         >
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/apply_sorting_events_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sort"

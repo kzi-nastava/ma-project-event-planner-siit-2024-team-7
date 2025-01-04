@@ -51,12 +51,15 @@
     <string name="apply">Apply</string>
     <string name="sort_options">Sort by:</string>
     <string name="button_close">Close</string>
-    <string name="begin_date">Begin date</string>
-    <string name="end_date">End date</string>
     <string name="event_name">Event name</string>
+    <string name="event_date_range">Event date range</string>
+    <string name="select_event_range_message">Select date range for the event</string>
     <string name="max_participants">Max participants</string>
+    <string name="event_description">Event description</string>
     <string name="event_type">Event type</string>
     <string name="event_location">Event location</string>
+    <string name="n_event_search_results_found">%d events found</string>
+    <string name="error_fetching_more_data">Error fetching more data</string>
     <string name="item_location">Item location</string>
     <string name="available_start_date">Available start date</string>
     <string name="available_end_date">Available end date</string>

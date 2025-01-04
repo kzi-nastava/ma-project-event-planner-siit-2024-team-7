@@ -20,8 +20,8 @@ import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
-import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
+import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCard;
 
 public class CardRecyclerViewAdapter<T extends BasicCard>
         extends RecyclerView.Adapter<CardRecyclerViewAdapter.ViewHolder> {
@@ -75,6 +75,10 @@ public class CardRecyclerViewAdapter<T extends BasicCard>
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    public int getLastItemIndex() {
+        return getItemCount()-1;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

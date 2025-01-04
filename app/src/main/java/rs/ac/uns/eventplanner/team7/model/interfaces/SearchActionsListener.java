@@ -6,5 +6,5 @@ package rs.ac.uns.eventplanner.team7.model.interfaces;
 public interface SearchActionsListener extends FilterActionsListener {
 
     void onSortApplied();
-    void onPageChanged(int newPage);
+    void onNextPage();
 }

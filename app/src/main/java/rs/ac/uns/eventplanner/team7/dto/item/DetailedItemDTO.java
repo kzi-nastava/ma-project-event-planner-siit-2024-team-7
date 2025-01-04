@@ -5,7 +5,7 @@ import java.util.Locale;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.dto.DetailedCard;
+import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCard;
 import rs.ac.uns.eventplanner.team7.model.Item;
 import rs.ac.uns.eventplanner.team7.model.Location;
 

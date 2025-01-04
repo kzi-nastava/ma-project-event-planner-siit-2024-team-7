@@ -3,7 +3,7 @@ package rs.ac.uns.eventplanner.team7.dto.event;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.dto.DetailedCard;
+import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCard;
 import rs.ac.uns.eventplanner.team7.model.Event;
 import rs.ac.uns.eventplanner.team7.model.Location;
 

@@ -4,10 +4,8 @@ package rs.ac.uns.eventplanner.team7.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Sort {
@@ -16,9 +14,24 @@ public class Sort {
     private String direction = "asc";
 
 
+    public Sort by(String property) {
+        by = property;
+        return this;
+    }
+
+    public Sort ascending() {
+        direction = "asc";
+        return this;
+    }
+
+    public Sort descending() {
+        direction = "desc";
+        return this;
+    }
+
     /// default sorting is by name ascending
     public static Sort getDefault() {
-        return new Sort("name", "asc");
+        return new Sort().by("name").ascending();
     }
 
     public void resetToDefault() {

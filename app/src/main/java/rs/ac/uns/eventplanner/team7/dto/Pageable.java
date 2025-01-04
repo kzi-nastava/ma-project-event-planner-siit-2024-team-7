@@ -1,6 +1,6 @@
 package rs.ac.uns.eventplanner.team7.dto;
 
-import android.annotation.SuppressLint;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,10 +8,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Pageable {
-    @Setter private int pageNumber = 0;
+    private int pageNumber = 0;
     private int pageSize = 10;
     private Sort sort = Sort.getDefault();
 
@@ -25,9 +26,10 @@ public class Pageable {
         return new Pageable(0, 10, Sort.getDefault());
     }
 
-    @SuppressLint("DefaultLocale")
-    public String toQuery() {
-        return String.format("page=%d&size=10&sort=%s,%s", pageNumber, sort.getBy(), sort.getDirection());
+    public Map<String, String> toQueryMap() {
+        return Map.of("page", String.valueOf(pageNumber),
+                "size", String.valueOf(pageSize),
+                "sort", String.format("%s,%s", sort.getBy(), sort.getDirection()));
     }
 
     public void resetToDefault() {

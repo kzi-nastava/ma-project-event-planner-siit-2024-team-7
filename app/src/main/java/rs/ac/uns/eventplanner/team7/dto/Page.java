@@ -2,11 +2,11 @@ package rs.ac.uns.eventplanner.team7.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
@@ -28,12 +28,36 @@ public class Page<T> {
     }
 
     public void update(Page<T> other) {
-        content = other.content;
+        content = new ArrayList<>(other.content);
         pageable = other.pageable;
         totalElements = other.totalElements;
         first = other.first;
         last = other.last;
         empty = other.empty;
+    }
+
+    public void resetToDefault() {
+        update(getDefault());
+    }
+
+    public Map<String, String> toQueryMap() {
+        return pageable.toQueryMap();
+    }
+
+    public int getPageNumber() {
+        return pageable.getPageNumber();
+    }
+
+    /**
+     * Increments current page, if it is not last
+     */
+    public void nextPage() {
+        if (last) return;
+        pageable.setPageNumber(getPageNumber()+1);
+    }
+
+    public void setSort(Sort sort) {
+        pageable.setSort(sort);
     }
 
     public static <T> Page<T> getDefault() {

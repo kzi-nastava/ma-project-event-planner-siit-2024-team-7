@@ -18,13 +18,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.adapters.HomeRecyclerViewAdapter;
+import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.event.DetailedEventDTO;
+import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.EventService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class TopEventsFragment extends Fragment {
+public class TopEventsFragment extends Fragment implements CardClickListener {
     private final EventService service = ClientUtils.injectService(EventService.class);
 
     public TopEventsFragment() {
@@ -58,8 +59,8 @@ public class TopEventsFragment extends Fragment {
                     return;
                 }
                 messageView.setVisibility(View.GONE);
-                eventsView.setAdapter(new HomeRecyclerViewAdapter<>(requireContext(),
-                        events, true));
+                eventsView.setAdapter(new CardRecyclerViewAdapter<>(requireContext(),
+                        events, true, TopEventsFragment.this));
             }
 
             @Override
@@ -69,5 +70,10 @@ public class TopEventsFragment extends Fragment {
                 eventsView.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onCardClicked(Integer entityId, String events) {
+        // TODO redirect to event details page
     }
 }

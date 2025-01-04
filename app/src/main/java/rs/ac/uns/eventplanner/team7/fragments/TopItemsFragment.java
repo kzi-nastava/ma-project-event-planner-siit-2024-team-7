@@ -19,14 +19,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.adapters.HomeRecyclerViewAdapter;
+import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.item.DetailedItemDTO;
+import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.ProductService;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class TopItemsFragment extends Fragment {
+public class TopItemsFragment extends Fragment implements CardClickListener {
     private MaterialTextView messageView;
     private RecyclerView topItemsView;
     private final ProductService productService = ClientUtils.injectService(ProductService.class);
@@ -91,8 +92,13 @@ public class TopItemsFragment extends Fragment {
                 return;
             }
             messageView.setVisibility(View.GONE);
-            topItemsView.setAdapter(new HomeRecyclerViewAdapter<>(requireContext(),
-                    serviceResponses, true));
+            topItemsView.setAdapter(new CardRecyclerViewAdapter<>(requireContext(),
+                    serviceResponses, true, TopItemsFragment.this));
         }
+    }
+
+    @Override
+    public void onCardClicked(Integer entityId, String type) {
+        // TODO redirect to item details page
     }
 }

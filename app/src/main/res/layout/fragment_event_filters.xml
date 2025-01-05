@@ -29,13 +29,7 @@
 
     </LinearLayout>
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@color/black"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        />
+    <include layout="@layout/divider_thick"/>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -52,7 +46,7 @@
                 android:layout_marginVertical="2dp"
                 android:paddingHorizontal="20dp"
                 app:endIconMode="clear_text"
-                android:hint="@string/event_name">
+                android:hint="@string/name">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/event_name_filter"
@@ -72,10 +66,10 @@
                 android:paddingHorizontal="20dp"
                 app:endIconMode="custom"
                 app:endIconDrawable="@drawable/ic_calendar"
-                android:hint="@string/event_date_range">
+                android:hint="@string/date_range">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/event_date_range_input"
+                    android:id="@+id/event_date_range_filter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="false"
@@ -109,7 +103,7 @@
                 android:layout_marginVertical="2dp"
                 android:paddingHorizontal="20dp"
                 app:endIconMode="clear_text"
-                android:hint="@string/event_description">
+                android:hint="@string/description">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/event_description_filter"
@@ -134,7 +128,7 @@
                 android:paddingHorizontal="20dp"
                 app:endIconMode="dropdown_menu">
 
-                <AutoCompleteTextView
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/event_type_filter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -156,7 +150,7 @@
                 android:paddingHorizontal="20dp"
                 app:endIconMode="dropdown_menu">
 
-                <AutoCompleteTextView
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/event_location_filter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -171,14 +165,7 @@
 
     </androidx.core.widget.NestedScrollView>
 
-
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@color/black"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        />
+    <include layout="@layout/divider_thick"/>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -17,6 +16,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -49,10 +49,8 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
             descriptionInput;
     private MaterialDatePicker<Pair<Long, Long>> dateRangePicker;
     private long beginDate, endDate;
-    private final long minDate;
-    private final long maxDate;
-    private AutoCompleteTextView eventTypeDropdown;
-    private AutoCompleteTextView eventLocationDropdown;
+    private final long minDate,  maxDate;
+    private MaterialAutoCompleteTextView eventTypeDropdown, eventLocationDropdown;
     @Getter
     private final Map<String, String> filters;
     private FilterActionsListener listener;
@@ -76,7 +74,7 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_filters, container, false);
-        dateRangeInput = view.findViewById(R.id.event_date_range_input);
+        dateRangeInput = view.findViewById(R.id.event_date_range_filter);
         eventNameInput = view.findViewById(R.id.event_name_filter);
         maxParticipantsInput = view.findViewById(R.id.event_max_participants_filter);
         descriptionInput = view.findViewById(R.id.event_description_filter);
@@ -89,8 +87,12 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        setDropdownAdapters();
+
         fetchEventTypeNames();
         fetchCities();
+
         String userCity = JwtUtil.getCity(requireContext());
         filters.put("city", userCity);
 
@@ -108,6 +110,20 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
             resetFilters();
             dismiss();
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setDropdownAdapters();
+    }
+
+    private void setDropdownAdapters() {
+        eventTypeDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_list_item_1, new ArrayList<String>()));
+
+        eventLocationDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_list_item_1, new ArrayList<String>()));
     }
 
     private void applyFilters() {
@@ -150,10 +166,10 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
         eventNameInput.setText("");
         maxParticipantsInput.setText("");
         descriptionInput.setText("");
+        eventTypeDropdown.dismissDropDown();
         eventTypeDropdown.setText("");
-        eventTypeDropdown.clearListSelection();
+        eventLocationDropdown.dismissDropDown();
         eventLocationDropdown.setText("");
-        eventLocationDropdown.clearListSelection();
         listener.onFiltersReset();
     }
 
@@ -193,19 +209,16 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
 
     private void fetchEventTypeNames() {
         eventTypeService.findAllNames().enqueue(new Callback<>() {
+            /** @noinspection unchecked*/
             @Override
             public void onResponse(@NonNull Call<List<String>> call,
                                    @NonNull Response<List<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<String> eventTypes = new ArrayList<>(response.body());
-                    eventTypes.add(0, "All");
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            requireContext(),
-                            android.R.layout.simple_list_item_1,
-                            eventTypes
-                    );
-                    eventTypeDropdown.setAdapter(adapter);
+                    var eventTypeNames = response.body();
+                    if (eventTypeDropdown.getAdapter() instanceof ArrayAdapter) {
+                        var adapter = (ArrayAdapter<String>) eventTypeDropdown.getAdapter();
+                        adapter.addAll(eventTypeNames);
+                    }
                 }
             }
 
@@ -216,19 +229,17 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
 
     private void fetchCities() {
         eventService.findAllCities().enqueue(new Callback<>() {
+            /** @noinspection unchecked*/
             @Override
             public void onResponse(@NonNull Call<List<String>> call,
                                    @NonNull Response<List<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<String> locations = new ArrayList<>(response.body());
-                    locations.add(0, "All");
-
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                            requireContext(),
-                            android.R.layout.simple_list_item_1,
-                            locations
-                    );
-                    eventLocationDropdown.setAdapter(adapter);
+                    var locations = response.body();
+                    if (eventLocationDropdown.getAdapter() instanceof ArrayAdapter) {
+                        var adapter = (ArrayAdapter<String>) eventLocationDropdown.getAdapter();
+                        adapter.add("All");
+                        adapter.addAll(locations);
+                    }
                 }
             }
 

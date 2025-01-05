@@ -57,8 +57,8 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
         handleServiceResponse(serviceService.findTopFive(userCity));
     }
 
-    private void handleServiceResponse(Call<List<DetailedItemDTO>> service) {
-        service.enqueue(new Callback<>() {
+    private void handleServiceResponse(Call<List<DetailedItemDTO>> serviceCall) {
+        serviceCall.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<DetailedItemDTO>> call,
                                    @NonNull Response<List<DetailedItemDTO>> response) {

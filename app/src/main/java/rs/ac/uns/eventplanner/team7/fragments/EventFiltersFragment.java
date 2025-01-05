@@ -42,18 +42,18 @@ import rs.ac.uns.eventplanner.team7.utils.DateConverter;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class EventFiltersFragment extends BottomSheetDialogFragment {
-
     private final EventService eventService = ClientUtils.injectService(EventService.class);
     private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
-    private TextInputEditText eventNameInput, dateRangeInput, maxParticipantsInput,
-            descriptionInput;
+    private TextInputEditText eventNameInput, dateRangeInput, maxParticipantsInput, descriptionInput;
+    private MaterialAutoCompleteTextView eventTypeDropdown, eventLocationDropdown;
     private MaterialDatePicker<Pair<Long, Long>> dateRangePicker;
     private long beginDate, endDate;
     private final long minDate,  maxDate;
-    private MaterialAutoCompleteTextView eventTypeDropdown, eventLocationDropdown;
+    private String selectedTypeName, selectedCity;
     @Getter
     private final Map<String, String> filters;
     private FilterActionsListener listener;
+    private final List<String> eventTypes, eventLocations;
 
     public EventFiltersFragment() {
         var today = LocalDateTime.now();
@@ -62,12 +62,17 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
         maxDate = DateConverter.toLong(max);
         beginDate = minDate;
         endDate = minDate;
+        selectedTypeName = "";
+        selectedCity = "";
         filters = new HashMap<>();
+        eventTypes = new ArrayList<>();
+        eventLocations = new ArrayList<>();
     }
 
-    public EventFiltersFragment(FilterActionsListener listener) {
-        this();
-        this.listener = listener;
+    public static EventFiltersFragment newInstance(FilterActionsListener listener) {
+        EventFiltersFragment fragment = new EventFiltersFragment();
+        fragment.listener = listener;
+        return fragment;
     }
 
     @Override
@@ -88,14 +93,43 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        String userCity = JwtUtil.getCity(requireContext());
+        filters.putIfAbsent("city", userCity);
+
         setDropdownAdapters();
 
-        fetchEventTypeNames();
-        fetchCities();
+        if (eventTypes.isEmpty()) fetchEventTypeNames();
+        if (eventLocations.isEmpty()) fetchCities();
 
-        String userCity = JwtUtil.getCity(requireContext());
-        filters.put("city", userCity);
 
+        setupListeners(view);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!selectedTypeName.isEmpty())  eventTypeDropdown.setText(selectedTypeName, false);
+        if (!selectedCity.isEmpty()) eventLocationDropdown.setText(selectedCity, false);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        selectedTypeName = eventTypeDropdown.getEditableText().toString();
+        if (!selectedTypeName.isEmpty()) eventTypeDropdown.setText("", false);
+        selectedCity = eventLocationDropdown.getEditableText().toString();
+        if (!selectedCity.isEmpty()) eventLocationDropdown.setText("", false);
+    }
+
+    private void setDropdownAdapters() {
+        eventTypeDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_list_item_1, eventTypes));
+
+        eventLocationDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_list_item_1, eventLocations));
+    }
+
+    private void setupListeners(@NonNull View view) {
         ImageButton closeButton = view.findViewById(R.id.event_filters_close_button);
         closeButton.setOnClickListener(v -> dismiss());
 
@@ -110,20 +144,6 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
             resetFilters();
             dismiss();
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setDropdownAdapters();
-    }
-
-    private void setDropdownAdapters() {
-        eventTypeDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_list_item_1, new ArrayList<String>()));
-
-        eventLocationDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_list_item_1, new ArrayList<String>()));
     }
 
     private void applyFilters() {
@@ -149,6 +169,7 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
 
         String city = eventLocationDropdown.getEditableText().toString();
         if (!city.isEmpty()) filters.put("city", city);
+
         if (filters.isEmpty()) {
             dismiss();
             return;
@@ -157,18 +178,12 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
     }
 
     private void resetFilters() {
-        if (filters.isEmpty()) {
-            dismiss();
-            return;
-        }
         filters.clear();
         dateRangeInput.setText("");
         eventNameInput.setText("");
         maxParticipantsInput.setText("");
         descriptionInput.setText("");
-        eventTypeDropdown.dismissDropDown();
         eventTypeDropdown.setText("");
-        eventLocationDropdown.dismissDropDown();
         eventLocationDropdown.setText("");
         listener.onFiltersReset();
     }

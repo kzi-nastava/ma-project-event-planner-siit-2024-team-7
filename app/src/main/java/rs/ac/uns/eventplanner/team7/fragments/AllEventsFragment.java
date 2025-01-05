@@ -48,8 +48,8 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
 
     public AllEventsFragment() {
         page = Page.getDefault();
-        filtersFragment = new EventFiltersFragment(this);
-        sortOptionsFragment = new EventSortOptionsFragment(this);
+        filtersFragment = EventFiltersFragment.newInstance(this);
+        sortOptionsFragment = EventSortOptionsFragment.newInstance(this);
         latestFilters = new HashMap<>();
     }
 
@@ -128,9 +128,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
                 }
                 Page<BasicEventDTO> pagedResponse = response.body();
                 if (pagedResponse == null || pagedResponse.isEmpty()) {
-                    if (page.isFirst()) {
-                        messageView.setText(R.string.no_events_to_show);
-                    }
+                    if (page.isFirst()) messageView.setText(R.string.no_events_to_show);
                     return;
                 }
                 page.update(pagedResponse);

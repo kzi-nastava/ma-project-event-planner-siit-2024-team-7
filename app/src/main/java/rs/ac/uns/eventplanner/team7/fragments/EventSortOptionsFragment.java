@@ -30,9 +30,10 @@ public class EventSortOptionsFragment extends BottomSheetDialogFragment {
         sort = Sort.getDefault();
     }
 
-    public EventSortOptionsFragment(SearchActionsListener listener) {
-        this();
-        this.listener = listener;
+    public static EventSortOptionsFragment newInstance(SearchActionsListener listener) {
+        EventSortOptionsFragment fragment = new EventSortOptionsFragment();
+        fragment.listener = listener;
+        return fragment;
     }
 
     @Override

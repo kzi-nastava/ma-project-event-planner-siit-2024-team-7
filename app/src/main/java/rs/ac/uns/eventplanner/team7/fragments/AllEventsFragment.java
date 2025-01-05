@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,7 +44,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
     private MaterialTextView messageView;
     private RecyclerView allEventsView;
     private CardRecyclerViewAdapter<BasicEventDTO> viewAdapter;
-    private boolean isLoading;
+    private boolean isLoading, hasShownFragment;
 
     public AllEventsFragment() {
         page = Page.getDefault();
@@ -73,13 +74,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
         latestFilters.put("city", JwtUtil.getCity(requireContext()));
         setContent(false);
 
-        MaterialButton filtersButton = view.findViewById(R.id.event_filters_button);
-        filtersButton.setOnClickListener(v -> filtersFragment.show(getChildFragmentManager(),
-                sortOptionsFragment.getTag()));
-
-        MaterialButton sortButton = view.findViewById(R.id.event_sort_button);
-        sortButton.setOnClickListener(v -> sortOptionsFragment.show(getChildFragmentManager(),
-                sortOptionsFragment.getTag()));
+        setupButtonListeners(view);
 
         setupContentScrollListener();
     }
@@ -120,6 +115,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
 
     private void setContent(boolean isUpdate) {
         isLoading = true;
+        messageView.setText(R.string.fetching_data);
         Map<String, String> combinedFilters = combineFiltersAndSort();
         service.filter(combinedFilters).enqueue(new Callback<>() {
             @Override
@@ -127,7 +123,6 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
                                    @NonNull Response<Page<BasicEventDTO>> response) {
                 if (!isUpdate) viewAdapter.clear();
                 if (!response.isSuccessful()) {
-                    messageView.setVisibility(View.VISIBLE);
                     messageView.setText(R.string.unable_to_contact_server);
                     return;
                 }
@@ -135,23 +130,59 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
                 if (pagedResponse == null || pagedResponse.isEmpty()) {
                     if (page.isFirst()) {
                         messageView.setText(R.string.no_events_to_show);
-                        messageView.setVisibility(View.VISIBLE);
                     }
                     return;
                 }
                 page.update(pagedResponse);
-                String resultCount = String.format(getString(R.string.n_event_search_results_found),
-                        page.getTotalElements());
-                messageView.setText(resultCount);
                 viewAdapter.addAll(page.getContent());
+                formatResponseMessage();
                 isLoading = false;
             }
 
             @Override
             public void onFailure(@NonNull Call<Page<BasicEventDTO>> call, @NonNull Throwable t) {
-                messageView.setVisibility(View.VISIBLE);
                 messageView.setText(R.string.error_fetching_more_data);
                 isLoading = false;
+            }
+        });
+    }
+
+    private void setupButtonListeners(@NonNull View view) {
+        MaterialButton filtersButton = view.findViewById(R.id.event_filters_button);
+        filtersButton.setOnClickListener(v -> {
+            if (!hasShownFragment && getChildFragmentManager().findFragmentByTag("eventFiltersFragment") == null) {
+                hasShownFragment = true;
+                filtersButton.setEnabled(false);
+                filtersFragment.show(getChildFragmentManager(), "eventFiltersFragment");
+                getChildFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentDetached(@NonNull FragmentManager fm, @NonNull Fragment f) {
+                        if (f == filtersFragment) {
+                            hasShownFragment = false;
+                            filtersButton.setEnabled(true);
+                            getChildFragmentManager().unregisterFragmentLifecycleCallbacks(this);
+                        }
+                    }
+                }, false);
+            }
+        });
+
+        MaterialButton sortButton = view.findViewById(R.id.event_sort_button);
+        sortButton.setOnClickListener(v -> {
+            if (!hasShownFragment && getChildFragmentManager().findFragmentByTag("eventSortOptionsFragment") == null) {
+                hasShownFragment = true;
+                sortButton.setEnabled(false);
+                sortOptionsFragment.show(getChildFragmentManager(), "eventSortOptionsFragment");
+                getChildFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentDetached(@NonNull FragmentManager fm, @NonNull Fragment f) {
+                        if (f == sortOptionsFragment) {
+                            hasShownFragment = false;
+                            sortButton.setEnabled(true);
+                            getChildFragmentManager().unregisterFragmentLifecycleCallbacks(this);
+                        }
+                    }
+                }, false);
             }
         });
     }
@@ -172,5 +203,12 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
                     onNextPage();
             }
         });
+    }
+
+    private void formatResponseMessage() {
+        int total = page.getTotalElements();
+        String resultCount = String.format(getString(R.string.n_event_search_results_found),
+                total, total == 1 ? "" : "s");
+        messageView.setText(resultCount);
     }
 }

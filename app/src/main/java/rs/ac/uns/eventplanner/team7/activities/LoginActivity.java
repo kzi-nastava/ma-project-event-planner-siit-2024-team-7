@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             intent.putExtra("isGuest", true);
             startActivity(intent);
+            finish();
         });
 
         MaterialButton loginButton = findViewById(R.id.loginButton);
@@ -91,6 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                     JwtUtil.saveToken(LoginActivity.this, token);
                     JwtUtil.saveRole(LoginActivity.this, role.toString());
                     startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                    finish();
                 } else {
                     clearFocus();
                     MaterialTextView errorMsg = findViewById(R.id.error_login);

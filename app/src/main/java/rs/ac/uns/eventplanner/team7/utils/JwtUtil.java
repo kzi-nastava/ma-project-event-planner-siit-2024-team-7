@@ -48,6 +48,13 @@ public class JwtUtil {
         editor.apply();
     }
 
+    public static void clearRole(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(ROLE);
+        editor.apply();
+    }
+
     public static Integer extractId(Context context) {
         try {
             String token = getToken(context);

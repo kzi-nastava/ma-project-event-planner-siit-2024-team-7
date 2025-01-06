@@ -2,23 +2,173 @@ package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import lombok.Getter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.model.interfaces.FilterActionsListener;
+import rs.ac.uns.eventplanner.team7.services.CategoryService;
+import rs.ac.uns.eventplanner.team7.services.EventTypeService;
+import rs.ac.uns.eventplanner.team7.services.ServiceService;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
-public class ServiceFilterFragment extends Fragment {
+public class ServiceFilterFragment extends BottomSheetDialogFragment {
+
+    private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
+    private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
+    private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
+
+    private TextInputEditText priceInput;
+    private AutoCompleteTextView eventTypeDropdown, categoryDropdown;
+    private MaterialCheckBox availableCheckBox;
+    @Getter
+    private final Map<String, String> filters;
+    private FilterActionsListener listener;
 
     public ServiceFilterFragment() {
-        // Required empty public constructor
+        filters = new HashMap<>();
+    }
+
+    public ServiceFilterFragment(FilterActionsListener listener) {
+        this();
+        this.listener = listener;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_service_filter, container, false);
+        View view = inflater.inflate(R.layout.fragment_service_filter, container, false);
+        priceInput = view.findViewById(R.id.item_price_filter);
+        eventTypeDropdown = view.findViewById(R.id.event_type_filter);
+        categoryDropdown = view.findViewById(R.id.category_filter);
+        availableCheckBox = view.findViewById(R.id.service_available_filter);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        fetchEventTypeNames();
+        fetchCategoryNames();
+
+        ImageButton closeButton = view.findViewById(R.id.service_filters_close_button);
+        closeButton.setOnClickListener(v -> dismiss());
+
+        MaterialButton applyFiltersButton = view.findViewById(R.id.apply_service_filters_button);
+        applyFiltersButton.setOnClickListener(v -> {
+            applyFilters();
+            dismiss();
+        });
+
+        MaterialButton resetFiltersButton = view.findViewById(R.id.reset_service_filters_button);
+        resetFiltersButton.setOnClickListener(v -> {
+            resetFilters();
+            dismiss();
+        });
+    }
+
+    private void resetFilters() {
+        if (filters.isEmpty()) {
+            dismiss();
+            return;
+        }
+        filters.clear();
+        priceInput.setText("");
+        eventTypeDropdown.setText("");
+        categoryDropdown.setText("");
+        availableCheckBox.setChecked(false);
+        listener.onFiltersReset();
+    }
+
+    private void applyFilters() {
+        filters.clear();
+        String price = priceInput.getEditableText().toString();
+        if (!price.isEmpty()) filters.put("price", price);
+
+        String eventTypeName = eventTypeDropdown.getEditableText().toString();
+        if (!eventTypeName.isEmpty()) filters.put("eventTypeName", eventTypeName);
+
+        String categoryName = categoryDropdown.getEditableText().toString();
+        if (!categoryName.isEmpty()) filters.put("categoryName", categoryName);
+
+        boolean isAvailable = availableCheckBox.isChecked();
+        if (isAvailable) filters.put("isAvailable", "true");
+        else filters.put("isAvailable", "false");
+
+        if (filters.isEmpty()) {
+            dismiss();
+            return;
+        }
+        listener.onFiltersApplied();
+    }
+
+    private void fetchEventTypeNames() {
+        eventTypeService.findAllNames().enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<String>> call,
+                                   @NonNull Response<List<String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<String> eventTypes = new ArrayList<>(response.body());
+                    eventTypes.add(0, "All");
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_list_item_1,
+                            eventTypes
+                    );
+                    eventTypeDropdown.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {}
+        });
+    }
+
+    private void fetchCategoryNames() {
+        categoryService.findAllNames().enqueue(new Callback<List<String>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<String>> call,
+                                   @NonNull Response<List<String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<String> categories = new ArrayList<>(response.body());
+                    categories.add(0, "All");
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_list_item_1,
+                            categories
+                    );
+                    categoryDropdown.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<String>> call,
+                                  @NonNull Throwable t) {
+
+            }
+        });
     }
 }

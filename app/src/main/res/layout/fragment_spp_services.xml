@@ -13,21 +13,14 @@
         android:orientation="vertical"
         android:layout_margin="15dp"
         >
-        <include
-            android:id="@+id/service_card_1"
-            layout="@layout/normal_card" />
-        <include
-            android:id="@+id/service_card_2"
-            layout="@layout/normal_card"/>
-        <include
-            android:id="@+id/service_card_3"
-            layout="@layout/normal_card" />
-        <include
-            android:id="@+id/service_card_4"
-            layout="@layout/normal_card" />
-        <include
-            android:id="@+id/service_card_5"
-            layout="@layout/normal_card" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_horizontal"
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
     </LinearLayout>
 
 </ScrollView>

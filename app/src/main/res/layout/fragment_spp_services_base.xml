@@ -49,12 +49,6 @@
             </LinearLayout>
 
             <fragment
-                android:id="@+id/service_filter_fragment"
-                android:name="rs.ac.uns.eventplanner.team7.fragments.ServiceFilterFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <fragment
                 android:id="@+id/spp_services_fragment"
                 android:name="rs.ac.uns.eventplanner.team7.fragments.SPPServicesFragment"
                 android:layout_width="match_parent"

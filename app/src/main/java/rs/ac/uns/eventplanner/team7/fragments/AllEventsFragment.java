@@ -83,13 +83,14 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
     public void onFiltersApplied() {
         page.resetToDefault();
         latestFilters = filtersFragment.getFilters();
+        sortOptionsFragment.scheduleReset();
         setContent(false);
     }
 
     @Override
     public void onFiltersReset() {
         page.resetToDefault();
-        sortOptionsFragment.resetSort();
+        sortOptionsFragment.scheduleReset();
         latestFilters = new HashMap<>();
         setContent(false);
     }

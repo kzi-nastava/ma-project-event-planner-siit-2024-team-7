@@ -26,14 +26,17 @@ public class EventSortOptionsFragment extends BottomSheetDialogFragment {
     private SearchActionsListener listener;
     private boolean pendingReset;
 
+    private EventSortOptionsFragment(SearchActionsListener listener) {
+        this();
+        this.listener = listener;
+    }
+
     public EventSortOptionsFragment() {
         sort = Sort.getDefault();
     }
 
     public static EventSortOptionsFragment newInstance(SearchActionsListener listener) {
-        EventSortOptionsFragment fragment = new EventSortOptionsFragment();
-        fragment.listener = listener;
-        return fragment;
+        return new EventSortOptionsFragment(listener);
     }
 
     @Override
@@ -70,7 +73,7 @@ public class EventSortOptionsFragment extends BottomSheetDialogFragment {
         pendingReset = false;
     }
 
-    public void resetSort() {
+    public void scheduleReset() {
         pendingReset = true;
     }
 

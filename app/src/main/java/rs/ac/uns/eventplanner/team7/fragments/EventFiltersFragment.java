@@ -55,6 +55,11 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
     private FilterActionsListener listener;
     private final List<String> eventTypes, eventLocations;
 
+    private EventFiltersFragment(FilterActionsListener listener) {
+        this();
+        this.listener = listener;
+    }
+
     public EventFiltersFragment() {
         var today = LocalDateTime.now();
         var max = today.plusMonths(6);
@@ -62,17 +67,14 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
         maxDate = DateConverter.toLong(max);
         beginDate = minDate;
         endDate = minDate;
-        selectedTypeName = "";
-        selectedCity = "";
+        selectedTypeName = selectedCity = "";
         filters = new HashMap<>();
         eventTypes = new ArrayList<>();
         eventLocations = new ArrayList<>();
     }
 
     public static EventFiltersFragment newInstance(FilterActionsListener listener) {
-        EventFiltersFragment fragment = new EventFiltersFragment();
-        fragment.listener = listener;
-        return fragment;
+        return new EventFiltersFragment(listener);
     }
 
     @Override
@@ -108,7 +110,7 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (!selectedTypeName.isEmpty())  eventTypeDropdown.setText(selectedTypeName, false);
+        if (!selectedTypeName.isEmpty()) eventTypeDropdown.setText(selectedTypeName, false);
         if (!selectedCity.isEmpty()) eventLocationDropdown.setText(selectedCity, false);
     }
 
@@ -183,8 +185,8 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
         eventNameInput.setText("");
         maxParticipantsInput.setText("");
         descriptionInput.setText("");
-        eventTypeDropdown.setText("");
-        eventLocationDropdown.setText("");
+        eventTypeDropdown.setText("", false);
+        eventLocationDropdown.setText("", false);
         listener.onFiltersReset();
     }
 

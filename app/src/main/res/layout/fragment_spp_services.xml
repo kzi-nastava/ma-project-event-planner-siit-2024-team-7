@@ -12,30 +12,52 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingTop="5dp"
         android:paddingBottom="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/event_search_view"
+        app:layout_constraintBottom_toBottomOf="@id/spp_services_search_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/event_search_view"
+        app:layout_constraintTop_toBottomOf="@id/spp_services_search_view"
         app:layout_constraintVertical_bias="0.001">
+
+        <SearchView
+            android:id="@+id/spp_services_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:inputType="text"
+
+            android:background="@drawable/searchview_border"
+            android:queryHint="Search for services"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/service_filters_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="0.3"
             android:text="@string/filters" />
+
     </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/services_search_result_message_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/fetching_data"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/spp_services_recycler_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_gravity="center"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/normal_card"/>
+        tools:listitem="@layout/horizontal_card"/>
 
 </LinearLayout>

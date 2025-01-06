@@ -125,4 +125,6 @@
     <string name="no_events_to_show">No events to show.</string>
     <string name="no_items_to_show">No items to show.</string>
     <string name="unable_to_contact_server">Unable to contact the server. Try again later.</string>
+    <string name="no_services_to_show">No services to show</string>
+    <string name="d_services_found">%d services found</string>
 </resources>

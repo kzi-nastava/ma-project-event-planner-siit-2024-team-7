@@ -24,10 +24,8 @@
         android:orientation="horizontal"
         android:paddingTop="5dp"
         android:paddingBottom="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/event_search_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/event_search_view"
         app:layout_constraintVertical_bias="0.001">
 
         <com.google.android.material.button.MaterialButton

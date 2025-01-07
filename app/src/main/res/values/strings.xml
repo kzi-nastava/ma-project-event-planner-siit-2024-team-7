@@ -127,6 +127,7 @@
     <string name="unable_to_contact_server">Unable to contact the server. Try again later.</string>
     <string name="no_services_to_show">No services to show</string>
     <string name="d_services_found">%d services found</string>
+    <string name="event_types">Event types</string>
     <string-array name="days_of_week">
         <item>Monday</item>
         <item>Tuesday</item>

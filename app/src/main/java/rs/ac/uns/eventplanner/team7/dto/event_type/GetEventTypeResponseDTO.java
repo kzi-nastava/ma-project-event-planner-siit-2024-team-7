@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import rs.ac.uns.eventplanner.team7.model.Category;
+import rs.ac.uns.eventplanner.team7.model.EventType;
+import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 
 @Getter
 @Setter
@@ -18,4 +20,8 @@ public class GetEventTypeResponseDTO {
     private String description;
     private boolean active;
     private List<Category> recommendedCategories;
+
+    public EventType toEventType() {
+        return new EventType(name, description, active, recommendedCategories);
+    }
 }

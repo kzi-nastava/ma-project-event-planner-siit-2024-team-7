@@ -6,6 +6,8 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
 
 public interface CategoryService {
@@ -22,5 +24,12 @@ public interface CategoryService {
     })
     @GET("categories/all_names")
     Call<List<String>> findAllNames();
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("categories/by_name")
+    Call<CategoryResponseDTO> findActiveCategoryByName(@Query("name") String name);
 }
 

@@ -33,7 +33,7 @@
             android:layout_marginBottom="24dp" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/category_filter_layout"
+            android:id="@+id/categories_dropdown_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="8dp"
@@ -61,6 +61,7 @@
             android:text="Recommend category" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_name_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Service name"
@@ -74,6 +75,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_description_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Service description"
@@ -87,6 +89,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_price_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:endIconMode="clear_text"
@@ -102,6 +105,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_discount_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:endIconMode="clear_text"
@@ -117,13 +121,14 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_specifics_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Specifics"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/specifics"
+                android:id="@+id/service_specifics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine" />
@@ -148,6 +153,7 @@
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/reservation_deadline_layout"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
@@ -176,6 +182,7 @@
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/cancellation_deadline_layout"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
@@ -204,6 +211,7 @@
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/min_duration_layout"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
@@ -232,6 +240,7 @@
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/max_duration_layout"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 app:endIconMode="clear_text"
@@ -288,24 +297,48 @@
                 android:text="Available"
                 android:layout_marginStart="20dp"
                 />
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/automated_conformation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Automated conformation"
-                android:layout_marginStart="20dp"
-                />
+<!--            <com.google.android.material.checkbox.MaterialCheckBox-->
+<!--                android:id="@+id/automated_conformation"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Automated conformation"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                />-->
 
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/event_types_button"
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Event types"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="start"
-            />
+            android:text="Select Event Types" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/event_type_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:paddingHorizontal="20dp"
+            app:endIconMode="dropdown_menu">
+
+            <AutoCompleteTextView
+                android:id="@+id/event_type_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="18sp"
+                android:paddingEnd="5sp"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"
+                android:hint="@string/event_types" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_selected_event_types"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

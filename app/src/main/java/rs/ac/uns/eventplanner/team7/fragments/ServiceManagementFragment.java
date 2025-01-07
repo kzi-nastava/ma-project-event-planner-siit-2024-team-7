@@ -14,18 +14,26 @@ import android.widget.ImageButton;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
+import rs.ac.uns.eventplanner.team7.model.WorkDay;
 
 public class ServiceManagementFragment extends Fragment {
+    private WorkDayAdapter workDayAdapter;
+    private Set<WorkDay> workDaySet;
 
     public ServiceManagementFragment() {
-        // Required empty public constructor
+        this.workDaySet = new HashSet<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_service_management, container, false);
+        View view = inflater.inflate(R.layout.fragment_service_management, container, false);
+        return view;
     }
 
     @Override
@@ -51,7 +59,7 @@ public class ServiceManagementFragment extends Fragment {
             view.findViewById(R.id.delete_service_button).setVisibility(View.GONE);
         }
         else if (title.getText() == "SERVICE UDPATE") {
-            view.findViewById(R.id.service_category).setEnabled(false);
+            view.findViewById(R.id.categories_dropdown).setEnabled(false);
         }
 
         MaterialButton categoryRecommendationButton = view.findViewById(R.id.button_recommend_category);

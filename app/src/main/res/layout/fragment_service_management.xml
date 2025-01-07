@@ -32,17 +32,25 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Category"
-            android:layout_gravity="start"
-            android:paddingHorizontal="20dp"
-            />
-        <Spinner
-            android:id="@+id/service_category"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/category_filter_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:paddingHorizontal="20dp"
+            app:endIconMode="dropdown_menu">
+
+            <AutoCompleteTextView
+                android:id="@+id/categories_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="18sp"
+                android:paddingEnd="5sp"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"
+                android:hint="@string/category" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_recommend_category"
@@ -120,6 +128,18 @@
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_open_work_day_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Work Day" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_work_days"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -201,7 +221,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="(hours)" />
+                android:text="(minutes)" />
 
         </LinearLayout>
 
@@ -229,7 +249,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="(hours)" />
+                android:text="(minutes)" />
 
         </LinearLayout>
 

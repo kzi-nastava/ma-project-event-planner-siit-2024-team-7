@@ -21,11 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/event_search_view"
-        app:layout_constraintBottom_toBottomOf="@id/event_search_view"
-        app:layout_constraintVertical_bias="0.001"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:paddingTop="5dp"
@@ -33,20 +28,17 @@
         >
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/srv_prd_filters_button"
+            android:id="@+id/item_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:text="@string/filters"
             />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="0.4"/>
+        <include layout="@layout/space_divider" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/srv_prd_sort_button"
+            android:id="@+id/item_sort_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
@@ -54,34 +46,21 @@
 
     </LinearLayout>
 
-    <!-- TODO figure out how it works and how to do pagination with it   -->
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:id="@+id/srv_prd_search_results"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="1"-->
-<!--        tools:listitem="@layout/horizontal_card"-->
-<!--        />-->
-
-    <ScrollView
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/items_search_result_message_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:text="@string/fetching_data"
+        />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="15dp">
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-        </LinearLayout>
-    </ScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/all_items_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/horizontal_card"/>
 
 </LinearLayout>

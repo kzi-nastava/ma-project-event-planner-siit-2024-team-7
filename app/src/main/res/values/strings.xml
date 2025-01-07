@@ -68,7 +68,7 @@
     <string name="maximum_duration">Max. duration (in minutes)</string>
     <string name="cancellation_deadline">Cancellation deadline (in days)</string>
     <string name="reservation_deadline">Reservation deadline (in days)</string>
-    <string name="n_item_search_results_found">%d item%s found</string>
+    <string name="n_item_search_results_found">%d %s found</string>
     <string name="please_sign_in">Please sign in</string>
     <string name="sign_in">Sign in</string>
     <string name="continue_as_guest_ul"><u>Continue as Guest</u></string>

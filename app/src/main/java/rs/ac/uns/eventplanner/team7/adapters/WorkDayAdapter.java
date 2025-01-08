@@ -1,5 +1,6 @@
 package rs.ac.uns.eventplanner.team7.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,32 +9,47 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textview.MaterialTextView;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
+import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.model.WorkDay;
 
 public class WorkDayAdapter extends RecyclerView.Adapter<WorkDayAdapter.ViewHolder> {
-    private final List<WorkDay> workDaysList;
+    private final Context context;
+    private List<WorkDayDTO> workDaysList;
 
-    public WorkDayAdapter(Set<WorkDay> workDaysSet) {
-        this.workDaysList = new ArrayList<>(workDaysSet);
+    public WorkDayAdapter(Context context, List<WorkDayDTO> workDaysSet) {
+        this.workDaysList = workDaysSet;
+        this.context = context;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(android.R.layout.simple_list_item_2, parent, false);
+        View view = LayoutInflater.from(context)
+                .inflate(R.layout.horizontal_button_card, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        WorkDay workDay = workDaysList.get(position);
-        holder.dayOfWeek.setText(workDay.getDay().toString());
-        holder.workTime.setText(String.format("%s - %s", workDay.getWorkTimeStart(), workDay.getWorkTimeEnd()));
+        WorkDayDTO workDay = workDaysList.get(position);
+        holder.titleView.setText(workDay.getDay().toString());
+        holder.subtitleView.setText(String.format("%s - %s", workDay.getWorkTimeStart(), workDay.getWorkTimeEnd()));
+        holder.fabView.setImageResource(R.drawable.baseline_cancel_24);  // Remove button
+
+        holder.fabView.setOnClickListener(v -> {
+            workDaysList.remove(workDay);
+            notifyDataSetChanged();
+            holder.setVisibility(View.GONE);
+        });
+        holder.itemView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -42,13 +58,21 @@ public class WorkDayAdapter extends RecyclerView.Adapter<WorkDayAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView dayOfWeek;
-        TextView workTime;
+        MaterialTextView titleView;
+        MaterialTextView subtitleView;
+        FloatingActionButton fabView;
+        MaterialCardView cardView;
 
-        ViewHolder(@NonNull View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
-            dayOfWeek = itemView.findViewById(android.R.id.text1);
-            workTime = itemView.findViewById(android.R.id.text2);
+            titleView = itemView.findViewById(R.id.horizontal_card_title);
+            subtitleView = itemView.findViewById(R.id.horizontal_card_subtitle);
+            fabView = itemView.findViewById(R.id.horizontal_card_fab);
+            cardView = itemView.findViewById(R.id.horizontal_button_card);
+        }
+
+        public void setVisibility(int visibility) {
+            cardView.setVisibility(visibility);
         }
     }
 }

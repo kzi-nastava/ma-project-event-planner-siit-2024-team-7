@@ -143,7 +143,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_work_days"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
             android:layout_marginTop="16dp" />
 
         <LinearLayout
@@ -274,6 +275,7 @@
             android:id="@+id/recycler_view_images"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:scrollbars="vertical"
             android:layout_marginTop="8dp" />
 
         <LinearLayout
@@ -335,9 +337,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_selected_event_types"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
             android:layout_marginTop="16dp"
-            android:clipToPadding="false"
             android:paddingBottom="8dp" />
 
         <LinearLayout

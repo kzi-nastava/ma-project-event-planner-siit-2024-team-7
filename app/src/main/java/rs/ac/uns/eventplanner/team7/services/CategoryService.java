@@ -30,6 +30,6 @@ public interface CategoryService {
             "Content-Type: application/json"
     })
     @GET("categories/by_name")
-    Call<CategoryResponseDTO> findActiveCategoryByName(@Query("name") String name);
+    Call<CategoryResponseDTO> findActiveCategoryByName(@Header("Authorization") String token, @Query("name") String name);
 }
 

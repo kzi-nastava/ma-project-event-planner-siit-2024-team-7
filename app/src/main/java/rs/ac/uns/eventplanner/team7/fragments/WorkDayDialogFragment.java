@@ -5,14 +5,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
 
 import com.google.android.material.button.MaterialButton;
@@ -21,18 +19,19 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
+import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.model.WorkDay;
 
 public class WorkDayDialogFragment extends DialogFragment {
-    private Set<WorkDay> workDaysSet;
+    private List<WorkDayDTO> workDayList;
     private WorkDayAdapter adapter;
 
-    public WorkDayDialogFragment(Set<WorkDay> workDaysSet, WorkDayAdapter adapter) {
-        this.workDaysSet = workDaysSet;
+    public WorkDayDialogFragment(List<WorkDayDTO> workDaysList, WorkDayAdapter adapter) {
+        this.workDayList = workDaysList;
         this.adapter = adapter;
     }
 
@@ -66,14 +65,18 @@ public class WorkDayDialogFragment extends DialogFragment {
 
         // Handle submit button click
         btnSubmit.setOnClickListener(v -> {
-            String dayOfWeek = spinnerDayOfWeek.getSelectedItem().toString();
+            String dayOfWeek = spinnerDayOfWeek.getSelectedItem().toString().toUpperCase();
             String startTime = spinnerStartTime.getSelectedItem().toString();
             String endTime = spinnerEndTime.getSelectedItem().toString();
 
-            WorkDay workDay = new WorkDay(DayOfWeek.valueOf(dayOfWeek), LocalTime.parse(startTime), LocalTime.parse(endTime));
-            workDaysSet.add(workDay);
-            adapter.notifyDataSetChanged(); // Notify RecyclerView adapter
-
+            try {
+                WorkDayDTO workDay = new WorkDayDTO(DayOfWeek.valueOf(dayOfWeek), startTime, endTime);
+                workDayList.add(workDay);
+                adapter.notifyDataSetChanged();
+            }
+            catch (IllegalArgumentException e) {
+                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+            }
             dismiss();
         });
 

@@ -10,7 +10,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -49,15 +47,13 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.SelectedEventTypesAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
-import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.CreatePricingRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.pricing.CreatePricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceResponseDTO;
-import rs.ac.uns.eventplanner.team7.model.EventType;
-import rs.ac.uns.eventplanner.team7.model.Pricing;
-import rs.ac.uns.eventplanner.team7.model.WorkDay;
+import rs.ac.uns.eventplanner.team7.model.enums.CategoryStatus;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
@@ -77,7 +73,7 @@ public class ServiceManagementFragment extends Fragment {
     private List<WorkDayDTO> workDayList;
     private Set<String> images;
     private List<GetEventTypeResponseDTO> selectedEventTypes;
-    private CategoryResponseDTO selectedCategory;
+    private List<CategoryResponseDTO> categories;
 
     private AutoCompleteTextView categoryDropdown, eventTypesDropdown;
     private MaterialCheckBox visibleCheckBox, availableCheckBox;
@@ -88,7 +84,7 @@ public class ServiceManagementFragment extends Fragment {
         this.workDayList = new ArrayList<>();
         this.images = new HashSet<>();
         this.selectedEventTypes = new ArrayList<>();
-        this.selectedCategory = new CategoryResponseDTO();
+        this.categories = new ArrayList<>();
     }
 
     @Override
@@ -133,7 +129,7 @@ public class ServiceManagementFragment extends Fragment {
 
         fetchCategories();
         recommendCategoryBtn.setOnClickListener(v -> {
-            CategoryRecommendationFragment fragment = new CategoryRecommendationFragment();
+            CategoryRecommendationFragment fragment = new CategoryRecommendationFragment(categories, categoryDropdown);
             fragment.show(requireActivity().getSupportFragmentManager(), "RecommendationDialog");
         });
 
@@ -178,14 +174,13 @@ public class ServiceManagementFragment extends Fragment {
                     public void onResponse(@NonNull Call<CreateServiceResponseDTO> call, @NonNull Response<CreateServiceResponseDTO> response) {
                         if (response.isSuccessful()) {
                             // Navigate back to the event type list
-                            Fragment fragment = new SPPServicesFragment();
+                            SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
                             Bundle args = new Bundle();
                             args.putString("snackbar_message", "Service created successfully!");
                             fragment.setArguments(args);
                             requireActivity().getSupportFragmentManager()
                                     .beginTransaction()
                                     .replace(R.id.home_main_fragment_container, fragment)
-                                    .addToBackStack(null)
                                     .commit();
                         } else {
                             try {
@@ -274,10 +269,11 @@ public class ServiceManagementFragment extends Fragment {
         pricingDTO.setActiveFrom(LocalDate.now().toString());
         dto.setPricing(pricingDTO);
 
-        if (!categoryDropdown.getText().toString().isEmpty()){
-            dto.setCategory(selectedCategory.toCategory());
+        for (CategoryResponseDTO categoryDTO : categories) {
+            if (categoryDTO.getName().equals(categoryDropdown.getText().toString()))
+                dto.setCategory(categoryDTO.toCategory());
         }
-        else {
+        if (dto.getCategory() == null) {
             TextInputLayout layout = view.findViewById(R.id.categories_dropdown_layout);
             layout.setError("Field is required!");
             throw new IllegalArgumentException();
@@ -292,6 +288,9 @@ public class ServiceManagementFragment extends Fragment {
 
         dto.setVisible(visibleCheckBox.isChecked());
         dto.setAvailable(availableCheckBox.isChecked());
+
+        if (dto.getCategory().getStatus() == CategoryStatus.PENDING)
+            dto.setRecommended(true);
 
         return dto;
     }
@@ -358,13 +357,13 @@ public class ServiceManagementFragment extends Fragment {
     }
 
     private void fetchCategories() {
-        categoryService.getAll(JwtUtil.getAuthorizationValue(getContext()))
+          categoryService.getAll(JwtUtil.getAuthorizationValue(getContext()))
                 .enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<CategoryResponseDTO>> call,
                                    @NonNull Response<List<CategoryResponseDTO>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<CategoryResponseDTO> categories = new ArrayList<>(response.body());
+                    categories = new ArrayList<>(response.body());
 
                     ArrayAdapter<CategoryResponseDTO> adapter = new ArrayAdapter<>(
                             requireContext(),
@@ -372,11 +371,6 @@ public class ServiceManagementFragment extends Fragment {
                             categories
                     );
                     categoryDropdown.setAdapter(adapter);
-                    categoryDropdown.setOnItemClickListener((parent, view, position, id) -> {
-                        selectedCategory = (CategoryResponseDTO) parent.getItemAtPosition(position);
-                        Log.d("Selected Category", "Name: " + selectedCategory.getName() + ", ID: " + selectedCategory.getId());
-                    });
-
                 }
             }
 

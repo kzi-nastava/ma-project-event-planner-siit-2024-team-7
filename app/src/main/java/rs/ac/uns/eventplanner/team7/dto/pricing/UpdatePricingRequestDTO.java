@@ -1,6 +1,4 @@
-package rs.ac.uns.eventplanner.team7.dto;
-
-import java.time.LocalDate;
+package rs.ac.uns.eventplanner.team7.dto.pricing;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,22 +10,14 @@ import rs.ac.uns.eventplanner.team7.model.Pricing;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreatePricingRequestDTO {
+public class UpdatePricingRequestDTO {
     private double price;
     private double discount;
     private String activeFrom;
 
-    public CreatePricingRequestDTO(Pricing pricing) {
+    public UpdatePricingRequestDTO(Pricing pricing) {
         this.price = pricing.getPrice();
         this.discount = pricing.getDiscount();
         this.activeFrom = pricing.getActiveFrom().toString();
-    }
-
-    public Pricing toPricing() {
-        Pricing pricing = new Pricing();
-        pricing.setPrice(price);
-        pricing.setDiscount(discount);
-        pricing.setActiveFrom(LocalDate.parse(activeFrom));
-        return pricing;
     }
 }

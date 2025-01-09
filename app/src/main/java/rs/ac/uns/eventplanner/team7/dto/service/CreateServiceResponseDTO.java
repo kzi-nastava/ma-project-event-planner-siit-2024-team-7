@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.dto.pricing.PricingResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.model.EventType;
 import rs.ac.uns.eventplanner.team7.model.Pricing;
@@ -24,7 +25,7 @@ public class CreateServiceResponseDTO {
     private String description;
     private Set<String> images;
     private boolean visible;
-    private Pricing pricing;
+    private PricingResponseDTO pricing;
     private Category category;
     private String specifics;
     private Set<WorkDay> workDays;
@@ -36,7 +37,7 @@ public class CreateServiceResponseDTO {
     private boolean recommended;
     private boolean available;
     private ItemStatus status;
-    private Instant createdAt;
+    private String createdAt;
 
     public CreateServiceResponseDTO(Service service) {
         this.id = service.getId();
@@ -44,7 +45,10 @@ public class CreateServiceResponseDTO {
         this.description = service.getDescription();
         this.visible = service.isVisible();
         this.images = service.getImages();
-        this.pricing = service.getPricing();
+
+        Pricing pricing = service.getPricing();
+        this.pricing = new PricingResponseDTO(service.getName(), service.getPricing());
+
         this.category = service.getCategory();
         this.specifics = service.getSpecifics();
         this.workDays = service.getWorkDays();
@@ -55,6 +59,6 @@ public class CreateServiceResponseDTO {
         this.appliesTo = service.getAppliesTo();
         this.available = service.isAvailable();
         this.status = service.getStatus();
-        this.createdAt = Instant.now();
+        this.createdAt = Instant.now().toString();
     }
 }

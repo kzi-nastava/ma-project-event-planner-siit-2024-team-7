@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.dto.pricing.PricingResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.model.EventType;
 import rs.ac.uns.eventplanner.team7.model.Pricing;
@@ -21,7 +22,7 @@ public class GetServiceResponseDTO {
     private String name;
     private String description;
     private Set<String> images;
-    private Pricing pricing;
+    private PricingResponseDTO pricing;
     private Category category;
     private String specifics;
     private Set<WorkDay> workDays;
@@ -37,7 +38,10 @@ public class GetServiceResponseDTO {
         this.name = service.getName();
         this.description = service.getDescription();
         this.images = service.getImages();
-        this.pricing = service.getPricing();
+
+        Pricing pricing = service.getPricing();
+        this.pricing = new PricingResponseDTO(service.getName(), pricing);
+
         this.category = service.getCategory();
         this.specifics = service.getSpecifics();
         this.workDays = service.getWorkDays();

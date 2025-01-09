@@ -3,7 +3,6 @@ package rs.ac.uns.eventplanner.team7.adapters;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
-import android.opengl.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,7 @@ import com.google.android.material.textview.MaterialTextView;
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 
 public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAdapter.ViewHolder> {
 

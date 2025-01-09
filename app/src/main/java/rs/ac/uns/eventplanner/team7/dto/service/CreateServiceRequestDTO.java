@@ -5,11 +5,10 @@ import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.dto.CreatePricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
+import rs.ac.uns.eventplanner.team7.dto.pricing.CreatePricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.model.EventType;
-import rs.ac.uns.eventplanner.team7.model.Pricing;
 import rs.ac.uns.eventplanner.team7.model.Service;
 import rs.ac.uns.eventplanner.team7.model.WorkDay;
 import rs.ac.uns.eventplanner.team7.model.enums.ItemStatus;

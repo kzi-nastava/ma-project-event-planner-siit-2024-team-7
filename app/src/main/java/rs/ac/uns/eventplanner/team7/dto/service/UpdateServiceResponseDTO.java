@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.dto.pricing.PricingResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.EventType;
 import rs.ac.uns.eventplanner.team7.model.Pricing;
 import rs.ac.uns.eventplanner.team7.model.Service;
@@ -23,7 +24,7 @@ public class UpdateServiceResponseDTO {
     private String description;
     private Set<String> images;
     private boolean visible;
-    private Pricing pricing;
+    private PricingResponseDTO pricing;
     private String specifics;
     private Set<WorkDay> workDays;
     private int minDurationInMinutes;
@@ -33,7 +34,7 @@ public class UpdateServiceResponseDTO {
     private Set<EventType> appliesTo;
     private boolean available;
     private ItemStatus status;
-    private Instant createdAt;
+    private String createdAt;
 
     public UpdateServiceResponseDTO(Service service) {
         this.id = service.getId();
@@ -41,7 +42,10 @@ public class UpdateServiceResponseDTO {
         this.description = service.getDescription();
         this.images = service.getImages();
         this.visible = service.isVisible();
-        this.pricing = service.getPricing();
+
+        Pricing pricing = service.getPricing();
+        this.pricing = new PricingResponseDTO(service.getName(), pricing);
+
         this.specifics = service.getSpecifics();
         this.workDays = service.getWorkDays();
         this.minDurationInMinutes = service.getMinDurationInMinutes();
@@ -51,6 +55,6 @@ public class UpdateServiceResponseDTO {
         this.appliesTo = service.getAppliesTo();
         this.available = service.isAvailable();
         this.status = service.getStatus();
-        this.createdAt = Instant.now();
+        this.createdAt = Instant.now().toString();
     }
 }

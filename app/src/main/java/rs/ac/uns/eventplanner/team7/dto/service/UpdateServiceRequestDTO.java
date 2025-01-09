@@ -1,11 +1,12 @@
 package rs.ac.uns.eventplanner.team7.dto.service;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.dto.pricing.UpdatePricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.model.EventType;
-import rs.ac.uns.eventplanner.team7.model.Pricing;
 import rs.ac.uns.eventplanner.team7.model.Service;
 import rs.ac.uns.eventplanner.team7.model.WorkDay;
 
@@ -16,7 +17,7 @@ public class UpdateServiceRequestDTO {
     private String description;
     private Set<String> images;
     private boolean visible;
-    private Pricing pricing;
+    private UpdatePricingRequestDTO pricing;
     private String specifics;
     private Set<WorkDay> workDays;
     private int minDurationInMinutes;
@@ -31,7 +32,11 @@ public class UpdateServiceRequestDTO {
         service.setDescription(description);
         service.setImages(images);
         service.setVisible(visible);
-        service.setPricing(pricing);
+
+        service.getPricing().setPrice(pricing.getPrice());
+        service.getPricing().setDiscount(pricing.getDiscount());
+        service.getPricing().setActiveFrom(LocalDate.parse(pricing.getActiveFrom()));
+
         service.setSpecifics(specifics);
         service.setWorkDays(workDays);
         service.setMinDurationInMinutes(minDurationInMinutes);

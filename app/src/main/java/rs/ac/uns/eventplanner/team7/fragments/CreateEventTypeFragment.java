@@ -24,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;

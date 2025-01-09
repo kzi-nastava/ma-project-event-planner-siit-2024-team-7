@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.dto;
+package rs.ac.uns.eventplanner.team7.dto.category;
 
 import androidx.annotation.NonNull;
 

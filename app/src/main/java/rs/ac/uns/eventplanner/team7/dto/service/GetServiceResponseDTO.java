@@ -1,11 +1,13 @@
 package rs.ac.uns.eventplanner.team7.dto.service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.pricing.PricingResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.model.EventType;
@@ -25,13 +27,15 @@ public class GetServiceResponseDTO {
     private PricingResponseDTO pricing;
     private Category category;
     private String specifics;
-    private Set<WorkDay> workDays;
+    private Set<WorkDayDTO> workDaysDTOs;
     private int minDurationInMinutes;
     private int maxDurationInMinutes;
     private int reservationDeadlineInDays;
     private int cancellationDeadlineInDays;
     private Set<EventType> appliesTo;
     private boolean isOwn;
+    private boolean visible;
+    private boolean available;
 
     public GetServiceResponseDTO(Service service) {
         this.id = service.getId();
@@ -44,11 +48,18 @@ public class GetServiceResponseDTO {
 
         this.category = service.getCategory();
         this.specifics = service.getSpecifics();
-        this.workDays = service.getWorkDays();
+
+        this.workDaysDTOs = new HashSet<>();
+        for (WorkDay wd : service.getWorkDays()) {
+            workDaysDTOs.add(new WorkDayDTO(wd));
+        }
+
         this.minDurationInMinutes = service.getMinDurationInMinutes();
         this.maxDurationInMinutes = service.getMaxDurationInMinutes();
         this.reservationDeadlineInDays = service.getReservationDeadlineInDays();
         this.cancellationDeadlineInDays = service.getCancellationDeadlineInDays();
         this.appliesTo = service.getAppliesTo();
+        this.visible = service.isVisible();
+        this.available = service.isAvailable();
     }
 }

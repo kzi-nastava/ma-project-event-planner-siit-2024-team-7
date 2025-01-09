@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.SearchView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.Page;
 import rs.ac.uns.eventplanner.team7.dto.Sort;
 import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.model.interfaces.SearchActionsListener;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
@@ -116,7 +120,37 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
 
     @Override
     public void onCardClicked(Integer entityId, String type) {
+        serviceService.getService(JwtUtil.getAuthorizationValue(getContext()), entityId).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
+                                   @NonNull Response<GetServiceResponseDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ServiceManagementFragment fragment = new ServiceManagementFragment(response.body());
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.home_main_fragment_container, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+                else {
+                    try {
+                        // Show error message
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String message = jsonObject.getString("message");
+                        MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                        errorMsg.setText(message);
+                        errorMsg.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                    }
+                }
+            }
 
+            @Override
+            public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
     }
 
     private void setContent(boolean isUpdate) {

@@ -18,6 +18,12 @@ public class WorkDayDTO {
     private String workTimeStart;
     private String workTimeEnd;
 
+    public WorkDayDTO(WorkDay workDay) {
+        this.day = workDay.getDay();
+        this.workTimeStart = workDay.getWorkTimeStart().toString();
+        this.workTimeEnd = workDay.getWorkTimeEnd().toString();
+    }
+
     public WorkDay toWorkDay() {
         WorkDay workDay = new WorkDay();
         workDay.setDay(day);

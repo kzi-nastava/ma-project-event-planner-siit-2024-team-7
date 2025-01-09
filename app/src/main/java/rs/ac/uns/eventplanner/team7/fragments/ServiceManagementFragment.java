@@ -51,8 +51,16 @@ import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.pricing.CreatePricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.pricing.PricingResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.pricing.UpdatePricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.DeleteServiceResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.EventType;
+import rs.ac.uns.eventplanner.team7.model.WorkDay;
 import rs.ac.uns.eventplanner.team7.model.enums.CategoryStatus;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
@@ -62,6 +70,8 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class ServiceManagementFragment extends Fragment {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
+
+    private GetServiceResponseDTO serviceDTO;
 
     private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
@@ -76,12 +86,14 @@ public class ServiceManagementFragment extends Fragment {
     private List<GetEventTypeResponseDTO> selectedEventTypes;
     private List<CategoryResponseDTO> categories;
 
+    private TextInputEditText nameInput, descriptionInput, priceInput, discountInput, specificsInput, reservationInput, cancellationInput, minDurationInput, maxDurationInput;
     private AutoCompleteTextView categoryDropdown, eventTypesDropdown;
     private MaterialCheckBox visibleCheckBox, availableCheckBox;
     private MaterialButton selectImagesBtn, addWorkDayBtn, recommendCategoryBtn;
     private RecyclerView imagesView, workDaysView, selectedEventTypesView;
 
-    public ServiceManagementFragment() {
+    public ServiceManagementFragment(GetServiceResponseDTO serviceDTO) {
+        this.serviceDTO = serviceDTO;
         this.workDayList = new ArrayList<>();
         this.images = new ArrayList<>();
         this.selectedEventTypes = new ArrayList<>();
@@ -92,6 +104,15 @@ public class ServiceManagementFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_service_management, container, false);
+        nameInput = view.findViewById(R.id.service_name);
+        descriptionInput = view.findViewById(R.id.service_description);
+        priceInput = view.findViewById(R.id.service_price);
+        discountInput = view.findViewById(R.id.service_discount);
+        specificsInput = view.findViewById(R.id.service_specifics);
+        reservationInput = view.findViewById(R.id.reservation_deadline);
+        cancellationInput = view.findViewById(R.id.cancellation_deadline);
+        minDurationInput = view.findViewById(R.id.min_duration);
+        maxDurationInput = view.findViewById(R.id.max_duration);
         categoryDropdown = view.findViewById(R.id.categories_dropdown);
         eventTypesDropdown = view.findViewById(R.id.event_type_dropdown);
         visibleCheckBox = view.findViewById(R.id.service_visible);
@@ -117,14 +138,12 @@ public class ServiceManagementFragment extends Fragment {
                     .commit();
         });
         MaterialTextView title = view.findViewById(R.id.welcomeMessage);
-        Bundle args = getArguments();
-        if (args != null) {
-            title.setText(args.getString("message_key"));
-        }
-        if (title.getText() == "SERVICE CREATION") {
+        if (serviceDTO == null) {
+            title.setText(R.string.service_creation);
             view.findViewById(R.id.delete_service_button).setVisibility(View.GONE);
         }
-        else if (title.getText() == "SERVICE UDPATE") {
+        else {
+            title.setText(R.string.service_update);
             view.findViewById(R.id.categories_dropdown).setEnabled(false);
         }
 
@@ -167,9 +186,11 @@ public class ServiceManagementFragment extends Fragment {
         selectedEventTypesAdapter = new SelectedEventTypesAdapter(getContext(), selectedEventTypes);
         selectedEventTypesView.setAdapter(selectedEventTypesAdapter);
 
+        setServieFields();
+
         MaterialButton saveButton = view.findViewById(R.id.save_service_button);
         saveButton.setOnClickListener(v -> {
-            if (title.getText() == "SERVICE CREATION") {
+            if (serviceDTO == null) {
                 CreateServiceRequestDTO dto;
                 try {
                     dto = createRequestDTO(view);
@@ -185,7 +206,7 @@ public class ServiceManagementFragment extends Fragment {
                 call.enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<CreateServiceResponseDTO> call, @NonNull Response<CreateServiceResponseDTO> response) {
-                        if (response.isSuccessful()) {
+                        if (response.isSuccessful() && response.body() != null) {
                             // Navigate back to the event type list
                             SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
                             Bundle args = new Bundle();
@@ -216,6 +237,93 @@ public class ServiceManagementFragment extends Fragment {
                     }
                 });
             }
+            else {
+                UpdateServiceRequestDTO dto;
+                try {
+                    dto = updateRequestDTO(view);
+                } catch (IllegalArgumentException e) {
+                    Snackbar snackbar = Snackbar.make(view, "Fields are not valid", Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                    return;
+                }
+                Call<UpdateServiceResponseDTO> call = serviceService.updateService(
+                        JwtUtil.getAuthorizationValue(requireContext()),
+                        serviceDTO.getId(),
+                        dto
+                );
+                call.enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<UpdateServiceResponseDTO> call, @NonNull Response<UpdateServiceResponseDTO> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            // Navigate back to the event type list
+                            SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
+                            Bundle args = new Bundle();
+                            args.putString("snackbar_message", "Service created successfully!");
+                            fragment.setArguments(args);
+                            requireActivity().getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.home_main_fragment_container, fragment)
+                                    .commit();
+                        } else {
+                            try {
+                                // Show error message
+                                String errorBody = response.errorBody().string();
+                                JSONObject jsonObject = new JSONObject(errorBody);
+                                String message = jsonObject.getString("message");
+                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                errorMsg.setText(message);
+                                errorMsg.setVisibility(View.VISIBLE);
+                            } catch (Exception e) {
+                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<UpdateServiceResponseDTO> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
+            }
+        });
+
+        MaterialButton deleteButton = view.findViewById(R.id.delete_service_button);
+        deleteButton.setOnClickListener(v -> {
+            Call<DeleteServiceResponseDTO> call = serviceService.deleteService(JwtUtil.getAuthorizationValue(getContext()), serviceDTO.getId());
+            call.enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<DeleteServiceResponseDTO> call,
+                                       @NonNull Response<DeleteServiceResponseDTO> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        // Navigate back to the event type list
+                        SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
+                        Bundle args = new Bundle();
+                        args.putString("snackbar_message", "Service created successfully!");
+                        fragment.setArguments(args);
+                        requireActivity().getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.home_main_fragment_container, fragment)
+                                .commit();
+                    } else {
+                        try {
+                            // Show error message
+                            String errorBody = response.errorBody().string();
+                            JSONObject jsonObject = new JSONObject(errorBody);
+                            String message = jsonObject.getString("message");
+                            MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                            errorMsg.setText(message);
+                            errorMsg.setVisibility(View.VISIBLE);
+                        } catch (Exception e) {
+                            Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<DeleteServiceResponseDTO> call, @NonNull Throwable t) {
+                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                }
+            });
         });
     }
 
@@ -238,6 +346,39 @@ public class ServiceManagementFragment extends Fragment {
         return null;
     }
 
+    private UpdateServiceRequestDTO updateRequestDTO(View view) {
+        UpdateServiceRequestDTO dto = new UpdateServiceRequestDTO();
+        UpdatePricingRequestDTO pricingDTO = new UpdatePricingRequestDTO();
+
+        // Validate and set string attributes
+        validateAndSet(view, R.id.service_name, R.id.service_name_layout, dto::setName);
+        validateAndSet(view, R.id.service_description, R.id.service_description_layout, dto::setDescription);
+        validateAndSet(view, R.id.service_specifics, R.id.service_specifics_layout, dto::setSpecifics);
+
+        // Validate and set integer attributes
+        validateAndSetInt(view, R.id.reservation_deadline, R.id.reservation_deadline_layout, dto::setReservationDeadlineInDays);
+        validateAndSetInt(view, R.id.cancellation_deadline, R.id.cancellation_deadline_layout, dto::setCancellationDeadlineInDays);
+        validateAndSetInt(view, R.id.min_duration, R.id.min_duration_layout, dto::setMinDurationInMinutes);
+        validateAndSetInt(view, R.id.max_duration, R.id.max_duration_layout, dto::setMaxDurationInMinutes);
+
+        // Validate and set double attributes for Pricing
+        validateAndSetDouble(view, R.id.service_price, R.id.service_price_layout, pricingDTO::setPrice);
+        validateAndSetDouble(view, R.id.service_discount, R.id.service_discount_layout, pricingDTO::setDiscount);
+        pricingDTO.setActiveFrom(LocalDate.now().toString());
+        dto.setPricing(pricingDTO);
+
+        dto.setImages(new HashSet<>(images));
+        dto.setWorkDaysDTOs(new HashSet<>(workDayList));
+        dto.setAppliesTo(new HashSet<>());
+        for (GetEventTypeResponseDTO eventTypeDTO : selectedEventTypes) {
+            dto.getAppliesTo().add(eventTypeDTO.toEventType());
+        }
+
+        dto.setVisible(visibleCheckBox.isChecked());
+        dto.setAvailable(availableCheckBox.isChecked());
+
+        return dto;
+    }
 
     private CreateServiceRequestDTO createRequestDTO(View view) {
         CreateServiceRequestDTO dto = new CreateServiceRequestDTO();
@@ -345,6 +486,36 @@ public class ServiceManagementFragment extends Fragment {
                 throw new IllegalArgumentException();
             }
         }
+    }
+
+    private void setServieFields() {
+        categoryDropdown.setText(serviceDTO.getCategory().getName(), false);
+        nameInput.setText(serviceDTO.getName());
+        descriptionInput.setText(serviceDTO.getDescription());
+        priceInput.setText(String.valueOf(serviceDTO.getPricing().getPrice()));
+        discountInput.setText(String.valueOf(serviceDTO.getPricing().getDiscount()));
+        specificsInput.setText(serviceDTO.getSpecifics());
+
+        workDayList.clear();
+        workDayList.addAll(serviceDTO.getWorkDaysDTOs());
+        workDayAdapter.notifyDataSetChanged();
+
+        reservationInput.setText(String.valueOf(serviceDTO.getReservationDeadlineInDays()));
+        cancellationInput.setText(String.valueOf(serviceDTO.getCancellationDeadlineInDays()));
+        minDurationInput.setText(String.valueOf(serviceDTO.getMinDurationInMinutes()));
+        maxDurationInput.setText(String.valueOf(serviceDTO.getMaxDurationInMinutes()));
+
+        images.clear();
+        images.addAll(serviceDTO.getImages());
+        imageListAdapter.notifyDataSetChanged();
+
+        visibleCheckBox.setChecked(serviceDTO.isVisible());
+        availableCheckBox.setChecked(serviceDTO.isAvailable());
+
+        selectedEventTypes.clear();
+        for (EventType et : serviceDTO.getAppliesTo())
+            selectedEventTypes.add(new GetEventTypeResponseDTO(et));
+        selectedEventTypesAdapter.notifyDataSetChanged();
     }
 
     private void fetchCategories() {

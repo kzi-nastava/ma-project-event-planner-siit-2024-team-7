@@ -1,12 +1,14 @@
 package rs.ac.uns.eventplanner.team7.dto.service;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.pricing.PricingResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.model.EventType;
@@ -28,7 +30,7 @@ public class CreateServiceResponseDTO {
     private PricingResponseDTO pricing;
     private Category category;
     private String specifics;
-    private Set<WorkDay> workDays;
+    private Set<WorkDayDTO> workDaysDTOs;
     private int minDurationInMinutes;
     private int maxDurationInMinutes;
     private int reservationDeadlineInDays;
@@ -51,7 +53,12 @@ public class CreateServiceResponseDTO {
 
         this.category = service.getCategory();
         this.specifics = service.getSpecifics();
-        this.workDays = service.getWorkDays();
+
+        this.workDaysDTOs = new HashSet<>();
+        for (WorkDay wd : service.getWorkDays()) {
+            workDaysDTOs.add(new WorkDayDTO(wd));
+        }
+
         this.minDurationInMinutes = service.getMinDurationInMinutes();
         this.maxDurationInMinutes = service.getMaxDurationInMinutes();
         this.reservationDeadlineInDays = service.getReservationDeadlineInDays();

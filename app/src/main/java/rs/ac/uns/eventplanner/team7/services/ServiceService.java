@@ -87,5 +87,5 @@ public interface ServiceService {
             "Content-Type: application/json"
     })
     @GET("services/{id}")
-    Call<GetServiceResponseDTO> getService(@Path("id") Integer id);
+    Call<GetServiceResponseDTO> getService(@Header("Authorization") String token, @Path("id") Integer id);
 }

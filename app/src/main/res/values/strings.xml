@@ -128,6 +128,8 @@
     <string name="no_services_to_show">No services to show</string>
     <string name="d_services_found">%d services found</string>
     <string name="event_types">Event types</string>
+    <string name="service_creation">SERVICE CREATION</string>
+    <string name="service_update">SERVICE UPDATE</string>
     <string-array name="days_of_week">
         <item>Monday</item>
         <item>Tuesday</item>

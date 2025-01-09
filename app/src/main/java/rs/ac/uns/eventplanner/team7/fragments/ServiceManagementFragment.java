@@ -1,13 +1,14 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
-import static android.app.Activity.RESULT_OK;
-
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -22,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -38,13 +38,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.adapters.ImageListAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.SelectedEventTypesAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
 import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
@@ -61,7 +61,7 @@ import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class ServiceManagementFragment extends Fragment {
-    private final int PICK_IMAGE_REQUEST = 1;
+    private ActivityResultLauncher<Intent> imagePickerLauncher;
 
     private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
@@ -69,9 +69,10 @@ public class ServiceManagementFragment extends Fragment {
 
     private WorkDayAdapter workDayAdapter;
     private SelectedEventTypesAdapter selectedEventTypesAdapter;
+    private ImageListAdapter imageListAdapter;
 
     private List<WorkDayDTO> workDayList;
-    private Set<String> images;
+    private List<String> images;
     private List<GetEventTypeResponseDTO> selectedEventTypes;
     private List<CategoryResponseDTO> categories;
 
@@ -82,7 +83,7 @@ public class ServiceManagementFragment extends Fragment {
 
     public ServiceManagementFragment() {
         this.workDayList = new ArrayList<>();
-        this.images = new HashSet<>();
+        this.images = new ArrayList<>();
         this.selectedEventTypes = new ArrayList<>();
         this.categories = new ArrayList<>();
     }
@@ -133,10 +134,22 @@ public class ServiceManagementFragment extends Fragment {
             fragment.show(requireActivity().getSupportFragmentManager(), "RecommendationDialog");
         });
 
+        imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                Uri imageUri = result.getData().getData();
+                String imageName = getImageName(imageUri);
+                if (imageName != null) {
+                    imageListAdapter.addImage(imageName);
+                }
+            }
+        });
+        imageListAdapter = new ImageListAdapter(getContext(), images);
+        imagesView.setLayoutManager(new LinearLayoutManager(getContext()));
+        imagesView.setHasFixedSize(true);
+        imagesView.setAdapter(imageListAdapter);
         selectImagesBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            startActivityForResult(intent, PICK_IMAGE_REQUEST);
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            imagePickerLauncher.launch(intent);
         });
 
         workDayAdapter = new WorkDayAdapter(getContext(), workDayList);
@@ -206,28 +219,6 @@ public class ServiceManagementFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            Uri imageUri = data.getData();
-            if (imageUri != null) {
-                // Get the image name
-                String imageName = getImageName(imageUri);
-
-                // Add the image name to the Set
-                if (imageName != null) {
-                    images.add(imageName);
-                    TextView newImage = new TextView(getContext());
-                    newImage.setText(imageName);
-                    imagesView.addView(newImage);
-                    Log.d("ImageNamesSet", "Added: " + imageName);
-                }
-            }
-        }
-    }
-
     private String getImageName(Uri uri) {
         // Use the fragment's context to access the ContentResolver
         Context context = getContext(); // Or requireContext() for non-null guarantee
@@ -242,7 +233,7 @@ public class ServiceManagementFragment extends Fragment {
                 return cursor.getString(nameIndex);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
         }
         return null;
     }
@@ -279,7 +270,7 @@ public class ServiceManagementFragment extends Fragment {
             throw new IllegalArgumentException();
         }
 
-        dto.setImages(images);
+        dto.setImages(new HashSet<>(images));
         dto.setWorkDaysDTOs(new HashSet<>(workDayList));
         dto.setAppliesTo(new HashSet<>());
         for (GetEventTypeResponseDTO eventTypeDTO : selectedEventTypes) {
@@ -400,10 +391,12 @@ public class ServiceManagementFragment extends Fragment {
 
                     eventTypesDropdown.setOnItemClickListener((parent, view, position, id) -> {
                         GetEventTypeResponseDTO selectedEventType = (GetEventTypeResponseDTO) parent.getItemAtPosition(position);
+                        for (GetEventTypeResponseDTO eventTypeDTO : selectedEventTypes) {
+                            if (eventTypeDTO.getName().equals(selectedEventType.getName()))
+                                return;
+                        }
                         selectedEventTypes.add(selectedEventType);  // Add to the Set
                         Log.d("EventTypeSelected", "Added event type: " + selectedEventType);
-
-                        // Optionally, update your RecyclerView or UI to reflect the change
                         selectedEventTypesAdapter.notifyDataSetChanged();
                     });
                 }

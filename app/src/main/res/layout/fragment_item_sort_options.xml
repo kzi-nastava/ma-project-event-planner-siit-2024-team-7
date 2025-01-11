@@ -26,14 +26,15 @@
         <include layout="@layout/space_divider"/>
 
         <RadioGroup
+            android:id="@+id/item_sort_direction_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:checkedButton="@id/sort_ascending_items"
+            android:checkedButton="@id/sort_ascending_item"
             >
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/sort_ascending_items"
+                android:id="@+id/sort_ascending_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/ascending"
@@ -41,7 +42,7 @@
                 />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
-                android:id="@+id/sort_descending_items"
+                android:id="@+id/sort_descending_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/descending"
@@ -50,11 +51,12 @@
 
         </RadioGroup>
 
-        <include layout="@layout/view_close_button"/>
+        <include android:id="@+id/item_sort_options_close_button" layout="@layout/view_close_button"/>
 
     </LinearLayout>
 
     <RadioGroup
+        android:id="@+id/item_sort_options_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="15dp"
@@ -107,6 +109,7 @@
         android:gravity="center"
         >
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/apply_sorting_items_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sort"

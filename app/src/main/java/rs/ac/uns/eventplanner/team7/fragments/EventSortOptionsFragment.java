@@ -18,22 +18,25 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.Sort;
 import rs.ac.uns.eventplanner.team7.model.interfaces.SearchActionsListener;
 
-@Getter
 public class EventSortOptionsFragment extends BottomSheetDialogFragment {
 
+    @Getter
     private final Sort sort;
-    private RadioGroup sortOptions;
-    private RadioGroup sortDirection;
+    private RadioGroup sortOptions, sortDirection;
     private SearchActionsListener listener;
-    private boolean isCreated, pendingReset;
+    private boolean pendingReset;
+
+    private EventSortOptionsFragment(SearchActionsListener listener) {
+        this();
+        this.listener = listener;
+    }
 
     public EventSortOptionsFragment() {
         sort = Sort.getDefault();
     }
 
-    public EventSortOptionsFragment(SearchActionsListener listener) {
-        this();
-        this.listener = listener;
+    public static EventSortOptionsFragment newInstance(SearchActionsListener listener) {
+        return new EventSortOptionsFragment(listener);
     }
 
     @Override
@@ -42,7 +45,6 @@ public class EventSortOptionsFragment extends BottomSheetDialogFragment {
         View view = inflater.inflate(R.layout.fragment_event_sort_options, container, false);
         sortOptions = view.findViewById(R.id.event_sort_options_group);
         sortDirection = view.findViewById(R.id.event_sort_direction_group);
-        isCreated = true;
         return view;
     }
 
@@ -54,6 +56,7 @@ public class EventSortOptionsFragment extends BottomSheetDialogFragment {
 
         setupRadioButtons();
 
+        if (listener == null) return;
         MaterialButton applySort = view.findViewById(R.id.apply_sorting_events_button);
         applySort.setOnClickListener(v -> {
             listener.onSortApplied();
@@ -70,6 +73,10 @@ public class EventSortOptionsFragment extends BottomSheetDialogFragment {
         pendingReset = false;
     }
 
+    public void scheduleReset() {
+        pendingReset = true;
+    }
+
     private void setupRadioButtons() {
         sortOptions.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.sort_event_name) sort.by("name");
@@ -83,10 +90,4 @@ public class EventSortOptionsFragment extends BottomSheetDialogFragment {
             else sort.descending();
         });
     }
-
-    public void resetSort() {
-        if (!isCreated) return; // Can cause an exception if the fragment hasn't been created yet
-        pendingReset = true;
-    }
-
 }

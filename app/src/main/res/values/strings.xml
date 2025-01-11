@@ -142,5 +142,9 @@
         <item>Sunday</item>
     </string-array>
     <string name="back">Back</string>
+    <string name="all_categories">All categories</string>
+    <string name="loading_data">Loading data...</string>
+    <string name="category_menu_item">Category</string>
+    <string name="edit">Edit</string>
 
 </resources>

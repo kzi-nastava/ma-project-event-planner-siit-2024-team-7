@@ -20,6 +20,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textview.MaterialTextView;
 
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.fragments.AllCategoriesFragment;
 import rs.ac.uns.eventplanner.team7.fragments.EventTypeListFragment;
 import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
@@ -136,6 +137,10 @@ public class HomeActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.event_type) {
                 loadFragment(new EventTypeListFragment());
+                toolbar.setTitle(item.getTitle());
+            }
+            else if (item.getItemId() == R.id.category) {
+                loadFragment(new AllCategoriesFragment());
                 toolbar.setTitle(item.getTitle());
             }
             drawerLayout.closeDrawer(GravityCompat.START);

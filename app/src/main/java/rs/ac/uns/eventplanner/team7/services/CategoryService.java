@@ -23,6 +23,13 @@ public interface CategoryService {
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
+    @GET("categories/all_active")
+    Call<List<CategoryResponseDTO>> findAllActive(@Header("Authorization") String token);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
     @GET("categories/all_names")
     Call<List<String>> findAllNames();
 

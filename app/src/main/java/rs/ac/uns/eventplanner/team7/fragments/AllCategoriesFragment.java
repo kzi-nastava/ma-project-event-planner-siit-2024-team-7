@@ -3,6 +3,7 @@ package rs.ac.uns.eventplanner.team7.fragments;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
@@ -31,8 +33,8 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class AllCategoriesFragment extends Fragment {
     private CategoryCardAdapter adapter;
-    private List<CategoryResponseDTO> categories;
-    private CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
+    private final List<CategoryResponseDTO> categories;
+    private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
     public AllCategoriesFragment() {
         categories = new ArrayList<>();
@@ -41,7 +43,21 @@ public class AllCategoriesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_all_categories, container, false);
+        return inflater.inflate(R.layout.fragment_all_categories, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        MaterialButton newCategory = view.findViewById(R.id.new_category);
+        newCategory.setOnClickListener(v -> {
+            CategoryManagementFragment fragment = new CategoryManagementFragment(null);
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.home_main_fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
 
         RecyclerView recyclerView = view.findViewById(R.id.categories_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -55,7 +71,6 @@ public class AllCategoriesFragment extends Fragment {
 
         fetchCategories(view);
 
-        return view;
     }
 
     private void fetchCategories(View view) {

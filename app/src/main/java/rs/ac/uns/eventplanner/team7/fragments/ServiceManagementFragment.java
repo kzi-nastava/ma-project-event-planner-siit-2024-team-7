@@ -208,7 +208,6 @@ public class ServiceManagementFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<CreateServiceResponseDTO> call, @NonNull Response<CreateServiceResponseDTO> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            // Navigate back to the event type list
                             SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
                             Bundle args = new Bundle();
                             args.putString("snackbar_message", "Service created successfully!");
@@ -256,7 +255,6 @@ public class ServiceManagementFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<UpdateServiceResponseDTO> call, @NonNull Response<UpdateServiceResponseDTO> response) {
                         if (response.isSuccessful() && response.body() != null) {
-                            // Navigate back to the event type list
                             SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
                             Bundle args = new Bundle();
                             args.putString("snackbar_message", "Service updated successfully!");
@@ -557,7 +555,6 @@ public class ServiceManagementFragment extends Fragment {
                         public void onResponse(@NonNull Call<DeleteServiceResponseDTO> call,
                                                @NonNull Response<DeleteServiceResponseDTO> response) {
                             if (response.isSuccessful() && response.body() != null) {
-                                // Navigate back to the event type list
                                 SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
                                 Bundle args = new Bundle();
                                 args.putString("snackbar_message", "Service deleted successfully!");

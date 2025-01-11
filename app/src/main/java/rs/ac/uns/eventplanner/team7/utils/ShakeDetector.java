@@ -10,7 +10,7 @@ import rs.ac.uns.eventplanner.team7.model.interfaces.Shakeable;
 
 public final class ShakeDetector implements SensorEventListener {
     private static final float SHAKE_THRESHOLD = 12.0f;
-    private static final int SHAKE_SLOP_TIME_MS = 1000;
+    private static final int SHAKE_SLOP_TIME_MS = 2000;
     private long lastShakeTime;
     private final Shakeable listener;
     private final SensorManager sensorManager;

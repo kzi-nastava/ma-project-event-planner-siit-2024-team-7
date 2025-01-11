@@ -4,6 +4,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -12,6 +13,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.CreateCategoryRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.category.DeleteCategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.UpdateCategoryRequestDTO;
 
 public interface CategoryService {
@@ -49,5 +51,12 @@ public interface CategoryService {
     })
     @PUT("categories/{id}")
     Call<CategoryResponseDTO> updateCategory(@Header("Authorization") String token, @Body UpdateCategoryRequestDTO dto, @Path("id") Integer id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @DELETE("categories/{id}")
+    Call<DeleteCategoryResponseDTO> deleteCategory(@Header("Authorization") String token, @Path("id") Integer id);
 }
 

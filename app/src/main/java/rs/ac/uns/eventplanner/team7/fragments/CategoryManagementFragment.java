@@ -1,15 +1,18 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -30,6 +33,7 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.CreateCategoryRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.category.DeleteCategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.UpdateCategoryRequestDTO;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
@@ -168,6 +172,11 @@ public class CategoryManagementFragment extends Fragment {
                         });
             }
         });
+
+        MaterialButton deleteButton = view.findViewById(R.id.delete_category);
+        deleteButton.setOnClickListener(v -> {
+            showDeleteConfirmationDialog();
+        });
     }
 
     private CreateCategoryRequestDTO createRequestDTO(View view) {
@@ -203,6 +212,58 @@ public class CategoryManagementFragment extends Fragment {
             layout.setError("Field is required!");
             throw new IllegalArgumentException("Field not valid!");
         }
+    }
+
+    private void showDeleteConfirmationDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle("Confirm Deletion")
+                .setMessage("Are you sure you want to delete this category?")
+                .setPositiveButton("Delete", (dialogInterface, which) -> {
+
+                    categoryService.deleteCategory(JwtUtil.getAuthorizationValue(requireContext()), categoryDTO.getId())
+                            .enqueue(new Callback<>() {
+                                @Override
+                                public void onResponse(@NonNull Call<DeleteCategoryResponseDTO> call,
+                                                       @NonNull Response<DeleteCategoryResponseDTO> response) {
+                                    if (response.isSuccessful() && response.body() != null) {
+                                        AllCategoriesFragment fragment = new AllCategoriesFragment();
+                                        Bundle args = new Bundle();
+                                        args.putString("snackbar_message", "Category deleted successfully!");
+                                        fragment.setArguments(args);
+                                        requireActivity().getSupportFragmentManager()
+                                                .beginTransaction()
+                                                .replace(R.id.home_main_fragment_container, fragment)
+                                                .commit();
+                                    } else {
+                                        try {
+                                            // Show error message
+                                            String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                                            JSONObject jsonObject = new JSONObject(errorBody);
+                                            String message = jsonObject.getString("message");
+                                            MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                            errorMsg.setText(message);
+                                            errorMsg.setVisibility(View.VISIBLE);
+                                        } catch (Exception e) {
+                                            Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(@NonNull Call<DeleteCategoryResponseDTO> call, @NonNull Throwable t) {
+                                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                                }
+                            });
+                })
+                .setNegativeButton("Cancel", (dialogInterface, which) -> dialogInterface.dismiss())
+                .create();
+
+        dialog.setOnShowListener(dialogInterface -> {
+            Button deleteButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            if (deleteButton != null)
+                deleteButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark));
+        });
+        dialog.show();
     }
 
 }

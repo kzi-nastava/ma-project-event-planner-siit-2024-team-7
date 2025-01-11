@@ -69,11 +69,11 @@ public class AllCategoriesFragment extends Fragment {
         content.setVisibility(View.GONE);
         loadingMsg.setVisibility(View.VISIBLE);
 
-        fetchCategories(view);
+        fetchActiveCategories(view);
 
     }
 
-    private void fetchCategories(View view) {
+    private void fetchActiveCategories(View view) {
         Call<List<CategoryResponseDTO>> call = categoryService.findAllActive(JwtUtil.getAuthorizationValue(requireContext()));
         call.enqueue(new Callback<>() {
             @Override

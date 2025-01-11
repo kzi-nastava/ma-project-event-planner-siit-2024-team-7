@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.fragments.CategoryManagementFragment;
 
 public class CategoryCardAdapter extends RecyclerView.Adapter<CategoryCardAdapter.ViewHolder> {
     private final Context context;
@@ -45,7 +47,15 @@ public class CategoryCardAdapter extends RecyclerView.Adapter<CategoryCardAdapte
         holder.moreInfoButton.setText(R.string.edit);
 
         holder.moreInfoButton.setOnClickListener(v -> {
-
+            CategoryManagementFragment fragment = new CategoryManagementFragment(category);
+            if (context instanceof FragmentActivity) {
+                FragmentActivity activity = (FragmentActivity) context;
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.home_main_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
         holder.itemView.setVisibility(View.VISIBLE);
     }

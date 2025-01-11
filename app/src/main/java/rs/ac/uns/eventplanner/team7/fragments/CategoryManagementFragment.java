@@ -30,6 +30,7 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.CreateCategoryRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.category.UpdateCategoryRequestDTO;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
@@ -122,6 +123,49 @@ public class CategoryManagementFragment extends Fragment {
                                 Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                             }
                         });
+            } else {
+                UpdateCategoryRequestDTO dto;
+                try {
+                    dto = updateRequestDTO(view);
+                } catch (IllegalArgumentException e) {
+                    Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(e.getMessage()), Snackbar.LENGTH_SHORT);
+                    snackbar.show();
+                    return;
+                }
+                categoryService.updateCategory(JwtUtil.getAuthorizationValue(requireContext()), dto, categoryDTO.getId())
+                        .enqueue(new Callback<>() {
+                            @Override
+                            public void onResponse(@NonNull Call<CategoryResponseDTO> call,
+                                                   @NonNull Response<CategoryResponseDTO> response) {
+                                if (response.isSuccessful() && response.body() != null) {
+                                    AllCategoriesFragment fragment = new AllCategoriesFragment();
+                                    Bundle args = new Bundle();
+                                    args.putString("snackbar_message", "Category updated successfully!");
+                                    fragment.setArguments(args);
+                                    requireActivity().getSupportFragmentManager()
+                                            .beginTransaction()
+                                            .replace(R.id.home_main_fragment_container, fragment)
+                                            .commit();
+                                } else {
+                                    try {
+                                        // Show error message
+                                        String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                                        JSONObject jsonObject = new JSONObject(errorBody);
+                                        String message = jsonObject.getString("message");
+                                        MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                        errorMsg.setText(message);
+                                        errorMsg.setVisibility(View.VISIBLE);
+                                    } catch (Exception e) {
+                                        Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<CategoryResponseDTO> call, @NonNull Throwable t) {
+                                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                            }
+                        });
             }
         });
     }
@@ -130,6 +174,14 @@ public class CategoryManagementFragment extends Fragment {
         CreateCategoryRequestDTO dto = new CreateCategoryRequestDTO();
         validateAndSet(view, R.id.category_name, R.id.category_name_layout, dto::setName);
         validateAndSet(view, R.id.category_desc, R.id.category_desc_layout, dto::setDescription);
+        return dto;
+    }
+
+    private UpdateCategoryRequestDTO updateRequestDTO(View view) {
+        UpdateCategoryRequestDTO dto = new UpdateCategoryRequestDTO();
+        validateAndSet(view, R.id.category_name, R.id.category_name_layout, dto::setName);
+        validateAndSet(view, R.id.category_desc, R.id.category_desc_layout, dto::setDescription);
+        dto.setStatus(categoryDTO.getStatus());
         return dto;
     }
 

@@ -10,7 +10,8 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="First Name"
+        android:hint="@string/first_name"
+        app:endIconMode="clear_text"
         android:layout_marginTop="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -22,7 +23,8 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Last Name">
+        app:endIconMode="clear_text"
+        android:hint="@string/last_name">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/last_name"

@@ -10,7 +10,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Organization name"
+            android:hint="@string/org_name"
+            app:endIconMode="clear_text"
             android:layout_marginTop="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -22,7 +23,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Organization Description">
+            app:endIconMode="clear_text"
+            android:hint="@string/org_desc">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/org_desc"

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import lombok.Getter;
 import retrofit2.Call;
@@ -30,12 +32,10 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.model.interfaces.FilterActionsListener;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
-import rs.ac.uns.eventplanner.team7.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
 public class ServiceFilterFragment extends BottomSheetDialogFragment {
 
-    private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
     private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
@@ -116,10 +116,6 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
         if (isAvailable) filters.put("isAvailable", "true");
         else filters.put("isAvailable", "false");
 
-        if (filters.isEmpty()) {
-            dismiss();
-            return;
-        }
         listener.onFiltersApplied();
     }
 
@@ -130,8 +126,6 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
                                    @NonNull Response<List<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<String> eventTypes = new ArrayList<>(response.body());
-                    eventTypes.add(0, "All");
-
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             requireContext(),
                             android.R.layout.simple_list_item_1,
@@ -142,19 +136,19 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {}
+            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
         });
     }
 
     private void fetchCategoryNames() {
-        categoryService.findAllNames().enqueue(new Callback<List<String>>() {
+        categoryService.findAllNames().enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<String>> call,
                                    @NonNull Response<List<String>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<String> categories = new ArrayList<>(response.body());
-                    categories.add(0, "All");
-
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             requireContext(),
                             android.R.layout.simple_list_item_1,
@@ -167,7 +161,7 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
             @Override
             public void onFailure(@NonNull Call<List<String>> call,
                                   @NonNull Throwable t) {
-
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
             }
         });
     }

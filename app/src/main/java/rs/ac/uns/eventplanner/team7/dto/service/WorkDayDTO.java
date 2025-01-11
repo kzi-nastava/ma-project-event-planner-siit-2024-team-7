@@ -1,5 +1,7 @@
 package rs.ac.uns.eventplanner.team7.dto.service;
 
+import java.time.DayOfWeek;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,10 +11,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FilterServiceRequestDTO {
-    private String name;
-    private String categoryName;
-    private String eventTypeName;
-    private String price;
-    private String available;
+public class WorkDayDTO {
+    private DayOfWeek day;
+    private String workTimeStart;
+    private String workTimeEnd;
 }

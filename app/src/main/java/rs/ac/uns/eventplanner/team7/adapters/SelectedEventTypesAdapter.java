@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,8 +16,6 @@ import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.user.GetOrganizerResponseDTO;
-import rs.ac.uns.eventplanner.team7.model.EventType;
 
 public class SelectedEventTypesAdapter extends RecyclerView.Adapter<SelectedEventTypesAdapter.ViewHolder> {
     private final Context context;
@@ -57,7 +54,7 @@ public class SelectedEventTypesAdapter extends RecyclerView.Adapter<SelectedEven
         return selectedEventTypes.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         MaterialTextView titleView;
         MaterialTextView subtitleView;
         FloatingActionButton fabView;

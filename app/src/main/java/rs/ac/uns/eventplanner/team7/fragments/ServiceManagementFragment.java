@@ -1,7 +1,6 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -49,9 +48,8 @@ import rs.ac.uns.eventplanner.team7.adapters.SelectedEventTypesAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
 import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.pricing.CreatePricingRequestDTO;
-import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.pricing.PricingResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.pricing.UpdatePricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceResponseDTO;
@@ -60,7 +58,6 @@ import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.EventType;
-import rs.ac.uns.eventplanner.team7.model.WorkDay;
 import rs.ac.uns.eventplanner.team7.model.enums.CategoryStatus;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
@@ -71,7 +68,7 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class ServiceManagementFragment extends Fragment {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    private GetServiceResponseDTO serviceDTO;
+    private final GetServiceResponseDTO serviceDTO;
 
     private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
@@ -81,9 +78,9 @@ public class ServiceManagementFragment extends Fragment {
     private SelectedEventTypesAdapter selectedEventTypesAdapter;
     private ImageListAdapter imageListAdapter;
 
-    private List<WorkDayDTO> workDayList;
-    private List<String> images;
-    private List<GetEventTypeResponseDTO> selectedEventTypes;
+    private final List<WorkDayDTO> workDayList;
+    private final List<String> images;
+    private final List<GetEventTypeResponseDTO> selectedEventTypes;
     private List<CategoryResponseDTO> categories;
 
     private TextInputEditText nameInput, descriptionInput, priceInput, discountInput, specificsInput, reservationInput, cancellationInput, minDurationInput, maxDurationInput;
@@ -137,15 +134,6 @@ public class ServiceManagementFragment extends Fragment {
                     .replace(R.id.home_main_fragment_container, fragment)
                     .commit();
         });
-        MaterialTextView title = view.findViewById(R.id.welcomeMessage);
-        if (serviceDTO == null) {
-            title.setText(R.string.service_creation);
-            view.findViewById(R.id.delete_service_button).setVisibility(View.GONE);
-        }
-        else {
-            title.setText(R.string.service_update);
-            view.findViewById(R.id.categories_dropdown).setEnabled(false);
-        }
 
         fetchCategories();
         recommendCategoryBtn.setOnClickListener(v -> {
@@ -186,7 +174,17 @@ public class ServiceManagementFragment extends Fragment {
         selectedEventTypesAdapter = new SelectedEventTypesAdapter(getContext(), selectedEventTypes);
         selectedEventTypesView.setAdapter(selectedEventTypesAdapter);
 
-        setServieFields();
+
+        MaterialTextView title = view.findViewById(R.id.welcomeMessage);
+        if (serviceDTO == null) {
+            title.setText(R.string.service_creation);
+            view.findViewById(R.id.delete_service_button).setVisibility(View.GONE);
+        }
+        else {
+            title.setText(R.string.service_update);
+            view.findViewById(R.id.categories_dropdown).setEnabled(false);
+            setServiceFields();
+        }
 
         MaterialButton saveButton = view.findViewById(R.id.save_service_button);
         saveButton.setOnClickListener(v -> {
@@ -195,7 +193,7 @@ public class ServiceManagementFragment extends Fragment {
                 try {
                     dto = createRequestDTO(view);
                 } catch (IllegalArgumentException e) {
-                    Snackbar snackbar = Snackbar.make(view, "Fields are not valid", Snackbar.LENGTH_SHORT);
+                    Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(e.getMessage()), Snackbar.LENGTH_SHORT);
                     snackbar.show();
                     return;
                 }
@@ -219,7 +217,7 @@ public class ServiceManagementFragment extends Fragment {
                         } else {
                             try {
                                 // Show error message
-                                String errorBody = response.errorBody().string();
+                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
                                 JSONObject jsonObject = new JSONObject(errorBody);
                                 String message = jsonObject.getString("message");
                                 MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
@@ -242,7 +240,7 @@ public class ServiceManagementFragment extends Fragment {
                 try {
                     dto = updateRequestDTO(view);
                 } catch (IllegalArgumentException e) {
-                    Snackbar snackbar = Snackbar.make(view, "Fields are not valid", Snackbar.LENGTH_SHORT);
+                    Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(e.getMessage()), Snackbar.LENGTH_SHORT);
                     snackbar.show();
                     return;
                 }
@@ -267,7 +265,7 @@ public class ServiceManagementFragment extends Fragment {
                         } else {
                             try {
                                 // Show error message
-                                String errorBody = response.errorBody().string();
+                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
                                 JSONObject jsonObject = new JSONObject(errorBody);
                                 String message = jsonObject.getString("message");
                                 MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
@@ -289,7 +287,7 @@ public class ServiceManagementFragment extends Fragment {
 
         MaterialButton deleteButton = view.findViewById(R.id.delete_service_button);
         deleteButton.setOnClickListener(v -> {
-            Call<DeleteServiceResponseDTO> call = serviceService.deleteService(JwtUtil.getAuthorizationValue(getContext()), serviceDTO.getId());
+            Call<DeleteServiceResponseDTO> call = serviceService.deleteService(JwtUtil.getAuthorizationValue(getContext()), Objects.requireNonNull(serviceDTO).getId());
             call.enqueue(new Callback<>() {
                 @Override
                 public void onResponse(@NonNull Call<DeleteServiceResponseDTO> call,
@@ -307,7 +305,7 @@ public class ServiceManagementFragment extends Fragment {
                     } else {
                         try {
                             // Show error message
-                            String errorBody = response.errorBody().string();
+                            String errorBody = Objects.requireNonNull(response.errorBody()).string();
                             JSONObject jsonObject = new JSONObject(errorBody);
                             String message = jsonObject.getString("message");
                             MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
@@ -328,14 +326,8 @@ public class ServiceManagementFragment extends Fragment {
     }
 
     private String getImageName(Uri uri) {
-        // Use the fragment's context to access the ContentResolver
-        Context context = getContext(); // Or requireContext() for non-null guarantee
-        if (context == null) {
-            return null; // Safeguard if the context is unavailable
-        }
-
         String[] projection = {MediaStore.Images.Media.DISPLAY_NAME};
-        try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
+        try (Cursor cursor = requireContext().getContentResolver().query(uri, projection, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 int nameIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME);
                 return cursor.getString(nameIndex);
@@ -392,8 +384,12 @@ public class ServiceManagementFragment extends Fragment {
         // Validate and set integer attributes
         validateAndSetInt(view, R.id.reservation_deadline, R.id.reservation_deadline_layout, dto::setReservationDeadlineInDays);
         validateAndSetInt(view, R.id.cancellation_deadline, R.id.cancellation_deadline_layout, dto::setCancellationDeadlineInDays);
+        if (dto.getReservationDeadlineInDays() < dto.getCancellationDeadlineInDays() || dto.getReservationDeadlineInDays() < 1 || dto.getCancellationDeadlineInDays() < 1)
+            throw new IllegalArgumentException("Deadlines not valid!");
         validateAndSetInt(view, R.id.min_duration, R.id.min_duration_layout, dto::setMinDurationInMinutes);
         validateAndSetInt(view, R.id.max_duration, R.id.max_duration_layout, dto::setMaxDurationInMinutes);
+        if (dto.getMaxDurationInMinutes() < 0 || dto.getMinDurationInMinutes() < 0 || dto.getMaxDurationInMinutes() < dto.getMinDurationInMinutes())
+            throw new IllegalArgumentException("Durations not valid!");
 
         // Validate and set double attributes for Pricing
         validateAndSetDouble(view, R.id.service_price, R.id.service_price_layout, pricingDTO::setPrice);
@@ -408,7 +404,7 @@ public class ServiceManagementFragment extends Fragment {
         if (dto.getCategory() == null) {
             TextInputLayout layout = view.findViewById(R.id.categories_dropdown_layout);
             layout.setError("Field is required!");
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Category not valid!");
         }
 
         dto.setImages(new HashSet<>(images));
@@ -438,7 +434,7 @@ public class ServiceManagementFragment extends Fragment {
             }
         } else if (layout != null) {
             layout.setError("Field is required!");
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Field not valid!");
         }
     }
 
@@ -455,12 +451,12 @@ public class ServiceManagementFragment extends Fragment {
                 }
             } else if (layout != null) {
                 layout.setError("Field is required!");
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Field not valid!");
             }
         } catch (NumberFormatException e) {
             if (layout != null) {
                 layout.setError("Invalid number format!");
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Invalid number format!");
             }
         }
     }
@@ -478,17 +474,17 @@ public class ServiceManagementFragment extends Fragment {
                 }
             } else if (layout != null) {
                 layout.setError("Field is required!");
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Field not valid!");
             }
         } catch (NumberFormatException e) {
             if (layout != null) {
                 layout.setError("Invalid number format!");
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Invalid number format!");
             }
         }
     }
 
-    private void setServieFields() {
+    private void setServiceFields() {
         categoryDropdown.setText(serviceDTO.getCategory().getName(), false);
         nameInput.setText(serviceDTO.getName());
         descriptionInput.setText(serviceDTO.getDescription());

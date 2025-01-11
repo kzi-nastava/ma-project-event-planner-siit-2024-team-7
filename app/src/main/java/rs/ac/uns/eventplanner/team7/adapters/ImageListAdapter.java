@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +18,7 @@ import rs.ac.uns.eventplanner.team7.R;
 
 public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ViewHolder> {
     private final Context context;
-    private List<String> images;
+    private final List<String> images;
 
     public ImageListAdapter(Context context, List<String> images) {
         this.context = context;
@@ -62,7 +61,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.View
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         MaterialTextView titleView;
         MaterialTextView subtitleView;
         FloatingActionButton fabView;

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,16 +12,14 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
-import rs.ac.uns.eventplanner.team7.model.WorkDay;
+import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 
 public class WorkDayAdapter extends RecyclerView.Adapter<WorkDayAdapter.ViewHolder> {
     private final Context context;
-    private List<WorkDayDTO> workDaysList;
+    private final List<WorkDayDTO> workDaysList;
 
     public WorkDayAdapter(Context context, List<WorkDayDTO> workDaysSet) {
         this.workDaysList = workDaysSet;
@@ -57,7 +54,7 @@ public class WorkDayAdapter extends RecyclerView.Adapter<WorkDayAdapter.ViewHold
         return workDaysList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         MaterialTextView titleView;
         MaterialTextView subtitleView;
         FloatingActionButton fabView;

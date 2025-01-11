@@ -5,13 +5,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import com.google.android.material.button.MaterialButton;
@@ -20,7 +18,6 @@ import com.google.android.material.textview.MaterialTextView;
 
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,9 +32,9 @@ import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class CategoryRecommendationFragment extends DialogFragment {
-    private List<CategoryResponseDTO> categories;
-    private AutoCompleteTextView categoryDropdown;
-    private CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
+    private final List<CategoryResponseDTO> categories;
+    private final AutoCompleteTextView categoryDropdown;
+    private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
     public CategoryRecommendationFragment(List<CategoryResponseDTO> categories,
                                           AutoCompleteTextView categoryDropdown) {
@@ -74,7 +71,7 @@ public class CategoryRecommendationFragment extends DialogFragment {
                                 } else {
                                     try {
                                         // Show error message
-                                        String errorBody = response.errorBody().string();
+                                        String errorBody = Objects.requireNonNull(response.errorBody()).string();
                                         JSONObject jsonObject = new JSONObject(errorBody);
                                         String message = jsonObject.getString("message");
                                         MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);

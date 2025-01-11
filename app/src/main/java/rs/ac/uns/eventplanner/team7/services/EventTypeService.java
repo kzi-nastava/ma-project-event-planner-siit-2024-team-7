@@ -44,13 +44,6 @@ public interface EventTypeService {
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
-    @GET("event_types/by_name")
-    Call<GetEventTypeResponseDTO> getByName(@Query("name") String name);
-
-    @Headers({
-            "User-Agent: Mobile-Android",
-            "Content-Type: application/json"
-    })
     @PUT("event_types/{id}")
     Call<UpdateEventTypeResponseDTO> update(@Header("Authorization") String token, @Path("id") Integer id, @Body UpdateEventTypeRequestDTO dto);
 

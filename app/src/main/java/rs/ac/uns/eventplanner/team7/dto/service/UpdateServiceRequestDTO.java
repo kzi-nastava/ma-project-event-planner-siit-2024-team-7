@@ -1,16 +1,11 @@
 package rs.ac.uns.eventplanner.team7.dto.service;
 
-import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.pricing.UpdatePricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.model.EventType;
-import rs.ac.uns.eventplanner.team7.model.Service;
-import rs.ac.uns.eventplanner.team7.model.WorkDay;
 
 @Getter
 @Setter
@@ -28,30 +23,4 @@ public class UpdateServiceRequestDTO {
     private int cancellationDeadlineInDays;
     private Set<EventType> appliesTo;
     private boolean available;
-
-    public void setServiceFields(Service service) {
-        service.setName(name);
-        service.setDescription(description);
-        service.setImages(images);
-        service.setVisible(visible);
-
-        service.getPricing().setPrice(pricing.getPrice());
-        service.getPricing().setDiscount(pricing.getDiscount());
-        service.getPricing().setActiveFrom(LocalDate.parse(pricing.getActiveFrom()));
-
-        service.setSpecifics(specifics);
-
-        Set<WorkDay> workDays = new HashSet<>();
-        for (WorkDayDTO workDayDTO : workDaysDTOs) {
-            workDays.add(workDayDTO.toWorkDay());
-        }
-        service.setWorkDays(workDays);
-
-        service.setMinDurationInMinutes(minDurationInMinutes);
-        service.setMaxDurationInMinutes(maxDurationInMinutes);
-        service.setReservationDeadlineInDays(reservationDeadlineInDays);
-        service.setCancellationDeadlineInDays(cancellationDeadlineInDays);
-        service.setAppliesTo(appliesTo);
-        service.setAvailable(available);
-    }
 }

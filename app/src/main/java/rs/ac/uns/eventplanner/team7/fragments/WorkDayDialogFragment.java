@@ -14,6 +14,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -23,12 +25,11 @@ import java.util.Objects;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
-import rs.ac.uns.eventplanner.team7.dto.WorkDayDTO;
-import rs.ac.uns.eventplanner.team7.model.WorkDay;
+import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 
 public class WorkDayDialogFragment extends DialogFragment {
-    private List<WorkDayDTO> workDayList;
-    private WorkDayAdapter adapter;
+    private final List<WorkDayDTO> workDayList;
+    private final WorkDayAdapter adapter;
 
     public WorkDayDialogFragment(List<WorkDayDTO> workDaysList, WorkDayAdapter adapter) {
         this.workDayList = workDaysList;
@@ -70,14 +71,17 @@ public class WorkDayDialogFragment extends DialogFragment {
             String endTime = spinnerEndTime.getSelectedItem().toString();
 
             try {
+                if (LocalTime.parse(startTime).isAfter(LocalTime.parse(endTime)) || LocalTime.parse(startTime).equals(LocalTime.parse(endTime)))
+                    throw new IllegalArgumentException("Invalid start and end times");
                 WorkDayDTO workDay = new WorkDayDTO(DayOfWeek.valueOf(dayOfWeek), startTime, endTime);
                 workDayList.add(workDay);
                 adapter.notifyDataSetChanged();
+                dismiss();
             }
             catch (IllegalArgumentException e) {
                 Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                Snackbar.make(view, e.getMessage(), BaseTransientBottomBar.LENGTH_SHORT).show();
             }
-            dismiss();
         });
 
         btnCancel.setOnClickListener(v -> {

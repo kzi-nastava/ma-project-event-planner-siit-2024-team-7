@@ -104,6 +104,7 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
     public void onFiltersApplied() {
         page.resetToDefault();
         String query = latestFilters.get("name");
+        if (query == null) query = "";
         latestFilters = filterFragment.getFilters();
         latestFilters.put("name", query);
         setContent(false);
@@ -134,7 +135,7 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
                 else {
                     try {
                         // Show error message
-                        String errorBody = response.errorBody().string();
+                        String errorBody = Objects.requireNonNull(response.errorBody()).string();
                         JSONObject jsonObject = new JSONObject(errorBody);
                         String message = jsonObject.getString("message");
                         MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);

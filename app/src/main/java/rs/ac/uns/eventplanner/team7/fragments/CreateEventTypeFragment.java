@@ -79,7 +79,7 @@ public class CreateEventTypeFragment extends Fragment {
 
         ImageView back = view.findViewById(R.id.back_button);
         back.setOnClickListener(v -> requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout, new EventTypeListFragment())
+                .replace(R.id.home_main_fragment_container, new EventTypeListFragment())
                 .commit());
 
         return view;

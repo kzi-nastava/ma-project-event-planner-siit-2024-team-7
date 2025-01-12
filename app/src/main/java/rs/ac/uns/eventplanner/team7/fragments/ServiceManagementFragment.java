@@ -515,7 +515,7 @@ public class ServiceManagementFragment extends Fragment {
     }
 
     private void fetchCategories() {
-          categoryService.getAll(JwtUtil.getAuthorizationValue(getContext()))
+          categoryService.findAllActive(JwtUtil.getAuthorizationValue(getContext()))
                 .enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<CategoryResponseDTO>> call,

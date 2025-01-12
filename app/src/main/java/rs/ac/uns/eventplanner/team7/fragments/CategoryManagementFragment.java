@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.google.android.material.button.MaterialButton;
@@ -187,7 +186,13 @@ public class CategoryManagementFragment extends Fragment {
         });
 
         deleteButton.setOnClickListener(v -> {
-            showDeleteConfirmationDialog();
+            if (Objects.requireNonNull(categoryDTO).getStatus() == CategoryStatus.ACTIVE)
+                showDeleteConfirmationDialog();
+            else {
+                RejectCategoryFragment fragment = new RejectCategoryFragment(requireContext(), categoryDTO);
+                fragment.show(requireActivity().getSupportFragmentManager(), "RejectCategoryDialog");
+            }
+
         });
 
         acceptButton.setOnClickListener(v -> {

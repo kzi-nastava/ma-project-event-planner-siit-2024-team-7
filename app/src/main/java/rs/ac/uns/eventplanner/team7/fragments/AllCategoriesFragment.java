@@ -50,7 +50,13 @@ public class AllCategoriesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        LinearLayout content = view.findViewById(R.id.content_view);
+        MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
         MaterialButton newCategory = view.findViewById(R.id.new_category);
+        MaterialButton activeCategories = view.findViewById(R.id.active_categories);
+        MaterialButton recommendedCategories = view.findViewById(R.id.recommended_categories);
+        MaterialTextView welcomeMsg = view.findViewById(R.id.categories_welcome_msg);
+
         newCategory.setOnClickListener(v -> {
             CategoryManagementFragment fragment = new CategoryManagementFragment(null);
             requireActivity().getSupportFragmentManager().beginTransaction()
@@ -59,13 +65,36 @@ public class AllCategoriesFragment extends Fragment {
                     .commit();
         });
 
+        welcomeMsg.setText(R.string.all_active_categories);
+        activeCategories.setVisibility(View.GONE);
+        activeCategories.setOnClickListener(v -> {
+            recommendedCategories.setVisibility(View.VISIBLE);
+            activeCategories.setVisibility(View.GONE);
+
+
+            welcomeMsg.setText(R.string.all_active_categories);
+            content.setVisibility(View.GONE);
+            loadingMsg.setVisibility(View.VISIBLE);
+
+            fetchActiveCategories(view);
+
+        });
+        recommendedCategories.setOnClickListener(v -> {
+            activeCategories.setVisibility(View.VISIBLE);
+            recommendedCategories.setVisibility(View.GONE);
+
+            welcomeMsg.setText(R.string.all_pending_categories);
+            content.setVisibility(View.GONE);
+            loadingMsg.setVisibility(View.VISIBLE);
+
+            fetchPendingCategories(view);
+        });
+
         RecyclerView recyclerView = view.findViewById(R.id.categories_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new CategoryCardAdapter(requireContext(), categories);
         recyclerView.setAdapter(adapter);
 
-        LinearLayout content = view.findViewById(R.id.content_view);
-        MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
         content.setVisibility(View.GONE);
         loadingMsg.setVisibility(View.VISIBLE);
 
@@ -75,6 +104,31 @@ public class AllCategoriesFragment extends Fragment {
 
     private void fetchActiveCategories(View view) {
         Call<List<CategoryResponseDTO>> call = categoryService.findAllActive(JwtUtil.getAuthorizationValue(requireContext()));
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<CategoryResponseDTO>> call,
+                                   @NonNull Response<List<CategoryResponseDTO>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    categories.clear();
+                    categories.addAll(response.body());
+                    adapter.notifyDataSetChanged();
+
+                    LinearLayout content = view.findViewById(R.id.content_view);
+                    MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
+                    content.setVisibility(View.VISIBLE);
+                    loadingMsg.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<CategoryResponseDTO>> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
+    }
+
+    private void fetchPendingCategories(View view) {
+        Call<List<CategoryResponseDTO>> call = categoryService.findAllPending(JwtUtil.getAuthorizationValue(requireContext()));
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<CategoryResponseDTO>> call,

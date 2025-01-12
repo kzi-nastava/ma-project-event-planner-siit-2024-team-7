@@ -8,10 +8,11 @@
     android:padding="16dp">
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/categories_welcome_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/all_categories"
+        android:text="@string/all_active_categories"
         android:textSize="24sp"/>
 
     <com.google.android.material.textview.MaterialTextView
@@ -44,6 +45,13 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:text="Recommended\ncategories"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/active_categories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="Active\ncategories"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/new_category"

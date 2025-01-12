@@ -72,7 +72,7 @@ public class CategoryManagementFragment extends Fragment {
                     .commit();
         });
 
-        MaterialTextView title = view.findViewById(R.id.category_welcome);
+        MaterialTextView title = view.findViewById(R.id.category_management_welcome);
         if (categoryDTO == null) {
             title.setText("CREATE CATEGORY");
             view.findViewById(R.id.delete_category).setVisibility(View.GONE);

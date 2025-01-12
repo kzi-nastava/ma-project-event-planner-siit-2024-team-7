@@ -35,6 +35,13 @@ public interface CategoryService {
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
+    @GET("categories/all_pending")
+    Call<List<CategoryResponseDTO>> findAllPending(@Header("Authorization") String token);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
     @GET("categories/all_names")
     Call<List<String>> findAllNames();
 

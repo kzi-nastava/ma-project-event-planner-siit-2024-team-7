@@ -11,6 +11,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.CreateCategoryRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.DeleteCategoryResponseDTO;
@@ -65,5 +66,20 @@ public interface CategoryService {
     })
     @DELETE("categories/{id}")
     Call<DeleteCategoryResponseDTO> deleteCategory(@Header("Authorization") String token, @Path("id") Integer id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("categories/filter/active")
+    Call<List<CategoryResponseDTO>> filterActiveCategoriesByName(@Header("Authorization") String token, @Query("name") String query);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("categories/filter/pending")
+    Call<List<CategoryResponseDTO>> filterPendingCategoriesByName(@Header("Authorization") String token, @Query("name") String query);
+
 }
 

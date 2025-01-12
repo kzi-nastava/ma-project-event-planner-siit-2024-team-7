@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
@@ -35,9 +37,12 @@ public class AllCategoriesFragment extends Fragment {
     private CategoryCardAdapter adapter;
     private final List<CategoryResponseDTO> categories;
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
+    private String lastSearch;
+    private boolean isActive;
 
     public AllCategoriesFragment() {
         categories = new ArrayList<>();
+        isActive = true;
     }
 
     @Override
@@ -70,7 +75,7 @@ public class AllCategoriesFragment extends Fragment {
         activeCategories.setOnClickListener(v -> {
             recommendedCategories.setVisibility(View.VISIBLE);
             activeCategories.setVisibility(View.GONE);
-
+            isActive = true;
 
             welcomeMsg.setText(R.string.all_active_categories);
             content.setVisibility(View.GONE);
@@ -82,6 +87,7 @@ public class AllCategoriesFragment extends Fragment {
         recommendedCategories.setOnClickListener(v -> {
             activeCategories.setVisibility(View.VISIBLE);
             recommendedCategories.setVisibility(View.GONE);
+            isActive = false;
 
             welcomeMsg.setText(R.string.all_pending_categories);
             content.setVisibility(View.GONE);
@@ -100,6 +106,7 @@ public class AllCategoriesFragment extends Fragment {
 
         fetchActiveCategories(view);
 
+        setupSearchView(view);
     }
 
     private void fetchActiveCategories(View view) {
@@ -150,5 +157,80 @@ public class AllCategoriesFragment extends Fragment {
                 Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
             }
         });
+    }
+
+    private void setupSearchView(View view) {
+        SearchView searchView = view.findViewById(R.id.categories_search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query.isEmpty())
+                    return true;
+
+                if (isActive) filterActiveCategories(query);
+                else filterPendingCategories(query);
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.equals(lastSearch))
+                    onQueryTextSubmit(newText);
+                lastSearch = newText;
+                return true;
+
+            }
+        });
+
+        ImageView reset = view.findViewById(R.id.reset_category_search);
+        reset.setOnClickListener(v -> {
+            lastSearch = "";
+            searchView.setQuery("", false);
+            searchView.clearFocus();
+            categories.clear();
+            if (isActive) fetchActiveCategories(view);
+            else fetchPendingCategories(view);
+        });
+    }
+
+    private void filterActiveCategories(String query) {
+        categoryService.filterActiveCategoriesByName(JwtUtil.getAuthorizationValue(requireContext()), query)
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<CategoryResponseDTO>> call,
+                                           @NonNull Response<List<CategoryResponseDTO>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            categories.clear();
+                            categories.addAll(response.body());
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<List<CategoryResponseDTO>> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
+    }
+
+    private void filterPendingCategories(String query) {
+        categoryService.filterPendingCategoriesByName(JwtUtil.getAuthorizationValue(requireContext()), query)
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<CategoryResponseDTO>> call,
+                                           @NonNull Response<List<CategoryResponseDTO>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            categories.clear();
+                            categories.addAll(response.body());
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<List<CategoryResponseDTO>> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
     }
 }

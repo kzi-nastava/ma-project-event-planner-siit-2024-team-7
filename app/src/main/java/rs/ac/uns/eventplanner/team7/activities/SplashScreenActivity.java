@@ -9,6 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -16,6 +17,9 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        JwtUtil.clearCity(this);
+        JwtUtil.clearRole(this);
+        JwtUtil.clearToken(this);
 
         int SPLASH_TIME_OUT = 500;
         new Timer().schedule(new TimerTask() {

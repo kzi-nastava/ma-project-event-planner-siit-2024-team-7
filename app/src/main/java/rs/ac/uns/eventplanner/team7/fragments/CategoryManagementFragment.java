@@ -35,6 +35,7 @@ import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.CreateCategoryRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.DeleteCategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.UpdateCategoryRequestDTO;
+import rs.ac.uns.eventplanner.team7.model.enums.CategoryStatus;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
@@ -44,6 +45,7 @@ public class CategoryManagementFragment extends Fragment {
     private final CategoryResponseDTO categoryDTO;
 
     private TextInputEditText nameInput, descriptionInput;
+    private MaterialButton saveButton, acceptButton, deleteButton;
 
     public CategoryManagementFragment(CategoryResponseDTO categoryDTO) {
         this.categoryDTO = categoryDTO;
@@ -56,6 +58,10 @@ public class CategoryManagementFragment extends Fragment {
 
         nameInput = view.findViewById(R.id.category_name);
         descriptionInput = view.findViewById(R.id.category_desc);
+
+        saveButton = view.findViewById(R.id.save_category);
+        acceptButton = view.findViewById(R.id.accept_category);
+        deleteButton = view.findViewById(R.id.delete_category);
 
         return view;
     }
@@ -75,15 +81,22 @@ public class CategoryManagementFragment extends Fragment {
         MaterialTextView title = view.findViewById(R.id.category_management_welcome);
         if (categoryDTO == null) {
             title.setText("CREATE CATEGORY");
-            view.findViewById(R.id.delete_category).setVisibility(View.GONE);
+            acceptButton.setVisibility(View.GONE);
+            deleteButton.setVisibility(View.GONE);
         }
-        else {
+        else if (categoryDTO.getStatus() == CategoryStatus.ACTIVE) {
             title.setText("UPDATE CATEGORY");
+            acceptButton.setVisibility(View.GONE);
+            setContent();
+        }
+        else if (categoryDTO.getStatus() == CategoryStatus.PENDING) {
+            title.setText("RECOMMENDED CATEGORY");
+            saveButton.setVisibility(View.GONE);
+            deleteButton.setText("Reject category");
             setContent();
         }
 
-        MaterialButton saveBtn = view.findViewById(R.id.save_category);
-        saveBtn.setOnClickListener(v -> {
+        saveButton.setOnClickListener(v -> {
             if (categoryDTO == null) {
                 CreateCategoryRequestDTO dto;
                 try {
@@ -173,9 +186,45 @@ public class CategoryManagementFragment extends Fragment {
             }
         });
 
-        MaterialButton deleteButton = view.findViewById(R.id.delete_category);
         deleteButton.setOnClickListener(v -> {
             showDeleteConfirmationDialog();
+        });
+
+        acceptButton.setOnClickListener(v -> {
+            categoryService.acceptRecommendedCategory(JwtUtil.getAuthorizationValue(requireContext()), Objects.requireNonNull(categoryDTO).getId())
+                    .enqueue(new Callback<>() {
+                        @Override
+                        public void onResponse(@NonNull Call<CategoryResponseDTO> call,
+                                               @NonNull Response<CategoryResponseDTO> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                AllCategoriesFragment fragment = new AllCategoriesFragment();
+                                Bundle args = new Bundle();
+                                args.putString("snackbar_message", "Category updated successfully!");
+                                fragment.setArguments(args);
+                                requireActivity().getSupportFragmentManager()
+                                        .beginTransaction()
+                                        .replace(R.id.home_main_fragment_container, fragment)
+                                        .commit();
+                            } else {
+                                try {
+                                    // Show error message
+                                    String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                                    JSONObject jsonObject = new JSONObject(errorBody);
+                                    String message = jsonObject.getString("message");
+                                    MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                    errorMsg.setText(message);
+                                    errorMsg.setVisibility(View.VISIBLE);
+                                } catch (Exception e) {
+                                    Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<CategoryResponseDTO> call, @NonNull Throwable t) {
+                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        }
+                    });
         });
     }
 

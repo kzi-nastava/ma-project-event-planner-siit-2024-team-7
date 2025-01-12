@@ -81,5 +81,12 @@ public interface CategoryService {
     @GET("categories/filter/pending")
     Call<List<CategoryResponseDTO>> filterPendingCategoriesByName(@Header("Authorization") String token, @Query("name") String query);
 
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @PUT("categories/recommended/{id}")
+    Call<CategoryResponseDTO> acceptRecommendedCategory(@Header("Authorization") String token, @Path("id") Integer id);
+
 }
 

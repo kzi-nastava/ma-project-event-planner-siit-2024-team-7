@@ -69,20 +69,27 @@
             android:layout_gravity="center"
             android:gravity="center">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/save_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="Save category"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Save category"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/delete_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:backgroundTint="@color/red_delete"
-            android:text="Delete category"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/accept_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Accept category"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/delete_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:backgroundTint="@color/red_delete"
+                android:text="Delete category"/>
 
         </LinearLayout>
 

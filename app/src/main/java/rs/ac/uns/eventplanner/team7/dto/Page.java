@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Page<T> {
     private List<T> content = new ArrayList<>();
     private Pageable pageable = Pageable.getDefault();
-    private long totalElements = 0;
+    private int totalElements = 0;
     private int totalPages = 1;
     private boolean first = true;
     private boolean last = true;

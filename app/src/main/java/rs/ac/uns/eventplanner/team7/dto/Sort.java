@@ -29,6 +29,14 @@ public class Sort {
         return this;
     }
 
+    public boolean isAscending() {
+        return direction.equals("asc");
+    }
+
+    public Sort reverseOrder() {
+        return isAscending() ? descending() : ascending();
+    }
+
     /// default sorting is by name ascending
     public static Sort getDefault() {
         return new Sort().by("name").ascending();

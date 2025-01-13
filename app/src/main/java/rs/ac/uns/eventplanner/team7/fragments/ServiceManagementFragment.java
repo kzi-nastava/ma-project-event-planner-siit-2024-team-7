@@ -186,6 +186,8 @@ public class ServiceManagementFragment extends Fragment {
         else {
             title.setText(R.string.service_update);
             view.findViewById(R.id.categories_dropdown).setEnabled(false);
+            view.findViewById(R.id.categories_dropdown_layout).setEnabled(false);
+            recommendCategoryBtn.setVisibility(View.GONE);
             setServiceFields();
         }
 

@@ -23,6 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.dto.ResponseMessageDTO;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.invitation.InvitationAcceptanceDTO;
@@ -43,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         setupNavigation();
-        checkRedirection();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         usernameLayout.setError(null);
         passwordLayout.setError(null);
         clearFocus();
-        checkRedirection();
+        if (invitationDto == null) checkRedirection();
     }
 
     private void setupNavigation() {
@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = Objects.requireNonNull(passwordInput.getText()).toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter email and password", LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_email_and_password, LENGTH_SHORT).show();
             return;
         }
 
@@ -98,14 +98,16 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponseDTO loginResponse = response.body();
                     String token = loginResponse.getToken();
-                    Integer userId = loginResponse.getId();
                     UserRole role = loginResponse.getRole();
                     JwtUtil.saveToken(LoginActivity.this, token);
                     JwtUtil.saveRole(LoginActivity.this, role.toString());
                     JwtUtil.saveCity(LoginActivity.this, loginResponse.getCity());
-                    if (invitationDto != null) handleInvitationAccepting();
-                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                    finish();
+                    if (invitationDto != null && email.equals(invitationDto.getEmail())) {
+                        handleInvitationAccepting();
+                        return;
+                    }
+                    switchToHomeActivity();
+
                 } else {
                     clearFocus();
                     MaterialTextView errorMsg = findViewById(R.id.error_login);
@@ -120,25 +122,35 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void switchToHomeActivity() {
+        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+        finish();
+    }
+
     private void handleInvitationAccepting() {
-        invitationService.acceptInvitation(invitationDto).enqueue(new Callback<>() {
+        String bearerToken = JwtUtil.getAuthorizationValue(this);
+        invitationService.acceptInvitation(bearerToken, invitationDto)
+                .enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+            public void onResponse(@NonNull Call<ResponseMessageDTO> call, @NonNull Response<ResponseMessageDTO> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(LoginActivity.this,
-                            "You have successfully accepted the invitation!", LENGTH_LONG).show();
-                    return;
+                            Objects.requireNonNull(response.body()).getMessage(), LENGTH_LONG).show();
                 }
                 if (response.code() == 400) {
-                    Toast.makeText(LoginActivity.this, response.body(), LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,
+                            Objects.requireNonNull(response.body()).getMessage(), LENGTH_SHORT).show();
                 } else if (response.code() == 404) {
-                    Toast.makeText(LoginActivity.this, "Invitation not found!", LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Invitation not found!",
+                            LENGTH_SHORT).show();
                 }
+                switchToHomeActivity();
             }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-
+            public void onFailure(@NonNull Call<ResponseMessageDTO> call, @NonNull Throwable t) {
+                Toast.makeText(LoginActivity.this, "Error accepting invitation!", LENGTH_SHORT).show();
+                switchToHomeActivity();
             }
         });
     }
@@ -156,10 +168,13 @@ public class LoginActivity extends AppCompatActivity {
     private void checkRedirection() {
         Uri data = getIntent().getData();
         if (data == null) return;
+        JwtUtil.clearCity(this);
+        JwtUtil.clearRole(this);
+        JwtUtil.clearToken(this);
         try {
             String email = data.getQueryParameter("email");
-            Integer eventId = Integer.parseInt(data.getQueryParameter("email"));
-            String token = data.getQueryParameter("email");
+            Integer eventId = Integer.parseInt(data.getQueryParameter("eventId"));
+            String token = data.getQueryParameter("token");
             if (email == null || token == null) return;
             TextInputEditText emailInput = findViewById(R.id.usernameInput);
             emailInput.setText(email);

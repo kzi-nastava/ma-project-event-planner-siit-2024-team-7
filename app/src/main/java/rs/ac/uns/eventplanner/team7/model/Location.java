@@ -11,9 +11,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class Location implements Parcelable {
-
-    private double lat;
-    private double lon;
     private String country;
     private String city;
     private String street;
@@ -21,9 +18,7 @@ public class Location implements Parcelable {
 
     public Location() {}
 
-    public Location(double lat, double lon, String country, String city, String street, String houseNumber) {
-        this.lat = lat;
-        this.lon = lon;
+    public Location(String country, String city, String street, String houseNumber) {
         this.city = city;
         this.country = country;
         this.street = street;
@@ -31,8 +26,7 @@ public class Location implements Parcelable {
     }
 
     protected Location(Parcel in) {
-        lat = in.readDouble();
-        lon = in.readDouble();
+
     }
 
     public static final Creator<Location> CREATOR = new Creator<>() {
@@ -54,8 +48,7 @@ public class Location implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeDouble(lat);
-        dest.writeDouble(lon);
+
     }
 
     public String toAddressString() {

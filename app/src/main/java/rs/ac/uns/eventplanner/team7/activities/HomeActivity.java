@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -19,17 +20,28 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.dto.ResponseMessageDTO;
+import rs.ac.uns.eventplanner.team7.dto.invitation.InvitationAcceptanceDTO;
 import rs.ac.uns.eventplanner.team7.fragments.EventTypeListFragment;
 import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
 import rs.ac.uns.eventplanner.team7.fragments.UserProfileFragment;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.services.InvitationService;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private final InvitationService invitationService = ClientUtils.injectService(InvitationService.class);
     private Toolbar toolbar;
-    private UserRole role = UserRole.GUEST;
+    private UserRole role;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
@@ -38,15 +50,14 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        boolean isGuest = getIntent().getBooleanExtra("isGuest", false);
-        if (!isGuest) role =  UserRole.valueOf(JwtUtil.getRole(this));
+        role = UserRole.valueOf(JwtUtil.getRole(this));
 
         // Initialize the DrawerLayout and Toolbar
         drawerLayout = findViewById(R.id.home_drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (role == UserRole.ADMIN) {
             setupAdminNav();
@@ -54,6 +65,7 @@ public class HomeActivity extends AppCompatActivity {
         if (role != UserRole.GUEST) {
             setupBottomNavbar();
         }
+        if (getIntent().getExtras() != null) handleInvitationAccepting();
     }
 
     @Override
@@ -91,19 +103,14 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onDestroy() {
-        JwtUtil.clearToken(HomeActivity.this);
-        JwtUtil.clearRole(HomeActivity.this);
-        JwtUtil.clearCity(HomeActivity.this);
-        super.onDestroy();
-    }
-
     private void setAccountClickListener(PopupMenu popupMenu) {
         popupMenu.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_logout || itemId == R.id.nav_sign_in) {
-                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                if (itemId == R.id.nav_logout) {
+                    JwtUtil.setDefaultValues(this);
+                }
+                Intent intent = new Intent(this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
@@ -115,7 +122,7 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             }
             if (itemId == R.id.nav_sign_up) {
-                startActivity(new Intent(HomeActivity.this, RegistrationActivity.class));
+                startActivity(new Intent(this, RegistrationActivity.class));
                 finish();
                 return true;
             }
@@ -167,6 +174,42 @@ public class HomeActivity extends AppCompatActivity {
                 .replace(R.id.home_main_fragment_container, fragment)
 //                .addToBackStack(null) // TODO look into this, make back button on top nav functional
                 .commit();
+    }
+
+    private void handleInvitationAccepting() {
+        String bearerToken = JwtUtil.getAuthorizationValue(this);
+        Bundle params = Objects.requireNonNull(getIntent().getExtras());
+        InvitationAcceptanceDTO dto = new InvitationAcceptanceDTO(params);
+        invitationService.acceptInvitation(bearerToken, dto).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseMessageDTO> call, @NonNull Response<ResponseMessageDTO> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(HomeActivity.this,
+                            Objects.requireNonNull(response.body()).getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+                switch (response.code()) {
+                    case 400:
+                        Toast.makeText(HomeActivity.this,
+                                Objects.requireNonNull(response.body()).getMessage(),
+                                Toast.LENGTH_LONG).show();
+                        break;
+                    case 401:
+                        Toast.makeText(HomeActivity.this, R.string.invitation_not_found,
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        Toast.makeText(HomeActivity.this, R.string.error_accepting_invitation,
+                                Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseMessageDTO> call, @NonNull Throwable t) {
+                Toast.makeText(HomeActivity.this, R.string.error_accepting_invitation,
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }

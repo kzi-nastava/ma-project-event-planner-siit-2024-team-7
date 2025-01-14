@@ -111,6 +111,29 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/service_availability_filter_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    android:paddingHorizontal="20dp"
+                    app:endIconMode="dropdown_menu">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/service_availability_filter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="18sp"
+                        android:paddingEnd="5sp"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:hint="@string/product_availability"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <include layout="@layout/divider_thin"/>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/service_date_range_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

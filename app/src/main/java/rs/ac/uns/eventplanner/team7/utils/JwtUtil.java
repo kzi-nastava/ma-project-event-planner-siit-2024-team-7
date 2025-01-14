@@ -52,24 +52,9 @@ public class JwtUtil {
         return sharedPreferences.getString(CITY, null);
     }
 
-    public static void clearToken(Context context) {
+    public static void setDefaultValues(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(TOKEN_KEY);
-        editor.apply();
-    }
-
-    public static void clearRole(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(ROLE);
-        editor.apply();
-    }
-    public static void clearCity(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(CITY);
-        editor.apply();
+        sharedPreferences.edit().putString(ROLE, "GUEST").putString(CITY, "All").remove(TOKEN_KEY).apply();
     }
 
     public static Integer extractId(Context context) {

@@ -17,42 +17,16 @@ public class RegisterRequestDTO {
     // AccountStatus not necessary, it will be set internally
     private String photoURL;
     private String phone;
-    private Location address;
+    private Location location = new Location();
     private String firstName;
     private String lastName;
     private String orgName;
     private String orgDesc;
     private String authToken;
 
-    /// Constructor for auth
-    public RegisterRequestDTO(String email, String password, String password2, String photoURL,
-                              String phone, Location address, String authToken) {
-        this.email = email;
-        this.password = password;
-        this.password2 = password2;
-        this.role = UserRole.AUTH;
-        this.photoURL = photoURL;
-        this.phone = phone;
-        this.address = address;
-        this.authToken = authToken;
-    }
-
-    /// Constructor for spp and event_org
-    public RegisterRequestDTO(String email, String password, String password2, UserRole role,
-                              String photoURL, String phone, Location address, String name, String lastNameOrDesc) {
-        this.email = email;
-        this.password = password;
-        this.password2 = password2;
-        this.role = role;
-        this.photoURL = photoURL;
-        this.phone = phone;
-        this.address = address;
-        if (role == UserRole.EVENT_ORG) {
-            orgName = name;
-            orgDesc = lastNameOrDesc;
-        } else if (role == UserRole.SPP) {
-            firstName = name;
-            lastName = lastNameOrDesc;
-        }
+    public boolean areValidFields() {
+        return email != null && password != null && password2 != null && phone != null &&
+                location.getCountry() != null && location.getCity() != null && location.getStreet()
+                != null && location.getHouseNumber() != null;
     }
 }

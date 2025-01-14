@@ -18,31 +18,13 @@
         tools:ignore="DiscouragedApi">
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="true"
+            android:exported="false"
             android:screenOrientation="nosensor">
-                <intent-filter>
-                    <action android:name="android.intent.action.VIEW" />
-                    <category android:name="android.intent.category.DEFAULT" />
-                    <category android:name="android.intent.category.BROWSABLE" />
-
-                    <data
-                        android:scheme="eventifi"
-                        android:host="login" />
-                </intent-filter>
         </activity>
         <activity
             android:name=".activities.RegistrationActivity"
-            android:exported="true"
+            android:exported="false"
             android:screenOrientation="nosensor">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:scheme="eventifi"
-                    android:host="register" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activities.SplashScreenActivity"
@@ -55,12 +37,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-        </activity>
-        <activity
-            android:name=".activities.HomeActivity"
-            android:label="Home"
-            android:exported="true"
-            android:screenOrientation="nosensor">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -68,8 +44,15 @@
 
                 <data
                     android:scheme="eventifi"
-                    android:host="home" />
+                    android:host="base"/>
             </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".activities.HomeActivity"
+            android:label="Home"
+            android:exported="false"
+            android:screenOrientation="nosensor">
         </activity>
     </application>
 

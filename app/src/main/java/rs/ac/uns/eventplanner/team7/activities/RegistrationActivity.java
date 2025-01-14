@@ -4,7 +4,6 @@ import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -47,14 +46,13 @@ public class RegistrationActivity extends AppCompatActivity {
         setupLoginNavigation();
         MaterialButton regButton = findViewById(R.id.register_button);
         regButton.setOnClickListener(v -> registerOnClick());
+        JwtUtil.setDefaultValues(this);
         checkRedirection();
     }
 
     private void setupLoginNavigation() {
         TextView signIn = findViewById(R.id.sign_in_reg);
-        signIn.setOnClickListener(v -> {
-            switchToLoginActivity();
-        });
+        signIn.setOnClickListener(v -> switchToLoginActivity());
     }
 
     private void switchToLoginActivity() {
@@ -201,23 +199,14 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void checkRedirection() {
-        Uri data = getIntent().getData();
+        Bundle data = getIntent().getExtras();
         if (data == null) return;
-        JwtUtil.clearCity(this);
-        JwtUtil.clearRole(this);
-        JwtUtil.clearToken(this);
-        String email = data.getQueryParameter("email");
-        String token = data.getQueryParameter("token");
-        if (email == null || token == null) {
-            Toast.makeText(this, R.string.quick_registration_missing_information, LENGTH_SHORT).show();
-            switchToLoginActivity();
-            return;
-        }
         TextInputEditText emailInput = findViewById(R.id.email);
+        String email = data.getString("email");
         emailInput.setText(email);
         emailInput.setEnabled(false);
         registerRequest.setEmail(email);
-        validateToken(token);
+        validateToken(data.getString("token"));
         selectAuthButton();
     }
 

@@ -1,9 +1,9 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
+import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -12,8 +12,9 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
@@ -31,12 +32,10 @@ import rs.ac.uns.eventplanner.team7.model.Location;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.AuthService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class RegistrationActivity extends AppCompatActivity {
-
-    private String authToken;
-    private String selectedRole;
-    private final Location address = new Location();
+    private final RegisterRequestDTO registerRequest = new RegisterRequestDTO();
     private final AuthService authService = ClientUtils.injectService(AuthService.class);
 
     @Override
@@ -47,47 +46,18 @@ public class RegistrationActivity extends AppCompatActivity {
         setupLoginNavigation();
         MaterialButton regButton = findViewById(R.id.register_button);
         regButton.setOnClickListener(v -> registerOnClick());
-        checkRedirection(true);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        checkRedirection(false);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        checkRedirection(false);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+        JwtUtil.setDefaultValues(this);
+        checkRedirection();
     }
 
     private void setupLoginNavigation() {
         TextView signIn = findViewById(R.id.sign_in_reg);
-        signIn.setOnClickListener(v -> {
-            Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
-            startActivity(intent);
-        });
+        signIn.setOnClickListener(v -> switchToLoginActivity());
+    }
+
+    private void switchToLoginActivity() {
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     private void setupRadio(){
@@ -97,7 +67,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 findViewById(R.id.eoinputs).setVisibility(View.GONE);
                 findViewById(R.id.sppinputs).setVisibility(View.VISIBLE);
                 MaterialButton regButton = findViewById(R.id.register_button);
-                selectedRole = "SPP";
+                registerRequest.setRole(UserRole.SPP);
                 regButton.setEnabled(true);
                 regButton.setText(R.string.register_spp);
             }
@@ -105,186 +75,163 @@ public class RegistrationActivity extends AppCompatActivity {
                 findViewById(R.id.eoinputs).setVisibility(View.VISIBLE);
                 findViewById(R.id.sppinputs).setVisibility(View.GONE);
                 MaterialButton regButton = findViewById(R.id.register_button);
-                selectedRole = "EVENT_ORG";
+                registerRequest.setRole(UserRole.EVENT_ORG);
                 regButton.setEnabled(true);
                 regButton.setText(R.string.register_eo);
 
             }
             if (checkedId == R.id.rb_auth) {
                 MaterialButton regButton = findViewById(R.id.register_button);
-                selectedRole = "AUTH";
+                registerRequest.setRole(UserRole.AUTH);
                 regButton.setEnabled(true);
-                regButton.setText(R.string.register_eo);
+                regButton.setText(R.string.register_auth);
             }
         });
     }
 
     public void registerOnClick() {
-        String country = validateRequiredField(R.id.country, "Country is required");
-        address.setCountry(validateRequiredField(R.id.country, "Country is required"));
-        String city = validateRequiredField(R.id.city, "City is required");
-        address.setCity(city);
-        String street = validateRequiredField(R.id.street, "Street is required");
-        address.setStreet(street);
-        String houseNumber = validateRequiredField(R.id.house_number, "House number is required");
-        address.setHouseNumber(houseNumber);
-        String email = validateRequiredField(R.id.email, "Email is required");
-        String pass1 = validateRequiredField(R.id.password, "Password is required");
-        String pass2 = validateRequiredField(R.id.password_confirm, "Password confirmation is required");
-        String phone = validateRequiredField(R.id.phone_number, "Phone number is required");
+        final Location address = registerRequest.getLocation();
+        address.setCountry(validateRequiredField(R.id.country, R.string.country_is_required));
+        address.setCity(validateRequiredField(R.id.city, R.string.city_is_required));
+        address.setStreet(validateRequiredField(R.id.street, R.string.street_is_required));
+        address.setHouseNumber(validateRequiredField(R.id.house_number, R.string.house_number_is_required));
+        registerRequest.setEmail(validateRequiredField(R.id.email, R.string.email_is_required));
+        registerRequest.setPassword(validateRequiredField(R.id.password, R.string.password_is_required));
+        registerRequest.setPassword2(validateRequiredField(R.id.password_confirm, R.string.password_confirmation_is_required));
+        registerRequest.setPhone(validateRequiredField(R.id.phone_number, R.string.phone_number_is_required));
         TextInputEditText photoInput = findViewById(R.id.photo_url);
-        String photoURL = Objects.requireNonNull(photoInput.getText()).toString().trim();
+        registerRequest.setPhotoURL(photoInput.getText() == null ? "" : photoInput.getText().toString().trim());
 
-        if (country == null || city == null || street == null || houseNumber == null ||
-                email == null || pass1 == null || pass2 == null) return;
+        if (!registerRequest.areValidFields() || !validateRoleSpecificFields()) return;
+        if (!validatePassword()) return;
+        if (!validateEmail()) return;
+        if (!validatePhone()) return;
 
-        if (!validatePassword(pass1, pass2)) return;
-        if (!validateEmail(email)) return;
-        if (!validatePhone(phone)) return;
-
-        RegisterRequestDTO dto = prepareRequest(email, pass1, pass2, photoURL, phone);
-        if (dto == null) return;
-        authService.register(dto).enqueue(new Callback<>() {
+        authService.register(registerRequest).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
-                    startActivity(intent);
+                    Toast.makeText(RegistrationActivity.this,
+                            R.string.registration_successful, LENGTH_LONG).show();
+                    switchToLoginActivity();
                 } else {
+                    Toast.makeText(RegistrationActivity.this,
+                            R.string.error_during_registration, LENGTH_SHORT).show();
                     finish();
                     startActivity(getIntent());
-                    Toast.makeText(RegistrationActivity.this, "Error during the registration",
-                            LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Toast.makeText(RegistrationActivity.this, "Network error: " + t.getMessage(), LENGTH_SHORT).show();
+                Toast.makeText(RegistrationActivity.this, "Error: " + t.getMessage(),
+                        LENGTH_LONG).show();
             }
         });
     }
 
-    private boolean validatePassword(String pass1, String pass2) {
+    private boolean validateRoleSpecificFields() {
+        switch (registerRequest.getRole()) {
+            case SPP:
+                String orgName = validateRequiredField(R.id.org_name, R.string.organization_name_is_required);
+                String orgDesc = validateRequiredField(R.id.org_desc, R.string.organization_description_is_required);
+                registerRequest.setOrgName(orgName);
+                registerRequest.setOrgDesc(orgDesc);
+                return orgName != null && orgDesc != null;
+            case EVENT_ORG:
+                String firstName = validateRequiredField(R.id.first_name, R.string.first_name_is_required);
+                String lastName = validateRequiredField(R.id.last_name, R.string.last_name_is_required);
+                registerRequest.setFirstName(firstName);
+                registerRequest.setLastName(lastName);
+                return firstName != null && lastName != null;
+        }
+        return true;
+    }
+
+    private boolean validatePassword() {
         TextInputEditText password1Input = findViewById(R.id.password);
         TextInputEditText password2Input = findViewById(R.id.password_confirm);
-        if (!pass1.equals(pass2)) {
+        if (!registerRequest.getPassword().equals(registerRequest.getPassword2())) {
             password1Input.setText("");
             password2Input.setText("");
-            password1Input.setError("Passwords do NOT match");
-            password2Input.setError("Passwords do NOT match");
+            password1Input.setError(getString(R.string.passwords_do_not_match));
+            password2Input.setError(getString(R.string.passwords_do_not_match));
             return false;
         }
-        if (pass1.length() < 8) {
+        if (registerRequest.getPassword().length() < 8) {
             password1Input.setText("");
             password2Input.setText("");
-            password1Input.setError("Password must be minimum 8 characters long");
+            password1Input.setError(getString(R.string.password_min_length_error));
             return false;
         }
         return true;
     }
 
-    private boolean validateEmail(String email) {
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+    private boolean validateEmail() {
+        if (!Patterns.EMAIL_ADDRESS.matcher(registerRequest.getEmail()).matches()) {
             TextInputEditText emailInput = findViewById(R.id.email);
             emailInput.setText("");
-            emailInput.setError("Invalid email format");
+            emailInput.setError(getString(R.string.invalid_email_format));
             return false;
         }
         return true;
     }
 
-    private String validateRequiredField(int viewId, String errorMessage) {
+    private String validateRequiredField(@IdRes int viewId, @StringRes int errorMessage) {
         TextInputEditText input = findViewById(viewId);
         String text = Objects.requireNonNull(input.getText()).toString().trim();
 
         if (text.isEmpty()) {
-            input.setError(errorMessage);
+            input.setError(getString(errorMessage));
             return null;
         }
         return text;
     }
 
-    private boolean validatePhone(String phone) {
-        if (!Patterns.PHONE.matcher(phone).matches()) {
+    private boolean validatePhone() {
+        if (!Patterns.PHONE.matcher(registerRequest.getPhone()).matches()) {
             TextInputEditText phoneInput = findViewById(R.id.phone_number);
             phoneInput.setText("");
-            phoneInput.setError("Invalid phone format");
+            phoneInput.setError(getString(R.string.invalid_phone_format));
             return false;
         }
         return true;
     }
 
-    private void checkRedirection(boolean validateToken) {
-        Uri data = getIntent().getData();
-        if (data != null) {
-            String email = data.getQueryParameter("email");
-            String token = data.getQueryParameter("token");
-            if (email == null || token == null) {
-                Toast.makeText(RegistrationActivity.this,
-                        "Missing required information. Redirecting to login", LENGTH_SHORT).show();
-                Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-                return;
-            }
-            TextInputEditText emailInput = findViewById(R.id.email);
-            emailInput.setText(email);
-            this.authToken = token;
-            if (!validateToken) return;
-            validateToken(email);
-            selectAuthButton();
-        }
+    private void checkRedirection() {
+        Bundle data = getIntent().getExtras();
+        if (data == null) return;
+        TextInputEditText emailInput = findViewById(R.id.email);
+        String email = data.getString("email");
+        emailInput.setText(email);
+        emailInput.setEnabled(false);
+        registerRequest.setEmail(email);
+        validateToken(data.getString("token"));
+        selectAuthButton();
     }
 
-    private void validateToken(String email) {
-        ValidateQuickRegistrationDTO dto = new ValidateQuickRegistrationDTO(email, this.authToken);
+    private void validateToken(String authToken) {
+        ValidateQuickRegistrationDTO dto =
+                new ValidateQuickRegistrationDTO(registerRequest.getEmail(), authToken);
         authService.validateQuickRegistration(dto).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (response.isSuccessful()) Toast.makeText(RegistrationActivity.this,
-                            "Token is valid", LENGTH_SHORT).show();
+                if (response.isSuccessful()) {
+                    registerRequest.setAuthToken(authToken);
+                    Toast.makeText(RegistrationActivity.this, R.string.token_is_valid, LENGTH_SHORT).show();
+                }
                 else {
-                    Toast.makeText(RegistrationActivity.this,
-                            "Invalid auth token. Redirecting to login", LENGTH_SHORT).show();
-                    Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
+                    Toast.makeText(RegistrationActivity.this, R.string.invalid_auth_token, LENGTH_LONG).show();
+                    switchToLoginActivity();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Toast.makeText(RegistrationActivity.this, "Network error: " + t.getMessage(),
-                        LENGTH_SHORT).show();
+                Toast.makeText(RegistrationActivity.this, "Error: " + t.getMessage(),
+                        LENGTH_LONG).show();
             }
         });
-    }
-
-    @Nullable
-    private RegisterRequestDTO prepareRequest(String email, String pass1, String pass2,
-                                              String photoURL, String phone) {
-        switch (selectedRole) {
-            case "SPP":
-                String orgName = validateRequiredField(R.id.org_name,
-                        "Organization name is required");
-                String orgDesc = validateRequiredField(R.id.org_desc,
-                        "Organization description is required");
-                if (orgName == null || orgDesc == null) return null;
-                return new RegisterRequestDTO(email, pass1, pass2, UserRole.SPP, photoURL, phone,
-                        address, orgName, orgDesc);
-            case "EVENT_ORG":
-                String firstName = validateRequiredField(R.id.first_name,
-                        "First name is required");
-                String lastName = validateRequiredField(R.id.last_name,
-                        "Last name is required");
-                if (firstName == null || lastName == null) return null;
-                return new RegisterRequestDTO(email, pass1, pass2, UserRole.SPP, photoURL, phone,
-                        address, firstName, lastName);
-            case "AUTH": return new RegisterRequestDTO(email, pass1, pass2, photoURL, phone,
-                    address, authToken);
-            default: return new RegisterRequestDTO(); // will never occur
-        }
     }
 
     private void selectAuthButton() {

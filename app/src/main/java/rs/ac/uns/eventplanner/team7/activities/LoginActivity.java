@@ -1,10 +1,6 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
-import static android.widget.Toast.LENGTH_LONG;
-import static android.widget.Toast.LENGTH_SHORT;
-
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -25,25 +21,20 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.auth.LoginResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.invitation.InvitationAcceptanceDTO;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.AuthService;
-import rs.ac.uns.eventplanner.team7.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class LoginActivity extends AppCompatActivity {
 
     private final AuthService authService = ClientUtils.injectService(AuthService.class);
-    private final InvitationService invitationService = ClientUtils.injectService(InvitationService.class);
-    private InvitationAcceptanceDTO invitationDto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         setupNavigation();
-        checkRedirection();
     }
 
     @Override
@@ -67,8 +58,6 @@ public class LoginActivity extends AppCompatActivity {
         MaterialTextView guestButton = findViewById(R.id.continue_as_guest);
         guestButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            intent.putExtra("isGuest", true);
-            JwtUtil.saveCity(LoginActivity.this, "all");
             startActivity(intent);
             finish();
         });
@@ -84,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = Objects.requireNonNull(passwordInput.getText()).toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter email and password", LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_email_and_password, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -98,14 +87,11 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponseDTO loginResponse = response.body();
                     String token = loginResponse.getToken();
-                    Integer userId = loginResponse.getId();
                     UserRole role = loginResponse.getRole();
                     JwtUtil.saveToken(LoginActivity.this, token);
                     JwtUtil.saveRole(LoginActivity.this, role.toString());
                     JwtUtil.saveCity(LoginActivity.this, loginResponse.getCity());
-                    if (invitationDto != null) handleInvitationAccepting();
-                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                    finish();
+                    switchToHomeActivity();
                 } else {
                     clearFocus();
                     MaterialTextView errorMsg = findViewById(R.id.error_login);
@@ -115,32 +101,19 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<LoginResponseDTO> call, @NonNull Throwable t) {
-                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void handleInvitationAccepting() {
-        invitationService.acceptInvitation(invitationDto).enqueue(new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(LoginActivity.this,
-                            "You have successfully accepted the invitation!", LENGTH_LONG).show();
-                    return;
-                }
-                if (response.code() == 400) {
-                    Toast.makeText(LoginActivity.this, response.body(), LENGTH_SHORT).show();
-                } else if (response.code() == 404) {
-                    Toast.makeText(LoginActivity.this, "Invitation not found!", LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-
-            }
-        });
+    private void switchToHomeActivity() {
+        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        Bundle params = getIntent().getExtras();
+        if (params != null) {
+            intent.putExtras(params);
+        }
+        startActivity(intent);
+        finish();
     }
 
     private void clearFocus() {
@@ -154,17 +127,10 @@ public class LoginActivity extends AppCompatActivity {
 
     /// Redirection can occur when accepting invitations
     private void checkRedirection() {
-        Uri data = getIntent().getData();
+        Bundle data = getIntent().getExtras();
         if (data == null) return;
-        try {
-            String email = data.getQueryParameter("email");
-            Integer eventId = Integer.parseInt(data.getQueryParameter("email"));
-            String token = data.getQueryParameter("email");
-            if (email == null || token == null) return;
-            TextInputEditText emailInput = findViewById(R.id.usernameInput);
-            emailInput.setText(email);
-            invitationDto = new InvitationAcceptanceDTO(email, eventId, token);
-        } catch (NumberFormatException ignored) {}
+        String email = data.getString("email");
+        TextInputEditText emailInput = findViewById(R.id.usernameInput);
+        emailInput.setText(email);
     }
-
 }

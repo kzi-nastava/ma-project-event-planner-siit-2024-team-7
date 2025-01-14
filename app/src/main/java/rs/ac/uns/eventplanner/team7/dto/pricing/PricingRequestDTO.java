@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdatePricingRequestDTO {
+public class PricingRequestDTO {
     private double price;
     private double discount;
     private String activeFrom;

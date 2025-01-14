@@ -56,12 +56,12 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
     private long availableFromDate, availableUntilDate;
     private final long minDate, maxDate;
     private MaterialAutoCompleteTextView shownItemTypeDropdown, productAvailabilityDropdown,
-            itemCategoryDropdown, itemLocationDropdown;
+            serviceAvailabilityDropdown, itemCategoryDropdown, itemLocationDropdown;
 
     @Getter
     private String shownItemType;
-    private String selectedProductAvailability, selectedCategory, selectedCity;
-    private final List<String> shownTypes, productAvailability, categoryNames, cities;
+    private String selectedProductAvailability, selectedServiceAvailability, selectedCategory, selectedCity;
+    private final List<String> shownTypes, itemAvailability, categoryNames, cities;
     @Getter
     private final Map<String, String> filters;
     private FilterActionsListener listener;
@@ -79,10 +79,10 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
         maxDate = DateConverter.toLong(max);
         availableFromDate = minDate;
         availableUntilDate = minDate;
-        selectedProductAvailability = selectedCategory = selectedCity = "";
+        selectedProductAvailability = selectedServiceAvailability = selectedCategory = selectedCity = "";
         filters = new HashMap<>();
         shownTypes = Arrays.asList("Products", "Services");
-        productAvailability = Arrays.asList("Available", "Unavailable", "Both");
+        itemAvailability = Arrays.asList("Available", "Unavailable", "Both");
         shownItemType = shownTypes.get(0);
         categoryNames = new ArrayList<>();
         cities = new ArrayList<>();
@@ -99,6 +99,7 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
         itemNameInput = view.findViewById(R.id.item_name_filter);
         descriptionInput = view.findViewById(R.id.item_description_filter);
         itemPriceInput = view.findViewById(R.id.item_price_filter);
+        serviceAvailabilityDropdown = view.findViewById(R.id.service_availability_filter);
         serviceDateRangeInput = view.findViewById(R.id.service_date_range_filter);
         serviceSpecificsInput = view.findViewById(R.id.service_specifics_filter);
         serviceMinDurationInput = view.findViewById(R.id.service_min_duration_filter);
@@ -153,6 +154,8 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
         if (shownItemType.equals(shownTypes.get(1))) switchViewVisibility();
         if (!selectedProductAvailability.isEmpty())
             productAvailabilityDropdown.setText(selectedProductAvailability, false);
+        if (!selectedServiceAvailability.isEmpty())
+            serviceAvailabilityDropdown.setText(selectedServiceAvailability, false);
         if (!selectedCategory.isEmpty()) itemCategoryDropdown.setText(selectedCategory, false);
         if (!selectedCity.isEmpty()) itemLocationDropdown.setText(selectedCity, false);
     }
@@ -163,6 +166,8 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
         shownItemTypeDropdown.setText("", false);
         selectedProductAvailability = productAvailabilityDropdown.getEditableText().toString();
         if (!selectedProductAvailability.isEmpty()) productAvailabilityDropdown.setText("", false);
+        selectedServiceAvailability = serviceAvailabilityDropdown.getEditableText().toString();
+        if (!selectedServiceAvailability.isEmpty()) serviceAvailabilityDropdown.setText("", false);
         selectedCategory = itemCategoryDropdown.getEditableText().toString();
         if (!selectedCategory.isEmpty()) itemCategoryDropdown.setText("", false);
         selectedCity = itemLocationDropdown.getEditableText().toString();
@@ -174,7 +179,10 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
                 android.R.layout.simple_list_item_1, shownTypes));
 
         productAvailabilityDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_list_item_1, productAvailability));
+                android.R.layout.simple_list_item_1, itemAvailability));
+
+        serviceAvailabilityDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_list_item_1, itemAvailability));
 
         itemCategoryDropdown.setAdapter(new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_1, categoryNames));
@@ -185,14 +193,12 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
 
     private void setupShownItemListener() {
         shownItemTypeDropdown.setOnItemClickListener((parent, view, position, id) -> {
-            shownItemType = shownTypes.get(position);
-            if (position == 0) {
-                fetchCities(productService.findAllCities());
-                switchViewVisibility();
-            } else if (position == 1) {
-                fetchCities(serviceService.findAllCities());
-                switchViewVisibility();
-            }
+            String selectedType = shownTypes.get(position);
+            if (position == 0) fetchCities(productService.findAllCities());
+            else if (position == 1) fetchCities(serviceService.findAllCities());
+            if (selectedType.equals(shownItemType)) return;
+            shownItemType = selectedType;
+            switchViewVisibility();
         });
     }
 
@@ -219,19 +225,20 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
         String city = itemLocationDropdown.getEditableText().toString();
         if (!city.isEmpty()) filters.put("city", city);
 
-        switch (shownItemType) {
+        switch (shownItemType.toLowerCase()) {
             case "products":
-                applyProductSpecificFilters();
+                applyAvailability(productAvailabilityDropdown);
                 break;
             case "services":
+                applyAvailability(serviceAvailabilityDropdown);
                 applyServiceSpecificFilters();
                 break;
         }
         listener.onFiltersApplied();
     }
 
-    private void applyProductSpecificFilters() {
-        String availability = productAvailabilityDropdown.getEditableText().toString();
+    private void applyAvailability(MaterialAutoCompleteTextView dropdown) {
+        String availability = dropdown.getEditableText().toString();
         if (!availability.isEmpty()) {
             switch (availability.toLowerCase()) {
                 case "available":

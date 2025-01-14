@@ -4,7 +4,7 @@ import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.dto.pricing.UpdatePricingRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.pricing.PricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.model.EventType;
 
 @Getter
@@ -14,7 +14,7 @@ public class UpdateServiceRequestDTO {
     private String description;
     private Set<String> images;
     private boolean visible;
-    private UpdatePricingRequestDTO pricing;
+    private PricingRequestDTO pricing;
     private String specifics;
     private Set<WorkDayDTO> workDaysDTOs;
     private int minDurationInMinutes;

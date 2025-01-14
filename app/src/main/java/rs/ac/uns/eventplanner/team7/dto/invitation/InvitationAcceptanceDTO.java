@@ -1,5 +1,7 @@
 package rs.ac.uns.eventplanner.team7.dto.invitation;
 
+import android.os.Bundle;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,4 +15,11 @@ public class InvitationAcceptanceDTO {
     private String email;
     private Integer eventId;
     private String token;
+
+    /// To be used ONLY when redirecting to home page with all required params
+    public InvitationAcceptanceDTO(Bundle params) {
+        email = params.getString("email");
+        eventId = params.getInt("eventId");
+        token = params.getString("token");
+    }
 }

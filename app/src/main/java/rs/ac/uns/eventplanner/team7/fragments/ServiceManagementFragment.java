@@ -50,10 +50,9 @@ import rs.ac.uns.eventplanner.team7.adapters.ImageListAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.SelectedEventTypesAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
 import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.pricing.CreatePricingRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.pricing.PricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.pricing.UpdatePricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.DeleteServiceResponseDTO;
@@ -309,7 +308,7 @@ public class ServiceManagementFragment extends Fragment {
 
     private UpdateServiceRequestDTO updateRequestDTO(View view) {
         UpdateServiceRequestDTO dto = new UpdateServiceRequestDTO();
-        UpdatePricingRequestDTO pricingDTO = new UpdatePricingRequestDTO();
+        PricingRequestDTO pricingDTO = new PricingRequestDTO();
 
         // Validate and set string attributes
         validateAndSet(view, R.id.service_name, R.id.service_name_layout, dto::setName);
@@ -343,7 +342,7 @@ public class ServiceManagementFragment extends Fragment {
 
     private CreateServiceRequestDTO createRequestDTO(View view) {
         CreateServiceRequestDTO dto = new CreateServiceRequestDTO();
-        CreatePricingRequestDTO pricingDTO = new CreatePricingRequestDTO();
+        PricingRequestDTO pricingDTO = new PricingRequestDTO();
 
         // Validate and set string attributes
         validateAndSet(view, R.id.service_name, R.id.service_name_layout, dto::setName);

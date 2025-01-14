@@ -152,4 +152,6 @@
     <string name="unable_to_contact_server">Unable to contact the server. Try again later.</string>
     <string name="error_accepting_invitation">Error accepting the invitation!</string>
     <string name="invitation_not_found">Invitation not found!</string>
+    <string name="back">Back</string>
+
 </resources>

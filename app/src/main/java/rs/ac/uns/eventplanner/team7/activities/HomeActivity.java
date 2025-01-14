@@ -56,7 +56,7 @@ public class HomeActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.navigation_view);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (role == UserRole.ADMIN) {
             setupAdminNav();

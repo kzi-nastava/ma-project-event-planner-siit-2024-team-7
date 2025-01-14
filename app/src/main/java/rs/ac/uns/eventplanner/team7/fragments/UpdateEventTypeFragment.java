@@ -1,18 +1,18 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
@@ -33,7 +33,6 @@ import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
-
 
 public class UpdateEventTypeFragment extends Fragment {
 
@@ -81,6 +80,12 @@ public class UpdateEventTypeFragment extends Fragment {
 
         MaterialButton updateButton = view.findViewById(R.id.update_event_type);
         updateButton.setOnClickListener(v -> update(isActive));
+
+        ImageView back = view.findViewById(R.id.back_button);
+        back.setOnClickListener(v -> requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.home_main_fragment_container, new EventTypeListFragment())
+                .commit());
+
         return view;
     }
 
@@ -169,24 +174,14 @@ public class UpdateEventTypeFragment extends Fragment {
             deleteButton.setText(R.string.reactivate_event_type);
             deleteButton.setBackgroundColor(getResources().getColor(R.color.blue_200));
 
-            Pair<AlertDialog, View> dialogData = createDialog();
-            AlertDialog dialog = dialogData.first;
-            View dialogView = dialogData.second;
-
-            MaterialTextView msg = dialogView.findViewById(R.id.event_type_deactivation_msg);
-            msg.setText(R.string.reactivate_message);
-
-            dialog.setOnShowListener(d -> {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-                    update(!isActive);
-                    dialog.dismiss();
-                });
-            });
-
-            deleteButton.setOnClickListener(v -> dialog.show());
-
-            // set the content
-
+            MaterialAlertDialogBuilder builder = createMaterialDialog(
+                    R.string.reactivate_message,
+                    (dialog, which) -> {
+                        update(!isActive);
+                        dialog.dismiss();
+                    }
+            );
+            deleteButton.setOnClickListener(v -> builder.show());
         } else {
             deleteButton.setOnClickListener(v -> delete());
         }
@@ -199,28 +194,22 @@ public class UpdateEventTypeFragment extends Fragment {
     private void delete() {
         Call<Void> call = eventTypeService.delete(JwtUtil.getAuthorizationValue(requireContext()), eventTypeId);
 
-        Pair<AlertDialog, View> dialogData = createDialog();
-        AlertDialog dialog = dialogData.first;
+        MaterialAlertDialogBuilder builder = createMaterialDialog(
+                R.string.deactivation_confirmation,
+                (dialog, which) -> call.enqueue(deleteCallback(dialog))
+        );
 
-        dialog.setOnShowListener(d -> {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-                call.enqueue(deleteCallback(dialog));
-            });
-        });
-
-        dialog.show();
+        builder.show();
     }
 
-
-    private Callback<Void> deleteCallback(Dialog dialog) {
+    private Callback<Void> deleteCallback(android.content.DialogInterface dialog) {
         return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     dialog.dismiss();
                     navigateToEventTypeList("Event type deactivated successfully!");
-                }
-                else {
+                } else {
                     dialog.dismiss();
                 }
             }
@@ -232,15 +221,12 @@ public class UpdateEventTypeFragment extends Fragment {
         };
     }
 
-    private Pair<AlertDialog, View> createDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_deactivation_event_type, null);
-        builder.setView(dialogView)
-                .setPositiveButton(R.string.yes, null) // Set to null for custom behavior
+    private MaterialAlertDialogBuilder createMaterialDialog(int messageResId, android.content.DialogInterface.OnClickListener positiveAction) {
+        return new MaterialAlertDialogBuilder(requireContext())
+                .setMessage(messageResId)
+                .setPositiveButton(R.string.yes, positiveAction)
                 .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
-        return new Pair<>(builder.create(), dialogView);
     }
-
 
     private void navigateToEventTypeList(String msg) {
         Fragment fragment = new EventTypeListFragment();
@@ -253,5 +239,4 @@ public class UpdateEventTypeFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
-
 }

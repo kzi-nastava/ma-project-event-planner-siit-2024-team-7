@@ -15,10 +15,10 @@ import android.widget.ImageButton;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +40,7 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
     private TextInputEditText priceInput;
-    private AutoCompleteTextView eventTypeDropdown, categoryDropdown;
-    private MaterialCheckBox availableCheckBox;
+    private AutoCompleteTextView eventTypeDropdown, categoryDropdown, availabilityDropdown;
     @Getter
     private final Map<String, String> filters;
     private FilterActionsListener listener;
@@ -62,7 +61,7 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
         priceInput = view.findViewById(R.id.item_price_filter);
         eventTypeDropdown = view.findViewById(R.id.event_type_filter);
         categoryDropdown = view.findViewById(R.id.category_filter);
-        availableCheckBox = view.findViewById(R.id.service_available_filter);
+        availabilityDropdown = view.findViewById(R.id.service_available_filter);
         return view;
     }
 
@@ -71,6 +70,7 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         fetchEventTypeNames();
         fetchCategoryNames();
+        fetchAvailability();
 
         ImageButton closeButton = view.findViewById(R.id.service_filters_close_button);
         closeButton.setOnClickListener(v -> dismiss());
@@ -95,9 +95,9 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
         }
         filters.clear();
         priceInput.setText("");
-        eventTypeDropdown.setText("");
-        categoryDropdown.setText("");
-        availableCheckBox.setChecked(false);
+        eventTypeDropdown.setText("", false);
+        categoryDropdown.setText("", false);
+        availabilityDropdown.setText("", false);
         listener.onFiltersReset();
     }
 
@@ -112,9 +112,10 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
         String categoryName = categoryDropdown.getEditableText().toString();
         if (!categoryName.isEmpty()) filters.put("categoryName", categoryName);
 
-        boolean isAvailable = availableCheckBox.isChecked();
-        if (isAvailable) filters.put("isAvailable", "true");
-        else filters.put("isAvailable", "false");
+        String isAvailable = availabilityDropdown.getEditableText().toString();
+        if (isAvailable.equals("Available")) filters.put("isAvailable", "true");
+        else if (isAvailable.equals("Unavailable")) filters.put("isAvailable", "false");
+        availabilityDropdown.setText("", false); // if set to a value, dropdown menu isn't showing
 
         listener.onFiltersApplied();
     }
@@ -164,5 +165,14 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
                 Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
             }
         });
+    }
+
+    private void fetchAvailability() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                Arrays.asList("Available", "Unavailable", "Both")
+        );
+        availabilityDropdown.setAdapter(adapter);
     }
 }

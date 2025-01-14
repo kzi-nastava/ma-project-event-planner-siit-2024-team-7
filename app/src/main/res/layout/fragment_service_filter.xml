@@ -45,20 +45,25 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-<!--    <com.google.android.material.textview.MaterialTextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Event type"-->
-<!--        android:paddingHorizontal="20dp"-->
-<!--        />-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/service_available_filter_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:paddingHorizontal="20dp"
+        app:endIconMode="dropdown_menu">
 
-<!--    <Spinner-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="60dp"-->
-<!--        android:layout_marginVertical="2dp"-->
-<!--        android:paddingHorizontal="20dp"-->
-<!--        android:id="@+id/event_type_filter"-->
-<!--        />-->
+        <AutoCompleteTextView
+            android:id="@+id/service_available_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="18sp"
+            android:paddingEnd="5sp"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"
+            android:hint="Availability" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/event_type_filter_layout"
@@ -79,22 +84,6 @@
             android:clickable="true"
             android:hint="@string/event_type" />
     </com.google.android.material.textfield.TextInputLayout>
-
-
-<!--    <com.google.android.material.textview.MaterialTextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Category"-->
-<!--        android:paddingHorizontal="20dp"-->
-<!--        />-->
-
-<!--    <Spinner-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="60dp"-->
-<!--        android:layout_marginVertical="2dp"-->
-<!--        android:paddingHorizontal="20dp"-->
-<!--        android:id="@+id/category_filter"-->
-<!--        />-->
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/category_filter_layout"
@@ -118,13 +107,6 @@
 
 
 
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/service_available_filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Available"
-        android:layout_marginStart="20dp"
-        />
 
     <LinearLayout
         android:layout_width="match_parent"

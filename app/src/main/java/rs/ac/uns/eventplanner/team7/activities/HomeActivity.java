@@ -166,7 +166,6 @@ public class HomeActivity extends AppCompatActivity {
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.home_main_fragment_container, fragment)
-//                .addToBackStack(null) // TODO look into this, make back button on top nav functional
                 .commit();
     }
 

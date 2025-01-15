@@ -55,6 +55,8 @@ dependencies {
     implementation libs.material
     implementation libs.material.calendarview
     implementation libs.navigation.fragment
+    implementation libs.navigation.fragment.ktx
+    implementation libs.navigation.ui.ktx
     implementation libs.retrofit
     implementation libs.picasso
     implementation libs.threetenabp

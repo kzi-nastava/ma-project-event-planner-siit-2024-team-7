@@ -171,4 +171,6 @@
     <string name="back">Back</string>
     <string name="error_accepting_invitation">Error accepting the invitation!</string>
     <string name="invitation_not_found">Invitation not found!</string>
+    <string name="back">Back</string>
+
 </resources>

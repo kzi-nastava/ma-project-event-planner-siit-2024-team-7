@@ -122,6 +122,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
             @Override
             public void onResponse(@NonNull Call<Page<BasicEventDTO>> call,
                                    @NonNull Response<Page<BasicEventDTO>> response) {
+                if (!isAdded()) return;
                 if (!isUpdate) viewAdapter.clear();
                 if (!response.isSuccessful()) {
                     messageView.setText(R.string.unable_to_contact_server);

@@ -87,7 +87,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
 
     private void tryToSetAdapter() {
         if (responseCount.incrementAndGet() == 2) {
-            if (serviceResponses.isEmpty()) {
+            if (serviceResponses.isEmpty() || !isAdded()) {
                 messageView.setText(R.string.no_items_to_show);
                 return;
             }

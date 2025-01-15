@@ -58,7 +58,6 @@ public class HomeActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.navigation_view);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (role == UserRole.ADMIN) {
             setupAdminNav();
@@ -177,7 +176,6 @@ public class HomeActivity extends AppCompatActivity {
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.home_main_fragment_container, fragment)
-//                .addToBackStack(null) // TODO look into this, make back button on top nav functional
                 .commit();
     }
 

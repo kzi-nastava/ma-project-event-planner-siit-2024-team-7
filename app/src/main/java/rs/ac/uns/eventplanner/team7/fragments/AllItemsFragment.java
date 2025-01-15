@@ -163,6 +163,7 @@ public class AllItemsFragment extends Fragment
             @Override
             public void onResponse(@NonNull Call<Page<BasicItemDTO>> call,
                                    @NonNull Response<Page<BasicItemDTO>> response) {
+                if (!isAdded()) return;
                 if (!isUpdate) viewAdapter.clear();
                 if (!response.isSuccessful()) {
                     messageView.setText(R.string.unable_to_contact_server);

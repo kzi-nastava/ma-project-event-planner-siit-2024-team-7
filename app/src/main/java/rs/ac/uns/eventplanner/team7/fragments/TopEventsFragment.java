@@ -49,7 +49,7 @@ public class TopEventsFragment extends Fragment implements CardClickListener {
             public void onResponse(@NonNull Call<List<DetailedEventDTO>> call,
                                    @NonNull Response<List<DetailedEventDTO>> response) {
 
-                if (!response.isSuccessful()) {
+                if (!response.isSuccessful() || !isAdded()) {
                     messageView.setText(R.string.unable_to_contact_server);
                     return;
                 }

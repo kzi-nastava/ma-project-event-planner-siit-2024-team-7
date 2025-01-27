@@ -1,6 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
@@ -17,7 +18,6 @@
             android:text="@string/sign_up_message"
             android:textStyle="bold"
             android:textSize="32sp"
-            android:textColor="@color/black"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="24dp" />
@@ -203,7 +203,6 @@
             android:enabled="false"
             android:text="@string/select_first"
             android:layout_marginTop="24dp"
-            android:textColor="@android:color/white"
             android:textSize="24sp"
             />
 

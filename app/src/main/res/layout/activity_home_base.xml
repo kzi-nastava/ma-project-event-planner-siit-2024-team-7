@@ -45,6 +45,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:labelVisibilityMode="labeled"
         android:visibility="gone"
-        app:menu="@menu/bottom_nav_menu"/>
+        style="?attr/bottomNavigationStyle"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

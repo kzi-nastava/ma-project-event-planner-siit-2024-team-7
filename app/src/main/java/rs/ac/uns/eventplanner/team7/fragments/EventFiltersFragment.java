@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -132,7 +131,7 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
     }
 
     private void setupListeners(@NonNull View view) {
-        ImageButton closeButton = view.findViewById(R.id.event_filters_close_button);
+        MaterialButton closeButton = view.findViewById(R.id.event_filters_close_button);
         closeButton.setOnClickListener(v -> dismiss());
 
         MaterialButton applyFiltersButton = view.findViewById(R.id.apply_event_filters_button);

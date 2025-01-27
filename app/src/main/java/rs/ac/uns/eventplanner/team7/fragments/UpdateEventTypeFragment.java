@@ -1,7 +1,6 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -172,7 +171,7 @@ public class UpdateEventTypeFragment extends Fragment {
         MaterialButton deleteButton = view.findViewById(R.id.delete_event_type);
         if (!isActive) {
             deleteButton.setText(R.string.reactivate_event_type);
-            deleteButton.setBackgroundColor(getResources().getColor(R.color.blue_200));
+            deleteButton.setBackgroundColor(getResources().getColor(R.color.blue_300));
 
             MaterialAlertDialogBuilder builder = createMaterialDialog(
                     R.string.reactivate_message,

@@ -1,18 +1,16 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ImageButton;
 import android.widget.RadioButton;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
@@ -74,7 +72,7 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
         fetchEventTypeNames();
         fetchCategoryNames();
 
-        ImageButton closeButton = view.findViewById(R.id.service_filters_close_button);
+        MaterialButton closeButton = view.findViewById(R.id.service_filters_close_button);
         closeButton.setOnClickListener(v -> dismiss());
 
         MaterialButton applyFiltersButton = view.findViewById(R.id.apply_service_filters_button);

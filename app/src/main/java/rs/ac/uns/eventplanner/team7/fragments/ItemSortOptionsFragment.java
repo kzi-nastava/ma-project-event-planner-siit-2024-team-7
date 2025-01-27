@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.IdRes;
@@ -59,7 +58,7 @@ public class ItemSortOptionsFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ImageButton closeButton = view.findViewById(R.id.item_sort_options_close_button);
+        MaterialButton closeButton = view.findViewById(R.id.item_sort_options_close_button);
         closeButton.setOnClickListener(v -> dismiss());
 
         setupRadioButtons();

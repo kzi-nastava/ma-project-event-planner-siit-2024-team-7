@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textview.MaterialTextView;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import retrofit2.Call;
@@ -21,6 +25,7 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.item.DetailedItemDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.ProductService;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
@@ -99,6 +104,36 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
 
     @Override
     public void onCardClicked(Integer entityId, String type) {
-        // TODO redirect to item details page
+        serviceService.getService(JwtUtil.getAuthorizationValue(getContext()), entityId).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
+                                   @NonNull Response<GetServiceResponseDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ServiceDetailsFragment fragment = new ServiceDetailsFragment(response.body());
+                    requireActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.home_main_fragment_container, fragment)
+                            .addToBackStack(null)
+                            .commit();
+                }
+                else {
+                    try {
+                        // Show error message
+                        String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String message = jsonObject.getString("message");
+                        MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                        errorMsg.setText(message);
+                        errorMsg.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
     }
 }

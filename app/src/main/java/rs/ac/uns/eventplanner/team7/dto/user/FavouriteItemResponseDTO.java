@@ -12,5 +12,4 @@ import lombok.Setter;
 public class FavouriteItemResponseDTO {
     private Integer userId;
     private Integer itemId;
-    private boolean favourite;
 }

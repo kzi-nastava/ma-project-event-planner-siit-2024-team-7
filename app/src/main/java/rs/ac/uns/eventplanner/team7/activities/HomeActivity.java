@@ -8,13 +8,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -26,9 +27,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.fragments.AllCategoriesFragment;
 import rs.ac.uns.eventplanner.team7.dto.ResponseMessageDTO;
 import rs.ac.uns.eventplanner.team7.dto.invitation.InvitationAcceptanceDTO;
+import rs.ac.uns.eventplanner.team7.fragments.AllCategoriesFragment;
 import rs.ac.uns.eventplanner.team7.fragments.EventTypeListFragment;
 import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
@@ -45,6 +46,7 @@ public class HomeActivity extends AppCompatActivity {
     private UserRole role;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +58,24 @@ public class HomeActivity extends AppCompatActivity {
         // Initialize the DrawerLayout and Toolbar
         drawerLayout = findViewById(R.id.home_drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ActionBar actionBar = Objects.requireNonNull(getSupportActionBar());
+        switch (role) {
+            case EVENT_ORG:
+            case SPP:
+                setupBottomNavbar();
+                break;
+            case ADMIN:
+                setupAdminNav();
+            case AUTH:
+            case GUEST:
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_home);
+                break;
+        }
 
-        if (role == UserRole.ADMIN) {
-            setupAdminNav();
-        }
-        if (role != UserRole.GUEST) {
-            setupBottomNavbar();
-        }
         if (getIntent().getExtras() != null) handleInvitationAccepting();
     }
 
@@ -84,14 +95,22 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.nav_chats) {
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            FragmentContainerView view = findViewById(R.id.home_main_fragment_container);
+            if (view.getFragment() instanceof HomeFragment) return false;
+            loadFragment(new HomeFragment());
+            toolbar.setTitle(R.string.home);
+            return true;
+        }
+        else if (itemId == R.id.nav_chats) {
             // TODO
-        } else if (item.getItemId() == R.id.nav_notifications) {
+        } else if (itemId == R.id.nav_notifications) {
             // TODO
-        } else if (item.getItemId() == R.id.nav_account) {
+        } else if (itemId == R.id.nav_account) {
             View profileMenuItemView = findViewById(R.id.nav_account);
             PopupMenu popupMenu = new PopupMenu(this, profileMenuItemView);
-            if (role == UserRole.GUEST) { //inflate it with guest menu
+            if (role == UserRole.GUEST) {
                 popupMenu.getMenuInflater().inflate(R.menu.guest_profile_menu, popupMenu.getMenu());
             } else {
                 popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
@@ -131,11 +150,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupAdminNav() {
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.openDrawer,  R.string.closeDrawer);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
         MaterialTextView headerText = navigationView.getHeaderView(0).findViewById(R.id.nav_header_user_name);
         headerText.setText(R.string.admin_options);
         navigationView.inflateMenu(R.menu.admin_nav_drawer_menu);
@@ -155,14 +169,24 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupBottomNavbar() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setVisibility(View.VISIBLE);
+        if (role == UserRole.EVENT_ORG) {
+            bottomNavigationView.inflateMenu(R.menu.event_organizer_menu);
+        } else {
+            bottomNavigationView.inflateMenu(R.menu.spp_menu);
+        }
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-            if (item.getItemId() == R.id.nav_home) {
+            FragmentContainerView fragmentContainer = findViewById(R.id.home_main_fragment_container);
+            Fragment selectedFragment = null, displayedFragment = fragmentContainer.getFragment();
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home && (!(displayedFragment instanceof HomeFragment))) {
                 selectedFragment = new HomeFragment();
                 toolbar.setTitle(item.getTitle());
-            } else if (item.getItemId() == R.id.nav_service) {
+            } else if (itemId == R.id.nav_event) {
+                // TODO
+            } else if (itemId == R.id.nav_product) {
+                // TODO
+            } else if (itemId == R.id.nav_service && (!(displayedFragment instanceof SPPServicesBaseFragment))) {
                 selectedFragment = new SPPServicesBaseFragment();
                 toolbar.setTitle(item.getTitle());
             }

@@ -44,36 +44,31 @@ public class HomeActivity extends AppCompatActivity {
     private final InvitationService invitationService = ClientUtils.injectService(InvitationService.class);
     private Toolbar toolbar;
     private UserRole role;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
     private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-
         role = UserRole.valueOf(JwtUtil.getRole(this));
-
-        // Initialize the DrawerLayout and Toolbar
-        drawerLayout = findViewById(R.id.home_drawer_layout);
-        navigationView = findViewById(R.id.navigation_view);
+        setContentView(role == UserRole.ADMIN ? R.layout.activity_home_admin : R.layout.activity_home);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = Objects.requireNonNull(getSupportActionBar());
+
         switch (role) {
+            case ADMIN:
+                setupAdminNav();
+                setupBottomNavbar();
+                break;
+            case AUTH:
             case EVENT_ORG:
             case SPP:
                 setupBottomNavbar();
                 break;
-            case ADMIN:
-                setupAdminNav();
-            case AUTH:
             case GUEST:
+                ActionBar actionBar = Objects.requireNonNull(getSupportActionBar());
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_home);
-                break;
         }
 
         if (getIntent().getExtras() != null) handleInvitationAccepting();
@@ -82,14 +77,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        MenuItem chatItem = menu.findItem(R.id.nav_chats);
-        MenuItem notificationsItem = menu.findItem(R.id.nav_notifications);
-        if (role == UserRole.ADMIN) {
-            chatItem.setVisible(false);
-        } else if (role == UserRole.GUEST) {
-            chatItem.setVisible(false);
-            notificationsItem.setVisible(false);
-        }
         return true;
     }
 
@@ -102,11 +89,6 @@ public class HomeActivity extends AppCompatActivity {
             loadFragment(new HomeFragment());
             toolbar.setTitle(R.string.home);
             return true;
-        }
-        else if (itemId == R.id.nav_chats) {
-            // TODO
-        } else if (itemId == R.id.nav_notifications) {
-            // TODO
         } else if (itemId == R.id.nav_account) {
             View profileMenuItemView = findViewById(R.id.nav_account);
             PopupMenu popupMenu = new PopupMenu(this, profileMenuItemView);
@@ -150,13 +132,16 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupAdminNav() {
+        DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout);
+        NavigationView navigationView = findViewById(R.id.navigation_view);
         MaterialTextView headerText = navigationView.getHeaderView(0).findViewById(R.id.nav_header_user_name);
         headerText.setText(R.string.admin_options);
         navigationView.inflateMenu(R.menu.admin_nav_drawer_menu);
+        navigationView.setVisibility(View.VISIBLE);
 
         navigationView.setNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.event_type) {
-                loadFragment(new EventTypeListFragment());
+                loadFragment(new AllEventTypesFragment());
                 toolbar.setTitle(item.getTitle());
             }
             else if (item.getItemId() == R.id.category) {
@@ -172,8 +157,10 @@ public class HomeActivity extends AppCompatActivity {
         bottomNavigationView.setVisibility(View.VISIBLE);
         if (role == UserRole.EVENT_ORG) {
             bottomNavigationView.inflateMenu(R.menu.event_organizer_menu);
-        } else {
+        } else if (role == UserRole.SPP) {
             bottomNavigationView.inflateMenu(R.menu.spp_menu);
+        } else {
+            bottomNavigationView.inflateMenu(R.menu.basic_menu);
         }
         bottomNavigationView.setOnItemSelectedListener(item -> {
             FragmentContainerView fragmentContainer = findViewById(R.id.home_main_fragment_container);
@@ -189,6 +176,10 @@ public class HomeActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_service && (!(displayedFragment instanceof SPPServicesBaseFragment))) {
                 selectedFragment = new SPPServicesBaseFragment();
                 toolbar.setTitle(item.getTitle());
+            } else if (itemId == R.id.nav_chats) {
+                // TODO
+            } else if (itemId == R.id.nav_notifications) {
+                // TODO
             }
             if (selectedFragment != null) {
                 loadFragment(selectedFragment);

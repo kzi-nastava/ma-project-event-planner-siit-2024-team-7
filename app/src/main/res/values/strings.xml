@@ -63,7 +63,7 @@
     <string name="tab_top_services_products">Top items</string>
     <string name="tab_all_services_products">All items</string>
     <string name="toolbar_chats">Chats</string>
-    <string name="toolbar_notifications">Notifications</string>
+    <string name="toolbar_notifications">Updates</string>
     <string name="toolbar_account">Account</string>
     <string name="search_bar">Search</string>
     <string name="filters">Filters</string>
@@ -195,4 +195,7 @@
     <string name="old_password">Old Password</string>
     <string name="new_password">New Password</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="my_events">My Events</string>
+    <string name="my_products">My Products</string>
+    <string name="my_services">My Services</string>
 </resources>

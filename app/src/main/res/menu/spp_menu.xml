@@ -6,11 +6,11 @@
         android:icon="@drawable/ic_home"/>
     <item
         android:id="@+id/nav_product"
-        android:title="My Products"
+        android:title="@string/my_products"
         android:icon="@drawable/ic_tv"/>
     <item
         android:id="@+id/nav_service"
-        android:title="My Services"
+        android:title="@string/my_services"
         android:icon="@drawable/ic_gears"/>
     <item android:id="@+id/nav_chats"
         android:title="@string/toolbar_chats"

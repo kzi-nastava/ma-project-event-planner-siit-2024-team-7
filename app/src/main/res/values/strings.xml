@@ -55,7 +55,7 @@
     <string name="city">City</string>
     <string name="street">Street</string>
     <string name="house_number">House Number</string>
-    <string name="prompt_password_again">Password again</string>
+    <string name="prompt_password_again">Confirm password</string>
     <string name="select_first">Select role first</string>
     <string name="sign_in_ul"><u>Already have an account? Sign in!</u></string>
     <string name="tab_top_events">Top events</string>
@@ -126,7 +126,7 @@
     <string name="all_fields_are_required">All fields are required!</string>
     <string name="new_passwords_do_not_match">New passwords do not match!</string>
     <string name="cancel">Cancel</string>
-    <string name="deactivation_confirmation">You are about to deactivate for account. Are you sure?</string>
+    <string name="account_deactivation_message">You are about to deactivate your account. This action is <b>irreversible</b>! Are you sure you want to proceed?</string>
     <string name="yes">Yes</string>
     <string name="profile">Profile</string>
     <string name="openDrawer">Open</string>
@@ -145,7 +145,7 @@
     <string name="more">More…</string>
     <string name="delete_event_type">Delete event type</string>
     <string name="reactivate_event_type">Reactivate event type</string>
-    <string name="reactivate_message">You are about to reactivate this event type. Are you sure?</string>
+    <string name="reactivate_event_type_message">You are about to reactivate this event type. Are you sure?</string>
     <string name="admin_options">Admin Management</string>
     <string name="event_type_menu_item">Event Type</string>
     <string name="show">Show</string>
@@ -173,9 +173,26 @@
     <string name="invitation_not_found">Invitation not found!</string>
     <string name="all_active_categories">All active categories</string>
     <string name="all_pending_categories">All pending categories</string>
-    <string name="loading_data">Loading data...</string>
+    <string name="loading_data">Loading data…</string>
     <string name="category_menu_item">Category</string>
     <string name="edit">Edit</string>
     <string name="you_must_choose_a_replacement_category">You must choose a replacement category!</string>
     <string name="replacement_category">Replacement category</string>
+    <string name="home">Home</string>
+    <string name="events">Events</string>
+    <string name="products">Products</string>
+    <string name="services">Services</string>
+    <string name="submit">Submit</string>
+    <string name="new_category_suggestion">New category suggestion</string>
+    <string name="add_new_work_day">Add new work day</string>
+    <string name="cant_find_a_suitable_category">Can\'t find a suitable category?</string>
+    <string name="suggest_a_new_category">Suggest a new one</string>
+    <string name="account_deactivation">Account deactivation</string>
+    <string name="event_type_deactivation_message">You are about to deactivate this event type. Are you sure?</string>
+    <string name="event_type_deactivation">Event type deactivation</string>
+    <string name="event_type_reactivation">Event type reactivation</string>
+    <string name="change_your_password">Change your password</string>
+    <string name="old_password">Old Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
 </resources>

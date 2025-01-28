@@ -30,7 +30,7 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.ResponseMessageDTO;
 import rs.ac.uns.eventplanner.team7.dto.invitation.InvitationAcceptanceDTO;
 import rs.ac.uns.eventplanner.team7.fragments.AllCategoriesFragment;
-import rs.ac.uns.eventplanner.team7.fragments.EventTypeListFragment;
+import rs.ac.uns.eventplanner.team7.fragments.AllEventTypesFragment;
 import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
 import rs.ac.uns.eventplanner.team7.fragments.UserProfileFragment;

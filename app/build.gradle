@@ -57,8 +57,9 @@ dependencies {
     implementation libs.navigation.fragment
     implementation libs.navigation.fragment.ktx
     implementation libs.navigation.ui.ktx
-    implementation libs.retrofit
     implementation libs.picasso
+    implementation libs.retrofit
+    implementation libs.swiperefreshlayout
     implementation libs.threetenabp
     runtimeOnly libs.jjwt.impl
     runtimeOnly libs.jjwt.jackson

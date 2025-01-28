@@ -31,7 +31,7 @@ import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 
-public class EventTypeListFragment extends Fragment {
+public class AllEventTypesFragment extends Fragment {
 
     private EventTypeCardAdapter adapter;
     private List<GetEventTypeResponseDTO> eventTypes;

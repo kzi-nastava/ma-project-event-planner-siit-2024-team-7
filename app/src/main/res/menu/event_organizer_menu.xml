@@ -8,4 +8,12 @@
         android:id="@+id/nav_event"
         android:title="My Events"
         android:icon="@drawable/ic_calendar"/>
+
+    <item android:id="@+id/nav_chats"
+        android:title="@string/toolbar_chats"
+        android:icon="@drawable/ic_chat_bubble"/>
+
+    <item android:id="@+id/nav_notifications"
+        android:title="@string/toolbar_notifications"
+        android:icon="@drawable/ic_notifications"/>
 </menu>

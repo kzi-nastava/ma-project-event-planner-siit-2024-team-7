@@ -1,21 +1,10 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,10 +13,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ImageButton;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -50,15 +49,15 @@ import rs.ac.uns.eventplanner.team7.adapters.ImageListAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.SelectedEventTypesAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
 import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.pricing.PricingRequestDTO;
-import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.pricing.PricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.DeleteServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.model.EventType;
 import rs.ac.uns.eventplanner.team7.model.enums.CategoryStatus;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
@@ -70,7 +69,7 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class ServiceManagementFragment extends Fragment {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-    private final GetServiceResponseDTO serviceDTO;
+    private GetServiceResponseDTO serviceDTO;
 
     private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
@@ -88,15 +87,20 @@ public class ServiceManagementFragment extends Fragment {
     private TextInputEditText nameInput, descriptionInput, priceInput, discountInput, specificsInput, reservationInput, cancellationInput, minDurationInput, maxDurationInput;
     private AutoCompleteTextView categoryDropdown, eventTypesDropdown;
     private MaterialCheckBox visibleCheckBox, availableCheckBox;
-    private MaterialButton selectImagesBtn, addWorkDayBtn, recommendCategoryBtn;
+    private MaterialButton selectImagesBtn, addWorkDayBtn, suggestCategoryBtn;
     private RecyclerView imagesView, workDaysView, selectedEventTypesView;
 
-    public ServiceManagementFragment(GetServiceResponseDTO serviceDTO) {
-        this.serviceDTO = serviceDTO;
+    public ServiceManagementFragment() {
         this.workDayList = new ArrayList<>();
         this.images = new ArrayList<>();
         this.selectedEventTypes = new ArrayList<>();
         this.categories = new ArrayList<>();
+    }
+
+    public static ServiceManagementFragment newInstance(GetServiceResponseDTO serviceDTO) {
+        ServiceManagementFragment fragment = new ServiceManagementFragment();
+        fragment.serviceDTO = serviceDTO;
+        return fragment;
     }
 
     @Override
@@ -118,7 +122,7 @@ public class ServiceManagementFragment extends Fragment {
         availableCheckBox = view.findViewById(R.id.service_available);
         selectImagesBtn = view.findViewById(R.id.button_select_images);
         addWorkDayBtn = view.findViewById(R.id.btn_open_work_day_dialog);
-        recommendCategoryBtn = view.findViewById(R.id.button_recommend_category);
+        suggestCategoryBtn = view.findViewById(R.id.button_suggest_category);
         imagesView = view.findViewById(R.id.recycler_view_images);
         workDaysView = view.findViewById(R.id.recycler_view_work_days);
         selectedEventTypesView = view.findViewById(R.id.recycler_view_selected_event_types);
@@ -129,7 +133,7 @@ public class ServiceManagementFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ImageButton back = view.findViewById(R.id.back_button);
+        MaterialButton back = view.findViewById(R.id.back_button);
         back.setOnClickListener(v -> {
             SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
             requireActivity().getSupportFragmentManager().beginTransaction()
@@ -138,9 +142,10 @@ public class ServiceManagementFragment extends Fragment {
         });
 
         fetchCategories();
-        recommendCategoryBtn.setOnClickListener(v -> {
-            CategoryRecommendationFragment fragment = new CategoryRecommendationFragment(categories, categoryDropdown);
-            fragment.show(requireActivity().getSupportFragmentManager(), "RecommendationDialog");
+        suggestCategoryBtn.setOnClickListener(v -> {
+            CategorySuggestionDialogFragment fragment =
+                    CategorySuggestionDialogFragment.newInstance(categories, categoryDropdown);
+            fragment.show(requireActivity().getSupportFragmentManager(), "SuggestionDialog");
         });
 
         imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -166,7 +171,7 @@ public class ServiceManagementFragment extends Fragment {
         workDaysView.setHasFixedSize(true);
         workDaysView.setAdapter(workDayAdapter);
         addWorkDayBtn.setOnClickListener(v -> {
-            WorkDayDialogFragment fragment = new WorkDayDialogFragment(workDayList, workDayAdapter);
+            WorkDayDialogFragment fragment = WorkDayDialogFragment.newInstance(workDayList, workDayAdapter);
             fragment.show(requireActivity().getSupportFragmentManager(), "WorkDayDialog");
         });
 
@@ -186,7 +191,7 @@ public class ServiceManagementFragment extends Fragment {
             title.setText(R.string.service_update);
             view.findViewById(R.id.categories_dropdown).setEnabled(false);
             view.findViewById(R.id.categories_dropdown_layout).setEnabled(false);
-            recommendCategoryBtn.setVisibility(View.GONE);
+            suggestCategoryBtn.setVisibility(View.GONE);
             setServiceFields();
         }
 
@@ -545,46 +550,10 @@ public class ServiceManagementFragment extends Fragment {
     }
 
     private void showDeleteConfirmationDialog() {
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Confirm Deletion")
                 .setMessage("Are you sure you want to delete this service?")
-                .setPositiveButton("Delete", (dialogInterface, which) -> {
-
-                    Call<DeleteServiceResponseDTO> call = serviceService.deleteService(JwtUtil.getAuthorizationValue(getContext()), Objects.requireNonNull(serviceDTO).getId());
-                    call.enqueue(new Callback<>() {
-                        @Override
-                        public void onResponse(@NonNull Call<DeleteServiceResponseDTO> call,
-                                               @NonNull Response<DeleteServiceResponseDTO> response) {
-                            if (response.isSuccessful() && response.body() != null) {
-                                SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
-                                Bundle args = new Bundle();
-                                args.putString("snackbar_message", "Service deleted successfully!");
-                                fragment.setArguments(args);
-                                requireActivity().getSupportFragmentManager()
-                                        .beginTransaction()
-                                        .replace(R.id.home_main_fragment_container, fragment)
-                                        .commit();
-                            } else {
-                                try {
-                                    // Show error message
-                                    String errorBody = Objects.requireNonNull(response.errorBody()).string();
-                                    JSONObject jsonObject = new JSONObject(errorBody);
-                                    String message = jsonObject.getString("message");
-                                    MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
-                                    errorMsg.setText(message);
-                                    errorMsg.setVisibility(View.VISIBLE);
-                                } catch (Exception e) {
-                                    Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<DeleteServiceResponseDTO> call, @NonNull Throwable t) {
-                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                        }
-                    });
-                })
+                .setPositiveButton("Delete", (d, which) -> deleteService())
                 .setNegativeButton("Cancel", (dialogInterface, which) -> dialogInterface.dismiss())
                 .create();
 
@@ -595,6 +564,43 @@ public class ServiceManagementFragment extends Fragment {
             }
         });
         dialog.show();
+    }
+
+    private void deleteService() {
+        Call<DeleteServiceResponseDTO> call = serviceService.deleteService(JwtUtil.getAuthorizationValue(getContext()), Objects.requireNonNull(serviceDTO).getId());
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<DeleteServiceResponseDTO> call,
+                                   @NonNull Response<DeleteServiceResponseDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
+                    Bundle args = new Bundle();
+                    args.putString("snackbar_message", "Service deleted successfully!");
+                    fragment.setArguments(args);
+                    requireActivity().getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.home_main_fragment_container, fragment)
+                            .commit();
+                } else {
+                    try {
+                        // Show error message
+                        String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String message = jsonObject.getString("message");
+                        MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                        errorMsg.setText(message);
+                        errorMsg.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<DeleteServiceResponseDTO> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
     }
 
 }

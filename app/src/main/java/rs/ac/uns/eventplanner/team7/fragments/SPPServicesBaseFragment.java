@@ -1,16 +1,15 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import rs.ac.uns.eventplanner.team7.R;
 
@@ -30,9 +29,9 @@ public class SPPServicesBaseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MaterialButton newServiceButton = view.findViewById(R.id.new_service_button);
+        FloatingActionButton newServiceButton = view.findViewById(R.id.new_service_button);
         newServiceButton.setOnClickListener(v -> {
-            ServiceManagementFragment fragment = new ServiceManagementFragment(null);
+            ServiceManagementFragment fragment = new ServiceManagementFragment();
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.home_main_fragment_container, fragment)
                     .addToBackStack(null)

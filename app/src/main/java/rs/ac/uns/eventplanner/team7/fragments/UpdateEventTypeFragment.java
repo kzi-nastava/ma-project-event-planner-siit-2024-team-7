@@ -82,7 +82,7 @@ public class UpdateEventTypeFragment extends Fragment {
 
         ImageView back = view.findViewById(R.id.back_button);
         back.setOnClickListener(v -> requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_main_fragment_container, new EventTypeListFragment())
+                .replace(R.id.home_main_fragment_container, new AllEventTypesFragment())
                 .commit());
 
         return view;
@@ -174,7 +174,8 @@ public class UpdateEventTypeFragment extends Fragment {
             deleteButton.setBackgroundColor(getResources().getColor(R.color.blue_300));
 
             MaterialAlertDialogBuilder builder = createMaterialDialog(
-                    R.string.reactivate_message,
+                    R.string.event_type_reactivation,
+                    R.string.reactivate_event_type_message,
                     (dialog, which) -> {
                         update(!isActive);
                         dialog.dismiss();
@@ -194,7 +195,8 @@ public class UpdateEventTypeFragment extends Fragment {
         Call<Void> call = eventTypeService.delete(JwtUtil.getAuthorizationValue(requireContext()), eventTypeId);
 
         MaterialAlertDialogBuilder builder = createMaterialDialog(
-                R.string.deactivation_confirmation,
+                R.string.event_type_deactivation,
+                R.string.event_type_deactivation_message,
                 (dialog, which) -> call.enqueue(deleteCallback(dialog))
         );
 
@@ -220,15 +222,16 @@ public class UpdateEventTypeFragment extends Fragment {
         };
     }
 
-    private MaterialAlertDialogBuilder createMaterialDialog(int messageResId, android.content.DialogInterface.OnClickListener positiveAction) {
+    private MaterialAlertDialogBuilder createMaterialDialog(int titleResId, int messageResId, android.content.DialogInterface.OnClickListener positiveAction) {
         return new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(titleResId)
                 .setMessage(messageResId)
                 .setPositiveButton(R.string.yes, positiveAction)
                 .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
     }
 
     private void navigateToEventTypeList(String msg) {
-        Fragment fragment = new EventTypeListFragment();
+        Fragment fragment = new AllEventTypesFragment();
         Bundle args = new Bundle();
         args.putString("snackbar_message", msg);
         fragment.setArguments(args);

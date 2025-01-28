@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".fragments.EventTypeListFragment">
+    tools:context=".fragments.AllEventTypesFragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
@@ -45,7 +45,8 @@
         android:layout_weight="1"
         android:layout_gravity="center_horizontal"
         android:clipToPadding="false"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        tools:listitem="@layout/normal_card"/>
 
     </LinearLayout>
 

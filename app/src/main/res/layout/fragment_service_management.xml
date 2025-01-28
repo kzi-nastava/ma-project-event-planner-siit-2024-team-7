@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.ServiceManagementFragment"
+    android:background="@color/background"
     android:id="@+id/service_management_fragment">
 
     <LinearLayout
@@ -14,8 +15,9 @@
         android:gravity="center"
         android:padding="16dp">
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/back_button"
+            style="?attr/materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/rounded_arrow_back_24"
@@ -26,9 +28,8 @@
             android:id="@+id/welcomeMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Service creation"
+            android:text="@string/service_creation"
             android:textSize="24sp"
-            android:textColor="@color/black"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp" />
 
@@ -37,7 +38,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="8dp"
-            android:paddingHorizontal="20dp"
             app:endIconMode="dropdown_menu">
 
             <AutoCompleteTextView
@@ -52,13 +52,29 @@
                 android:hint="@string/category" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_recommend_category"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="start"
-            android:text="Recommend category" />
+            android:orientation="horizontal">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingHorizontal="16dp"
+                android:layout_gravity="center"
+                android:textSize="16sp"
+                android:text="@string/cant_find_a_suitable_category"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_suggest_category"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="8dp"
+                android:text="@string/suggest_a_new_category" />
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/service_name_layout"
@@ -71,7 +87,7 @@
                 android:id="@+id/service_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -85,7 +101,7 @@
                 android:id="@+id/service_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine" />
+                android:inputType="textCapSentences|textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -131,23 +147,42 @@
                 android:id="@+id/service_specifics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine" />
+                android:inputType="textCapSentences|textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_open_work_day_dialog"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginTop="8dp"
-            android:text="Add Work Day" />
+            android:orientation="horizontal">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingHorizontal="16dp"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:text="Work days"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_open_work_day_dialog"
+                style="?attr/materialIconButtonFilledStyle"
+                app:icon="@drawable/ic_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_work_days"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="vertical"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            tools:listitem="@layout/horizontal_button_card"/>
 
         <LinearLayout
             android:layout_width="match_parent"

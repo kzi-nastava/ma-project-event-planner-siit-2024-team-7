@@ -37,7 +37,7 @@
                 android:id="@+id/category_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -51,7 +51,7 @@
                 android:id="@+id/category_desc"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:inputType="text" />
+                android:inputType="textCapSentences|textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textview.MaterialTextView
@@ -73,6 +73,7 @@
                 android:id="@+id/save_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.5"
                 android:layout_margin="10dp"
                 android:text="Save category"/>
 
@@ -81,6 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
+                android:layout_weight="0.5"
                 android:text="Accept category"/>
 
             <com.google.android.material.button.MaterialButton
@@ -88,6 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
+                android:layout_weight="0.5"
                 android:backgroundTint="@color/red_delete"
                 android:text="Delete category"/>
 

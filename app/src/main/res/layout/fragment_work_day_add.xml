@@ -1,30 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    tools:context=".fragments.WorkDayDialogFragment"
+    android:padding="20dp"
+    android:orientation="vertical">
 
-    <Spinner
-        android:id="@+id/spinner_day_of_week"
+
+    <TextView
+        android:id="@+id/dialog_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:autofillHints="Select Day of Week" />
+        android:paddingBottom="8dp"
+        android:text="@string/add_new_work_day"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
 
-    <Spinner
-        android:id="@+id/spinner_start_time"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:autofillHints="Start Time" />
+        android:layout_marginVertical="8dp"
+        app:endIconMode="dropdown_menu">
 
-    <Spinner
-        android:id="@+id/spinner_end_time"
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/dropdown_day_of_week"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="18sp"
+            android:paddingEnd="5sp"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"
+            android:hint="Weekday" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:autofillHints="End Time" />
+        android:layout_marginVertical="8dp"
+        app:endIconMode="dropdown_menu">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/dropdown_start_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="18sp"
+            android:paddingEnd="5sp"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"
+            android:hint="Start Time" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        app:endIconMode="dropdown_menu">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/dropdown_end_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="18sp"
+            android:paddingEnd="5sp"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"
+            android:hint="End Time" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,15 +84,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="Submit"
-            android:textColor="@color/white" />
+            android:layout_weight="0.35"
+            style="?attr/borderlessButtonStyle"
+            android:text="@string/submit" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_cancel_work_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Cancel"
-            android:textColor="@color/white" />
+            android:layout_weight="0.35"
+            style="?attr/borderlessButtonStyle"
+            android:text="@string/cancel" />
     </LinearLayout>
+
 </LinearLayout>

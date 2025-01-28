@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.AllCategoriesFragment"
     android:orientation="vertical"
     android:padding="16dp">
@@ -40,25 +41,28 @@
             android:gravity="center">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/recommended_categories"
+                android:id="@+id/suggested_categories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.5"
                 android:layout_margin="8dp"
-                android:text="Recommended\ncategories"/>
+                android:text="View Suggested" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/active_categories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.5"
                 android:layout_margin="8dp"
-                android:text="Active\ncategories"/>
+                android:text="View Active"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/new_category"
+                style="?attr/materialIconButtonFilledStyle"
+                app:icon="@drawable/ic_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="New\ncategory"/>
+                android:layout_margin="8dp"/>
 
         </LinearLayout>
 
@@ -70,8 +74,9 @@
 
             <SearchView
                 android:id="@+id/categories_search_view"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:iconifiedByDefault="false"
                 android:inputType="text"
                 android:background="@drawable/searchview_border"
@@ -79,12 +84,13 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp" />
 
-            <ImageView
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/reset_category_search"
+                style="?attr/materialIconButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/reset"
-                android:src="@drawable/baseline_cancel_24"
+                app:icon="@drawable/baseline_cancel_24"
                 android:layout_gravity="center"
                 android:layout_marginStart="16dp"
                 />

@@ -1,20 +1,18 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.SearchView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
@@ -57,12 +55,12 @@ public class AllCategoriesFragment extends Fragment {
 
         LinearLayout content = view.findViewById(R.id.content_view);
         MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
-        MaterialButton newCategory = view.findViewById(R.id.new_category);
-        MaterialButton activeCategories = view.findViewById(R.id.active_categories);
-        MaterialButton recommendedCategories = view.findViewById(R.id.recommended_categories);
+        MaterialButton newCategoryBtn = view.findViewById(R.id.new_category);
+        MaterialButton activeCategoriesBtn = view.findViewById(R.id.active_categories);
+        MaterialButton suggestedCategoriesBtn = view.findViewById(R.id.suggested_categories);
         MaterialTextView welcomeMsg = view.findViewById(R.id.categories_welcome_msg);
 
-        newCategory.setOnClickListener(v -> {
+        newCategoryBtn.setOnClickListener(v -> {
             CategoryManagementFragment fragment = new CategoryManagementFragment(null);
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.home_main_fragment_container, fragment)
@@ -71,10 +69,10 @@ public class AllCategoriesFragment extends Fragment {
         });
 
         welcomeMsg.setText(R.string.all_active_categories);
-        activeCategories.setVisibility(View.GONE);
-        activeCategories.setOnClickListener(v -> {
-            recommendedCategories.setVisibility(View.VISIBLE);
-            activeCategories.setVisibility(View.GONE);
+        activeCategoriesBtn.setVisibility(View.GONE);
+        activeCategoriesBtn.setOnClickListener(v -> {
+            suggestedCategoriesBtn.setVisibility(View.VISIBLE);
+            activeCategoriesBtn.setVisibility(View.GONE);
             isActive = true;
 
             welcomeMsg.setText(R.string.all_active_categories);
@@ -84,9 +82,9 @@ public class AllCategoriesFragment extends Fragment {
             fetchActiveCategories(view);
 
         });
-        recommendedCategories.setOnClickListener(v -> {
-            activeCategories.setVisibility(View.VISIBLE);
-            recommendedCategories.setVisibility(View.GONE);
+        suggestedCategoriesBtn.setOnClickListener(v -> {
+            activeCategoriesBtn.setVisibility(View.VISIBLE);
+            suggestedCategoriesBtn.setVisibility(View.GONE);
             isActive = false;
 
             welcomeMsg.setText(R.string.all_pending_categories);
@@ -183,7 +181,7 @@ public class AllCategoriesFragment extends Fragment {
             }
         });
 
-        ImageView reset = view.findViewById(R.id.reset_category_search);
+        MaterialButton reset = view.findViewById(R.id.reset_category_search);
         reset.setOnClickListener(v -> {
             lastSearch = "";
             searchView.setQuery("", false);

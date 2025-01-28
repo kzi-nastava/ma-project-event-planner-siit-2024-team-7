@@ -126,7 +126,7 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
             public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
                                    @NonNull Response<GetServiceResponseDTO> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ServiceManagementFragment fragment = new ServiceManagementFragment(response.body());
+                    ServiceManagementFragment fragment = ServiceManagementFragment.newInstance(response.body());
                     requireActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.home_main_fragment_container, fragment)
                             .addToBackStack(null)
@@ -161,6 +161,7 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
             @Override
             public void onResponse(@NonNull Call<Page<BasicItemDTO>> call,
                                    @NonNull Response<Page<BasicItemDTO>> response) {
+                if (!isAdded()) return;
                 if (!isUpdate) viewAdapter.clear();
                 if (!response.isSuccessful()) {
                     messageView.setVisibility(View.VISIBLE);

@@ -45,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private UserRole role;
     private BottomNavigationView bottomNavigationView;
+    private FragmentContainerView fragmentContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class HomeActivity extends AppCompatActivity {
         role = UserRole.valueOf(JwtUtil.getRole(this));
         setContentView(role == UserRole.ADMIN ? R.layout.activity_home_admin : R.layout.activity_home);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        fragmentContainer = findViewById(R.id.home_main_fragment_container);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -117,7 +119,7 @@ public class HomeActivity extends AppCompatActivity {
                 finish();
                 return true;
             }
-            if (itemId == R.id.nav_my_account) {
+            if (itemId == R.id.nav_my_account && (!(fragmentContainer.getFragment() instanceof UserProfileFragment))) {
                 loadFragment(new UserProfileFragment());
                 toolbar.setTitle(R.string.profile);
                 return true;
@@ -163,7 +165,6 @@ public class HomeActivity extends AppCompatActivity {
             bottomNavigationView.inflateMenu(R.menu.basic_menu);
         }
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            FragmentContainerView fragmentContainer = findViewById(R.id.home_main_fragment_container);
             Fragment selectedFragment = null, displayedFragment = fragmentContainer.getFragment();
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home && (!(displayedFragment instanceof HomeFragment))) {

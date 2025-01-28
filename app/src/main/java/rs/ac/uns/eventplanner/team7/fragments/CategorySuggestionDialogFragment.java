@@ -1,16 +1,14 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -31,35 +29,42 @@ import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class CategoryRecommendationFragment extends DialogFragment {
-    private final List<CategoryResponseDTO> categories;
-    private final AutoCompleteTextView categoryDropdown;
+public class CategorySuggestionDialogFragment extends MaterialDialogFragment {
+    private List<CategoryResponseDTO> categories;
+    private AutoCompleteTextView categoryDropdown;
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
-    public CategoryRecommendationFragment(List<CategoryResponseDTO> categories,
-                                          AutoCompleteTextView categoryDropdown) {
-        this.categories = categories;
-        this.categoryDropdown = categoryDropdown;
+    public CategorySuggestionDialogFragment() {
+    }
+
+    public static CategorySuggestionDialogFragment newInstance(List<CategoryResponseDTO> categories,
+                                                               AutoCompleteTextView categoryDropdown) {
+        CategorySuggestionDialogFragment fragment = new CategorySuggestionDialogFragment();
+        fragment.categories = categories;
+        fragment.categoryDropdown = categoryDropdown;
+        return fragment;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_category_recommendation, container, false);
+        return inflater.inflate(R.layout.fragment_category_suggestion, container, false);
+    }
 
-        TextInputEditText nameInput = view.findViewById(R.id.recommended_category_name);
-        TextInputEditText descriptionInput = view.findViewById(R.id.recommended_category_description);
-
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        TextInputEditText nameInput = view.findViewById(R.id.suggested_category_name);
+        TextInputEditText descriptionInput = view.findViewById(R.id.suggested_category_description);
         MaterialButton submitButton = view.findViewById(R.id.button_submit);
         submitButton.setOnClickListener(v -> {
             String name = Objects.requireNonNull(nameInput.getText()).toString();
             String description = Objects.requireNonNull(descriptionInput.getText()).toString();
 
             if (!name.isEmpty() && !description.isEmpty()) {
-                categoryService.createCategory(
-                        JwtUtil.getAuthorizationValue(getContext()),
-                        new CreateCategoryRequestDTO(name, description))
+                categoryService.createCategory(JwtUtil.getAuthorizationValue(getContext()),
+                                new CreateCategoryRequestDTO(name, description))
                         .enqueue(new Callback<>() {
                             @Override
                             public void onResponse(@NonNull Call<CategoryResponseDTO> call,
@@ -93,10 +98,6 @@ public class CategoryRecommendationFragment extends DialogFragment {
         });
 
         MaterialButton cancelButton = view.findViewById(R.id.button_cancel);
-        cancelButton.setOnClickListener(v -> {
-            dismiss();
-        });
-
-        return view;
+        cancelButton.setOnClickListener(v -> dismiss());
     }
 }

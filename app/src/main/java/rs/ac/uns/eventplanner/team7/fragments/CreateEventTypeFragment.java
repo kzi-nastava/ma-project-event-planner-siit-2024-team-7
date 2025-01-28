@@ -79,7 +79,7 @@ public class CreateEventTypeFragment extends Fragment {
 
         ImageView back = view.findViewById(R.id.back_button);
         back.setOnClickListener(v -> requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_main_fragment_container, new EventTypeListFragment())
+                .replace(R.id.home_main_fragment_container, new AllEventTypesFragment())
                 .commit());
 
         return view;
@@ -108,7 +108,7 @@ public class CreateEventTypeFragment extends Fragment {
             public void onResponse(@NonNull Call<CreateEventTypeResponseDTO> call, @NonNull Response<CreateEventTypeResponseDTO> response) {
                 if (response.isSuccessful()) {
                     // Navigate back to the event type list
-                    Fragment fragment = new EventTypeListFragment();
+                    Fragment fragment = new AllEventTypesFragment();
                     Bundle args = new Bundle();
                     args.putString("snackbar_message", "Event type created successfully!");
                     fragment.setArguments(args);

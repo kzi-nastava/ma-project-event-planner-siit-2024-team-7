@@ -1,6 +1,5 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,8 +9,9 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
 import org.json.JSONObject;
@@ -26,7 +26,7 @@ import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class ConfirmDeactivationFragment extends DialogFragment {
+public class ConfirmDeactivationFragment extends MaterialDialogFragment {
 
     private static final String ARG_ROLE = "user_role";
 
@@ -53,7 +53,7 @@ public class ConfirmDeactivationFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_deactivation_confirmation, null);
         builder.setView(dialogView)
                 .setPositiveButton(R.string.yes, null) // Set to null for custom behavior

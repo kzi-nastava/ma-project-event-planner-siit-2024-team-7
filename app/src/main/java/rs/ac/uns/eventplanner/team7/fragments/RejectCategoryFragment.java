@@ -2,16 +2,14 @@ package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -35,7 +33,7 @@ import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class RejectCategoryFragment extends DialogFragment {
+public class RejectCategoryFragment extends MaterialDialogFragment {
     private final Context context;
     private final CategoryResponseDTO categoryDTO;
 

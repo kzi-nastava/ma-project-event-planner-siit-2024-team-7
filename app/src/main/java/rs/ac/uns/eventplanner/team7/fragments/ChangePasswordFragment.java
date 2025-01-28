@@ -1,6 +1,5 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,8 +8,9 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -31,7 +31,7 @@ import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class ChangePasswordFragment extends DialogFragment {
+public class ChangePasswordFragment extends MaterialDialogFragment {
 
     private static final String ARG_ROLE = "user_role";
 
@@ -58,7 +58,7 @@ public class ChangePasswordFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_change_password, null);
 
         TextInputEditText etOldPassword = dialogView.findViewById(R.id.et_old_password);

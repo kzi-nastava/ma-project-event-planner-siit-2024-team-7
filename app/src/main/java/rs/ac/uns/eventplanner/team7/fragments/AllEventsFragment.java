@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
@@ -72,6 +73,13 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
         super.onViewCreated(view, savedInstanceState);
 
         latestFilters.put("city", JwtUtil.getCity(requireContext()));
+
+        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.events_swipe_refresh);
+        refreshLayout.setOnRefreshListener(() -> {
+            refreshLayout.setRefreshing(false);
+            setContent(false);
+        });
+
         setContent(false);
 
         setupButtonListeners(view);

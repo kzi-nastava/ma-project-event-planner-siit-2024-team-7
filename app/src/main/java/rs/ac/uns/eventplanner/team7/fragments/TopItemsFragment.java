@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.textview.MaterialTextView;
 
@@ -29,11 +31,12 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class TopItemsFragment extends Fragment implements CardClickListener {
     private MaterialTextView messageView;
-    private RecyclerView topItemsView;
+    private CardRecyclerViewAdapter<DetailedItemDTO> viewAdapter;
     private final ProductService productService = ClientUtils.injectService(ProductService.class);
     private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
     private final List<DetailedItemDTO> serviceResponses = new ArrayList<>();
     private final AtomicInteger responseCount = new AtomicInteger(0);
+    private String userCity;
 
     public TopItemsFragment() {
         // Required empty public constructor
@@ -43,18 +46,31 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top_items, container, false);
-        setupView(view);
+        userCity = JwtUtil.getCity(requireContext());
+        messageView = view.findViewById(R.id.top_items_message_view);
         return view;
     }
 
-    private void setupView(View view) {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        String userCity = JwtUtil.getCity(requireContext());
-        topItemsView = view.findViewById(R.id.top_items_recycler_view);
-        messageView = view.findViewById(R.id.top_items_message_view);
+        RecyclerView topItemsView = view.findViewById(R.id.top_items_recycler_view);
+        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(),
+                new ArrayList<>(), true, this);
+        topItemsView.setAdapter(viewAdapter);
 
         handleServiceResponse(productService.findTopFive(userCity));
         handleServiceResponse(serviceService.findTopFive(userCity));
+
+        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.items_swipe_refresh);
+        refreshLayout.setOnRefreshListener(() -> {
+            refreshLayout.setRefreshing(false);
+            messageView.setVisibility(View.VISIBLE);
+            messageView.setText(R.string.fetching_data);
+            handleServiceResponse(productService.findTopFive(userCity));
+            handleServiceResponse(serviceService.findTopFive(userCity));
+        });
     }
 
     private void handleServiceResponse(Call<List<DetailedItemDTO>> serviceCall) {
@@ -64,7 +80,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
                                    @NonNull Response<List<DetailedItemDTO>> response) {
 
                 if (!response.isSuccessful()) {
-                    tryToSetAdapter();
+                    joinResponses();
                     return;
                 }
 
@@ -75,25 +91,28 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
                         serviceResponses.addAll(items);
                     }
                 }
-                tryToSetAdapter();
+                joinResponses();
             }
 
             @Override
             public void onFailure(@NonNull Call<List<DetailedItemDTO>> call, @NonNull Throwable t) {
-                tryToSetAdapter();
+                joinResponses();
             }
         });
     }
 
-    private void tryToSetAdapter() {
+    private void joinResponses() {
         if (responseCount.incrementAndGet() == 2) {
             if (serviceResponses.isEmpty() || !isAdded()) {
+                viewAdapter.clear();
                 messageView.setText(R.string.no_items_to_show);
                 return;
             }
+            responseCount.set(0);
             messageView.setVisibility(View.GONE);
-            topItemsView.setAdapter(new CardRecyclerViewAdapter<>(requireContext(),
-                    serviceResponses, true, TopItemsFragment.this));
+            viewAdapter.clear();
+            viewAdapter.addAll(serviceResponses);
+            serviceResponses.clear();
         }
     }
 

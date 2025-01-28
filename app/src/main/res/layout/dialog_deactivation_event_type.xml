@@ -5,21 +5,28 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/event_type_deactivation"
+        android:layout_gravity="start"
+        android:layout_marginBottom="15dp"
+        android:textSize="20sp"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/event_type_deactivation_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="You are about to deactivate this event type. Are you sure?"
-        android:textSize="32sp"/>
+        android:text="@string/event_type_deactivation_message"
+        android:textSize="16sp"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/deactivation_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:textColor="@color/red_delete"
         android:visibility="gone"/>
 

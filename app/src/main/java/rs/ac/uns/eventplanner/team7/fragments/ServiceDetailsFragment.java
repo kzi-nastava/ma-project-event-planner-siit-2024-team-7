@@ -5,8 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
@@ -27,8 +23,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.FavouriteItemResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.EventType;
 import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
@@ -39,7 +37,7 @@ public class ServiceDetailsFragment extends Fragment {
 
     ImageView favouriteStar;
     MaterialTextView nameView, descriptionView, specificsView, priceView, discountView, minDurationView, maxDurationView,
-            reservationDeadlineView, cancellationDeadlineView, categoryView;
+            reservationDeadlineView, cancellationDeadlineView, categoryView, eventTypesView, workDaysView;
 
     public ServiceDetailsFragment(GetServiceResponseDTO serviceDTO) {
         this.serviceDTO = serviceDTO;
@@ -63,6 +61,8 @@ public class ServiceDetailsFragment extends Fragment {
         reservationDeadlineView = view.findViewById(R.id.service_details_reservation);
         cancellationDeadlineView = view.findViewById(R.id.service_details_cancellation);
         categoryView = view.findViewById(R.id.service_details_category);
+        eventTypesView = view.findViewById(R.id.service_details_event_types);
+        workDaysView = view.findViewById(R.id.service_details_availability);
 
         fillDetails();
         return view;
@@ -112,5 +112,31 @@ public class ServiceDetailsFragment extends Fragment {
         reservationDeadlineView.setText(String.format("%s d", serviceDTO.getReservationDeadlineInDays()));
         cancellationDeadlineView.setText(String.format("%s d", serviceDTO.getCancellationDeadlineInDays()));
         categoryView.setText(serviceDTO.getCategory().getName());
+
+        if (!serviceDTO.getAppliesTo().isEmpty()) {
+            StringBuilder eventTypesStr = new StringBuilder();
+            for (EventType eventType : serviceDTO.getAppliesTo()) {
+                eventTypesStr.append(eventType.getName()).append('\n');
+            }
+            eventTypesStr.deleteCharAt(eventTypesStr.length()-1);
+            eventTypesView.setText(eventTypesStr.toString());
+        }
+        else {
+            eventTypesView.setText("Currently no event types!");
+        }
+
+        if (!serviceDTO.getWorkDaysDTOs().isEmpty()) {
+            StringBuilder workDaysStr = new StringBuilder();
+            for (WorkDayDTO workDayDTO : serviceDTO.getWorkDaysDTOs()) {
+                workDaysStr.append(workDayDTO.getDay()).append(": ")
+                        .append(workDayDTO.getWorkTimeStart()).append(" - ")
+                        .append(workDayDTO.getWorkTimeEnd()).append('\n');
+            }
+            workDaysStr.deleteCharAt(workDaysStr.length()-1);
+            workDaysView.setText(workDaysStr.toString());
+        }
+        else {
+            workDaysView.setText("Currently unavailable!");
+        }
     }
 }

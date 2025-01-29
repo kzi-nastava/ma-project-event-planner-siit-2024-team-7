@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
@@ -31,6 +32,7 @@ import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.FavouriteItemResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.EventType;
+import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
@@ -44,6 +46,8 @@ public class ServiceDetailsFragment extends Fragment {
             reservationDeadlineView, cancellationDeadlineView, categoryView, eventTypesView, workDaysView, noImagesView;
     RecyclerView imagesView;
     ImageAdapter imageAdapter;
+
+    MaterialButton reserveButton, cancelButton, viewProviderButton, chatWithProviderButton;
 
     public ServiceDetailsFragment(GetServiceResponseDTO serviceDTO) {
         this.serviceDTO = serviceDTO;
@@ -71,6 +75,11 @@ public class ServiceDetailsFragment extends Fragment {
         workDaysView = view.findViewById(R.id.service_details_availability);
         imagesView = view.findViewById(R.id.service_details_images);
         noImagesView = view.findViewById(R.id.service_details_no_images);
+
+        reserveButton = view.findViewById(R.id.reserve_button);
+        cancelButton = view.findViewById(R.id.cancel_reservation_button);
+        viewProviderButton = view.findViewById(R.id.view_provider_button);
+        chatWithProviderButton = view.findViewById(R.id.chat_w_provider_button);
 
         fillDetails();
         return view;
@@ -107,6 +116,16 @@ public class ServiceDetailsFragment extends Fragment {
                         }
                     });
         });
+
+        if (!Objects.equals(JwtUtil.getRole(requireContext()), UserRole.EVENT_ORG.toString()) || serviceDTO.isReserved() || !serviceDTO.isAvailable())
+            reserveButton.setVisibility(View.GONE);
+        if (!Objects.equals(JwtUtil.getRole(requireContext()), UserRole.EVENT_ORG.toString()) || !serviceDTO.isReserved() || !serviceDTO.isAvailable())
+            cancelButton.setVisibility(View.GONE);
+
+        if (Objects.equals(JwtUtil.getRole(requireContext()), UserRole.SPP.toString())) {
+            viewProviderButton.setVisibility(View.GONE);
+            chatWithProviderButton.setVisibility(View.GONE);
+        }
     }
 
     private void fillDetails() {

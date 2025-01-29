@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,12 +18,14 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.FavouriteItemRequestDTO;
@@ -37,7 +41,9 @@ public class ServiceDetailsFragment extends Fragment {
 
     ImageView favouriteStar;
     MaterialTextView nameView, descriptionView, specificsView, priceView, discountView, minDurationView, maxDurationView,
-            reservationDeadlineView, cancellationDeadlineView, categoryView, eventTypesView, workDaysView;
+            reservationDeadlineView, cancellationDeadlineView, categoryView, eventTypesView, workDaysView, noImagesView;
+    RecyclerView imagesView;
+    ImageAdapter imageAdapter;
 
     public ServiceDetailsFragment(GetServiceResponseDTO serviceDTO) {
         this.serviceDTO = serviceDTO;
@@ -63,6 +69,8 @@ public class ServiceDetailsFragment extends Fragment {
         categoryView = view.findViewById(R.id.service_details_category);
         eventTypesView = view.findViewById(R.id.service_details_event_types);
         workDaysView = view.findViewById(R.id.service_details_availability);
+        imagesView = view.findViewById(R.id.service_details_images);
+        noImagesView = view.findViewById(R.id.service_details_no_images);
 
         fillDetails();
         return view;
@@ -137,6 +145,17 @@ public class ServiceDetailsFragment extends Fragment {
         }
         else {
             workDaysView.setText("Currently unavailable!");
+        }
+
+        if (!serviceDTO.getImages().isEmpty()) {
+            imageAdapter = new ImageAdapter(requireContext(), new ArrayList<>(serviceDTO.getImages()));
+            LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+            imagesView.setLayoutManager(layoutManager);
+            imagesView.setAdapter(imageAdapter);
+        }
+        else {
+            noImagesView.setVisibility(View.VISIBLE);
+            imagesView.setVisibility(View.GONE);
         }
     }
 }

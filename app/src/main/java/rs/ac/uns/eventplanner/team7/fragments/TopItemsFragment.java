@@ -25,6 +25,7 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.item.DetailedItemDTO;
+import rs.ac.uns.eventplanner.team7.dto.product.GetProductResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.ProductService;
@@ -133,6 +134,39 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
 
                 @Override
                 public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
+                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                }
+            });
+        }
+        else {
+            productService.getProduct(JwtUtil.getAuthorizationValue(requireContext()), entityId).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<GetProductResponseDTO> call,
+                                       @NonNull Response<GetProductResponseDTO> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        ProductDetailsFragment fragment = new ProductDetailsFragment(response.body());
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.home_main_fragment_container, fragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                    else {
+                        try {
+                            // Show error message
+                            String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                            JSONObject jsonObject = new JSONObject(errorBody);
+                            String message = jsonObject.getString("message");
+                            MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                            errorMsg.setText(message);
+                            errorMsg.setVisibility(View.VISIBLE);
+                        } catch (Exception e) {
+                            Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<GetProductResponseDTO> call, @NonNull Throwable t) {
                     Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                 }
             });

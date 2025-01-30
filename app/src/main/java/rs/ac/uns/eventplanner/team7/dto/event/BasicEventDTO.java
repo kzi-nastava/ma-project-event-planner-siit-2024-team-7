@@ -7,13 +7,14 @@ import java.time.format.FormatStyle;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.Event;
+import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
+import rs.ac.uns.eventplanner.team7.model.interfaces.CardWithImage;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class BasicEventDTO implements BasicCard {
+public class BasicEventDTO implements BasicCard, CardWithImage {
 
     protected Integer id;
     protected String name;
@@ -25,11 +26,6 @@ public class BasicEventDTO implements BasicCard {
         name = event.getName();
         coverImage = event.getCoverImage();
         date = event.getDate();
-    }
-
-    @Override
-    public String getType() {
-        return "events";
     }
 
     @Override

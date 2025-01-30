@@ -3,6 +3,7 @@ package rs.ac.uns.eventplanner.team7.fragments.services;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -13,15 +14,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
@@ -45,11 +48,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.ImageListAdapter;
-import rs.ac.uns.eventplanner.team7.adapters.SelectedEventTypesAdapter;
-import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.pricing.PricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceResponseDTO;
@@ -58,15 +58,18 @@ import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
+import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.model.EventType;
 import rs.ac.uns.eventplanner.team7.model.enums.CategoryStatus;
+import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
+import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class ServiceManagementFragment extends Fragment {
+public class ServiceManagementFragment extends Fragment implements CardClickListener {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
     private GetServiceResponseDTO serviceDTO;
@@ -75,14 +78,14 @@ public class ServiceManagementFragment extends Fragment {
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
     private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
 
-    private WorkDayAdapter workDayAdapter;
-    private SelectedEventTypesAdapter selectedEventTypesAdapter;
+    private CardRecyclerViewAdapter<WorkDayDTO> workDayAdapter;
+    private CardRecyclerViewAdapter<EventType> selectedEventTypesAdapter;
     private ImageListAdapter imageListAdapter;
 
-    private final List<WorkDayDTO> workDayList;
+    private final List<WorkDayDTO> workDays;
     private final List<String> images;
-    private final List<GetEventTypeResponseDTO> selectedEventTypes;
-    private List<CategoryResponseDTO> categories;
+    private final List<EventType> selectedEventTypes;
+    private List<Category> categories;
 
     private TextInputEditText nameInput, descriptionInput, priceInput, discountInput, specificsInput, reservationInput, cancellationInput, minDurationInput, maxDurationInput;
     private AutoCompleteTextView categoryDropdown, eventTypesDropdown;
@@ -91,16 +94,18 @@ public class ServiceManagementFragment extends Fragment {
     private RecyclerView imagesView, workDaysView, selectedEventTypesView;
 
     public ServiceManagementFragment() {
-        this.workDayList = new ArrayList<>();
+        this.workDays = new ArrayList<>();
         this.images = new ArrayList<>();
         this.selectedEventTypes = new ArrayList<>();
         this.categories = new ArrayList<>();
     }
 
-    public static ServiceManagementFragment newInstance(GetServiceResponseDTO serviceDTO) {
-        ServiceManagementFragment fragment = new ServiceManagementFragment();
-        fragment.serviceDTO = serviceDTO;
-        return fragment;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            serviceDTO = getArguments().getParcelable("serviceDTO", GetServiceResponseDTO.class);
+        }
     }
 
     @Override
@@ -133,14 +138,6 @@ public class ServiceManagementFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MaterialButton back = view.findViewById(R.id.back_button);
-        back.setOnClickListener(v -> {
-            SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.home_main_fragment_container, fragment)
-                    .commit();
-        });
-
         fetchCategories();
         suggestCategoryBtn.setOnClickListener(v -> {
             CategorySuggestionDialogFragment fragment =
@@ -158,29 +155,25 @@ public class ServiceManagementFragment extends Fragment {
             }
         });
         imageListAdapter = new ImageListAdapter(getContext(), images);
-        imagesView.setLayoutManager(new LinearLayoutManager(getContext()));
-        imagesView.setHasFixedSize(true);
         imagesView.setAdapter(imageListAdapter);
+
         selectImagesBtn.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             imagePickerLauncher.launch(intent);
         });
+        Drawable icon = AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_cancel_24);
 
-        workDayAdapter = new WorkDayAdapter(getContext(), workDayList);
-        workDaysView.setLayoutManager(new LinearLayoutManager(getContext()));
-        workDaysView.setHasFixedSize(true);
+        workDayAdapter = new CardRecyclerViewAdapter<>(requireContext(), workDays, this, icon);
         workDaysView.setAdapter(workDayAdapter);
         addWorkDayBtn.setOnClickListener(v -> {
-            WorkDayDialogFragment fragment = WorkDayDialogFragment.newInstance(workDayList, workDayAdapter);
+            WorkDayDialogFragment fragment = WorkDayDialogFragment.newInstance(workDays, workDayAdapter);
             fragment.show(requireActivity().getSupportFragmentManager(), "WorkDayDialog");
         });
 
-        fetchEventTypes();
-        selectedEventTypesView.setLayoutManager(new LinearLayoutManager(getContext()));
-        selectedEventTypesView.setHasFixedSize(true);
-        selectedEventTypesAdapter = new SelectedEventTypesAdapter(getContext(), selectedEventTypes);
+        selectedEventTypesAdapter = new CardRecyclerViewAdapter<>(requireContext(), selectedEventTypes, this, icon);
         selectedEventTypesView.setAdapter(selectedEventTypesAdapter);
 
+        fetchEventTypes();
 
         MaterialTextView title = view.findViewById(R.id.welcomeMessage);
         if (serviceDTO == null) {
@@ -191,6 +184,7 @@ public class ServiceManagementFragment extends Fragment {
             title.setText(R.string.service_update);
             view.findViewById(R.id.categories_dropdown).setEnabled(false);
             view.findViewById(R.id.categories_dropdown_layout).setEnabled(false);
+            view.findViewById(R.id.cant_find_category_text).setVisibility(View.GONE);
             suggestCategoryBtn.setVisibility(View.GONE);
             setServiceFields();
         }
@@ -206,22 +200,14 @@ public class ServiceManagementFragment extends Fragment {
                     snackbar.show();
                     return;
                 }
-                Call<CreateServiceResponseDTO> call = serviceService.createService(
-                        JwtUtil.getAuthorizationValue(requireContext()),
-                        dto
-                );
-                call.enqueue(new Callback<>() {
+
+                serviceService.createService(JwtUtil.getAuthorizationValue(requireContext()), dto)
+                        .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<CreateServiceResponseDTO> call, @NonNull Response<CreateServiceResponseDTO> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
-                            SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
-                            Bundle args = new Bundle();
-                            args.putString("snackbar_message", "Service created successfully!");
-                            fragment.setArguments(args);
-                            requireActivity().getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.home_main_fragment_container, fragment)
-                                    .commit();
+                            returnToBaseFragment("Service created successfully!");
                         } else {
                             try {
                                 // Show error message
@@ -252,23 +238,13 @@ public class ServiceManagementFragment extends Fragment {
                     snackbar.show();
                     return;
                 }
-                Call<UpdateServiceResponseDTO> call = serviceService.updateService(
-                        JwtUtil.getAuthorizationValue(requireContext()),
-                        serviceDTO.getId(),
-                        dto
-                );
-                call.enqueue(new Callback<>() {
+                serviceService.updateService(JwtUtil.getAuthorizationValue(requireContext()),
+                        serviceDTO.getId(), dto).enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<UpdateServiceResponseDTO> call, @NonNull Response<UpdateServiceResponseDTO> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
-                            SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
-                            Bundle args = new Bundle();
-                            args.putString("snackbar_message", "Service updated successfully!");
-                            fragment.setArguments(args);
-                            requireActivity().getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .replace(R.id.home_main_fragment_container, fragment)
-                                    .commit();
+                            returnToBaseFragment("Service updated successfully!");
                         } else {
                             try {
                                 // Show error message
@@ -296,6 +272,16 @@ public class ServiceManagementFragment extends Fragment {
         deleteButton.setOnClickListener(v -> {
             showDeleteConfirmationDialog();
         });
+    }
+
+
+    @Override
+    public void onCardClicked(BasicCard entity) {
+        if (entity instanceof WorkDayDTO) {
+            workDayAdapter.remove((WorkDayDTO) entity);
+        } else if (entity instanceof EventType) {
+            selectedEventTypesAdapter.remove((EventType) entity);
+        }
     }
 
     private String getImageName(Uri uri) {
@@ -333,11 +319,8 @@ public class ServiceManagementFragment extends Fragment {
         dto.setPricing(pricingDTO);
 
         dto.setImages(new HashSet<>(images));
-        dto.setWorkDaysDTOs(new HashSet<>(workDayList));
-        dto.setAppliesTo(new HashSet<>());
-        for (GetEventTypeResponseDTO eventTypeDTO : selectedEventTypes) {
-            dto.getAppliesTo().add(eventTypeDTO.toEventType());
-        }
+        dto.setWorkDaysDTOs(new HashSet<>(workDays));
+        dto.setAppliesTo(new HashSet<>(selectedEventTypes));
 
         dto.setVisible(visibleCheckBox.isChecked());
         dto.setAvailable(availableCheckBox.isChecked());
@@ -370,9 +353,9 @@ public class ServiceManagementFragment extends Fragment {
         pricingDTO.setActiveFrom(LocalDate.now().toString());
         dto.setPricing(pricingDTO);
 
-        for (CategoryResponseDTO categoryDTO : categories) {
-            if (categoryDTO.getName().equals(categoryDropdown.getText().toString()))
-                dto.setCategory(categoryDTO.toCategory());
+        for (Category category : categories) {
+            if (category.getName().equals(categoryDropdown.getText().toString()))
+                dto.setCategory(category);
         }
         if (dto.getCategory() == null) {
             TextInputLayout layout = view.findViewById(R.id.categories_dropdown_layout);
@@ -381,12 +364,8 @@ public class ServiceManagementFragment extends Fragment {
         }
 
         dto.setImages(new HashSet<>(images));
-        dto.setWorkDaysDTOs(new HashSet<>(workDayList));
-        dto.setAppliesTo(new HashSet<>());
-        for (GetEventTypeResponseDTO eventTypeDTO : selectedEventTypes) {
-            dto.getAppliesTo().add(eventTypeDTO.toEventType());
-        }
-
+        dto.setWorkDaysDTOs(new HashSet<>(workDays));
+        dto.setAppliesTo(new HashSet<>(selectedEventTypes));
         dto.setVisible(visibleCheckBox.isChecked());
         dto.setAvailable(availableCheckBox.isChecked());
 
@@ -465,9 +444,7 @@ public class ServiceManagementFragment extends Fragment {
         discountInput.setText(String.valueOf(serviceDTO.getPricing().getDiscount()));
         specificsInput.setText(serviceDTO.getSpecifics());
 
-        workDayList.clear();
-        workDayList.addAll(serviceDTO.getWorkDaysDTOs());
-        workDayAdapter.notifyDataSetChanged();
+        workDayAdapter.addAll(serviceDTO.getWorkDaysDTOs());
 
         reservationInput.setText(String.valueOf(serviceDTO.getReservationDeadlineInDays()));
         cancellationInput.setText(String.valueOf(serviceDTO.getCancellationDeadlineInDays()));
@@ -481,22 +458,20 @@ public class ServiceManagementFragment extends Fragment {
         visibleCheckBox.setChecked(serviceDTO.isVisible());
         availableCheckBox.setChecked(serviceDTO.isAvailable());
 
-        selectedEventTypes.clear();
-        for (EventType et : serviceDTO.getAppliesTo())
-            selectedEventTypes.add(new GetEventTypeResponseDTO(et));
-        selectedEventTypesAdapter.notifyDataSetChanged();
+        selectedEventTypesAdapter.addAll(serviceDTO.getAppliesTo());
     }
 
     private void fetchCategories() {
           categoryService.findAllActive(JwtUtil.getAuthorizationValue(getContext()))
                 .enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<List<CategoryResponseDTO>> call,
-                                   @NonNull Response<List<CategoryResponseDTO>> response) {
+            public void onResponse(@NonNull Call<List<Category>> call,
+                                   @NonNull Response<List<Category>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     categories = new ArrayList<>(response.body());
 
-                    ArrayAdapter<CategoryResponseDTO> adapter = new ArrayAdapter<>(
+                    ArrayAdapter<Category> adapter = new ArrayAdapter<>(
                             requireContext(),
                             android.R.layout.simple_list_item_1,
                             categories
@@ -506,7 +481,7 @@ public class ServiceManagementFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<CategoryResponseDTO>> call,
+            public void onFailure(@NonNull Call<List<Category>> call,
                                   @NonNull Throwable t) {
                 Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
             }
@@ -517,33 +492,26 @@ public class ServiceManagementFragment extends Fragment {
         eventTypeService.findAllActive(JwtUtil.getAuthorizationValue(getContext()))
                 .enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<List<GetEventTypeResponseDTO>> call,
-                                   @NonNull Response<List<GetEventTypeResponseDTO>> response) {
+            public void onResponse(@NonNull Call<List<EventType>> call,
+                                   @NonNull Response<List<EventType>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
-                    List<GetEventTypeResponseDTO> eventTypes = new ArrayList<>(response.body());
+                    List<EventType> eventTypes = new ArrayList<>(response.body());
 
-                    ArrayAdapter<GetEventTypeResponseDTO> adapter = new ArrayAdapter<>(
+                    ArrayAdapter<EventType> adapter = new ArrayAdapter<>(
                             requireContext(),
                             android.R.layout.simple_list_item_1,
                             eventTypes
                     );
                     eventTypesDropdown.setAdapter(adapter);
 
-                    eventTypesDropdown.setOnItemClickListener((parent, view, position, id) -> {
-                        GetEventTypeResponseDTO selectedEventType = (GetEventTypeResponseDTO) parent.getItemAtPosition(position);
-                        for (GetEventTypeResponseDTO eventTypeDTO : selectedEventTypes) {
-                            if (eventTypeDTO.getName().equals(selectedEventType.getName()))
-                                return;
-                        }
-                        selectedEventTypes.add(selectedEventType);
-                        Log.d("EventTypeSelected", "Added event type: " + selectedEventType);
-                        selectedEventTypesAdapter.notifyDataSetChanged();
-                    });
+                    eventTypesDropdown.setOnItemClickListener((parent, view, position, id) ->
+                            handleEventTypeSelection((EventType) parent.getItemAtPosition(position)));
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<GetEventTypeResponseDTO>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<EventType>> call, @NonNull Throwable t) {
                 Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
             }
         });
@@ -572,15 +540,9 @@ public class ServiceManagementFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<DeleteServiceResponseDTO> call,
                                    @NonNull Response<DeleteServiceResponseDTO> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
-                    SPPServicesBaseFragment fragment = new SPPServicesBaseFragment();
-                    Bundle args = new Bundle();
-                    args.putString("snackbar_message", "Service deleted successfully!");
-                    fragment.setArguments(args);
-                    requireActivity().getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.home_main_fragment_container, fragment)
-                            .commit();
+                    returnToBaseFragment("Service deleted successfully!");
                 } else {
                     try {
                         // Show error message
@@ -603,4 +565,33 @@ public class ServiceManagementFragment extends Fragment {
         });
     }
 
+
+    private void handleEventTypeSelection(EventType selectedEventType) {
+        boolean isUnknownSelected = selectedEventType.getName().equals("UNKNOWN");
+        if (isUnknownSelected) {
+            selectedEventTypesAdapter.clear();
+            selectedEventTypesAdapter.add(selectedEventType);
+            return;
+        }
+        EventType unknownType = null;
+        boolean eventTypeIsPresent = false;
+        for (EventType eventType : selectedEventTypes) {
+            if (eventType.getName().equals("UNKNOWN")) {
+                unknownType = eventType;
+                break;
+            }
+            if (eventType.getName().equals(selectedEventType.getName())) {
+                eventTypeIsPresent = true;
+                break;
+            }
+        }
+        if (unknownType != null) selectedEventTypesAdapter.remove(unknownType);
+        if (eventTypeIsPresent) return;
+        selectedEventTypesAdapter.add(selectedEventType);
+    }
+
+    private void returnToBaseFragment(String responseMessage) {
+        Toast.makeText(requireContext(), responseMessage, Toast.LENGTH_LONG).show();
+        Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_service_management);
+    }
 }

@@ -32,7 +32,7 @@ import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
-public class ServiceFilterFragment extends BottomSheetDialogFragment {
+public class SPPServicesFilterFragment extends BottomSheetDialogFragment {
 
     private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
@@ -44,11 +44,11 @@ public class ServiceFilterFragment extends BottomSheetDialogFragment {
     private final Map<String, String> filters;
     private FilterActionsListener listener;
 
-    public ServiceFilterFragment() {
+    public SPPServicesFilterFragment() {
         filters = new HashMap<>();
     }
 
-    public ServiceFilterFragment(FilterActionsListener listener) {
+    public SPPServicesFilterFragment(FilterActionsListener listener) {
         this();
         this.listener = listener;
     }

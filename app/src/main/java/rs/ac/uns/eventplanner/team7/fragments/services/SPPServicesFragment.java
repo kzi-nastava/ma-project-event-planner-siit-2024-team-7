@@ -1,18 +1,18 @@
 package rs.ac.uns.eventplanner.team7.fragments.services;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
@@ -35,6 +35,7 @@ import rs.ac.uns.eventplanner.team7.dto.Page;
 import rs.ac.uns.eventplanner.team7.dto.Sort;
 import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.model.interfaces.SearchActionsListener;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
@@ -44,7 +45,7 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class SPPServicesFragment extends Fragment implements SearchActionsListener, CardClickListener {
     private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
 
-    private final ServiceFilterFragment filterFragment;
+    private final SPPServicesFilterFragment filterFragment;
     private final Page<BasicItemDTO> page;
     private Map<String, String> latestFilters;
     private String lastSearch;
@@ -56,7 +57,7 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
 
     public SPPServicesFragment() {
         page = Page.getDefault();
-        filterFragment = new ServiceFilterFragment(this);
+        filterFragment = new SPPServicesFilterFragment(this);
         latestFilters = new HashMap<>();
     }
 
@@ -67,7 +68,7 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
         messageView = view.findViewById(R.id.services_search_result_message_view);
         searchView = view.findViewById(R.id.spp_services_search_view);
         servicesView = view.findViewById(R.id.spp_services_recycler_view);
-        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(), false, this);
+        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(), this);
         servicesView.setAdapter(viewAdapter);
         return view;
     }
@@ -120,17 +121,16 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
     }
 
     @Override
-    public void onCardClicked(Integer entityId, String type) {
-        serviceService.getService(JwtUtil.getAuthorizationValue(getContext()), entityId).enqueue(new Callback<>() {
+    public void onCardClicked(BasicCard entity) {
+        serviceService.getService(JwtUtil.getAuthorizationValue(getContext()), entity.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
                                    @NonNull Response<GetServiceResponseDTO> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ServiceManagementFragment fragment = ServiceManagementFragment.newInstance(response.body());
-                    requireActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.home_main_fragment_container, fragment)
-                            .addToBackStack(null)
-                            .commit();
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("serviceDTO", response.body());
+                    Navigation.findNavController(requireView())
+                            .navigate(R.id.navigate_to_service_management_update, bundle);
                 }
                 else {
                     try {

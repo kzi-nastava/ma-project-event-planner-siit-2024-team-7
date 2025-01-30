@@ -21,12 +21,14 @@ import java.util.List;
 import java.util.Objects;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.adapters.WorkDayAdapter;
+import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
+import rs.ac.uns.eventplanner.team7.fragments.MaterialDialogFragment;
 
 public class WorkDayDialogFragment extends MaterialDialogFragment {
-    private List<WorkDayDTO> workDayList;
-    private WorkDayAdapter adapter;
+
+    private List<WorkDayDTO> currentWorkDays;
+    private CardRecyclerViewAdapter<WorkDayDTO> adapter;
     private MaterialAutoCompleteTextView dayOfWeekDropdown, startTimeDropdown, endTimeDropdown;
     private MaterialButton btnSubmit, btnCancel;
     private final ArrayList<String> timeOptions;
@@ -41,10 +43,11 @@ public class WorkDayDialogFragment extends MaterialDialogFragment {
         selectedDay = selectedStartTime = selectedEndTime = "";
     }
 
-    public static WorkDayDialogFragment newInstance(List<WorkDayDTO> workDaysList, WorkDayAdapter adapter) {
+    public static WorkDayDialogFragment newInstance(List<WorkDayDTO> currentWorkDays,
+                                                    CardRecyclerViewAdapter<WorkDayDTO> adapter) {
         WorkDayDialogFragment fragment = new WorkDayDialogFragment();
-        fragment.workDayList = workDaysList;
         fragment.adapter = adapter;
+        fragment.currentWorkDays = currentWorkDays;
         return fragment;
     }
 
@@ -98,9 +101,24 @@ public class WorkDayDialogFragment extends MaterialDialogFragment {
         try {
             if (LocalTime.parse(selectedStartTime).isAfter(LocalTime.parse(selectedEndTime)) || LocalTime.parse(selectedStartTime).equals(LocalTime.parse(selectedEndTime)))
                 throw new IllegalArgumentException("Invalid start and end times");
-            WorkDayDTO workDay = new WorkDayDTO(DayOfWeek.valueOf(selectedDay.toUpperCase()), selectedStartTime, selectedEndTime);
-            workDayList.add(workDay);
-            adapter.notifyDataSetChanged();
+            DayOfWeek day = DayOfWeek.valueOf(selectedDay.toUpperCase());
+            WorkDayDTO existingWorkDay = null;
+            // existing work day is replaced with new one, if present
+            for (int i = 0; i < currentWorkDays.size(); i++) {
+                WorkDayDTO currentWorkDay = currentWorkDays.get(i);
+                if (currentWorkDay.getDay() == day) {
+                    showToast("Replacing existing work day");
+                    existingWorkDay = currentWorkDay;
+                    break;
+                }
+            }
+
+            WorkDayDTO workDay = new WorkDayDTO(day, selectedStartTime, selectedEndTime);
+            if (existingWorkDay != null) {
+                adapter.remove(existingWorkDay);
+            }
+            adapter.add(workDay);
+
             dismiss();
         }
         catch (IllegalArgumentException e) {

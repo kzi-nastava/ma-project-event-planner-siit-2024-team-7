@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -30,13 +31,8 @@ public class SPPServicesBaseFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         FloatingActionButton newServiceButton = view.findViewById(R.id.new_service_button);
-        newServiceButton.setOnClickListener(v -> {
-            ServiceManagementFragment fragment = new ServiceManagementFragment();
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.home_main_fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        });
+        newServiceButton.setOnClickListener(v ->
+                Navigation.findNavController(view).navigate(R.id.navigate_to_service_management_creation));
 
     }
 }

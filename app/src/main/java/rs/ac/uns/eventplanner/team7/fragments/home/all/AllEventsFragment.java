@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.home.all;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,55 +29,44 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.Page;
-import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
+import rs.ac.uns.eventplanner.team7.dto.event.BasicEventDTO;
+import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.model.interfaces.SearchActionsListener;
-import rs.ac.uns.eventplanner.team7.model.interfaces.Shakeable;
-import rs.ac.uns.eventplanner.team7.services.ProductService;
-import rs.ac.uns.eventplanner.team7.services.ServiceService;
+import rs.ac.uns.eventplanner.team7.services.EventService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
-import rs.ac.uns.eventplanner.team7.utils.ShakeDetector;
 
-public class AllItemsFragment extends Fragment
-        implements SearchActionsListener, CardClickListener, Shakeable {
-
-    private final ProductService productService = ClientUtils.injectService(ProductService.class);
-    private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
-    private final ItemFiltersFragment filtersFragment;
-    private final ItemSortOptionsFragment sortOptionsFragment;
-    private final Page<BasicItemDTO> page;
+public class AllEventsFragment extends Fragment implements SearchActionsListener, CardClickListener {
+    private final EventService service = ClientUtils.injectService(EventService.class);
+    private final EventFiltersFragment filtersFragment;
+    private final EventSortOptionsFragment sortOptionsFragment;
+    private final Page<BasicEventDTO> page;
     private Map<String, String> latestFilters;
     private MaterialTextView messageView;
-    private RecyclerView allItemsView;
-    private CardRecyclerViewAdapter<BasicItemDTO> viewAdapter;
-    private ShakeDetector shakeDetector;
+    private RecyclerView allEventsView;
+    private CardRecyclerViewAdapter<BasicEventDTO> viewAdapter;
     private boolean isLoading, hasShownFragment;
 
-    public AllItemsFragment() {
+    public AllEventsFragment() {
         page = Page.getDefault();
-        filtersFragment = ItemFiltersFragment.newInstance(this);
-        sortOptionsFragment = ItemSortOptionsFragment.newInstance(this);
+        filtersFragment = EventFiltersFragment.newInstance(this);
+        sortOptionsFragment = EventSortOptionsFragment.newInstance(this);
         latestFilters = new HashMap<>();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        shakeDetector = new ShakeDetector(requireContext(), this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_all_items, container, false);
+        View view = inflater.inflate(R.layout.fragment_all_events, container, false);
 
-        messageView = view.findViewById(R.id.items_search_result_message_view);
+        messageView = view.findViewById(R.id.events_search_result_message_view);
 
-        allItemsView = view.findViewById(R.id.all_items_recycler_view);
-        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(), false, this);
-        allItemsView.setAdapter(viewAdapter);
+        allEventsView = view.findViewById(R.id.all_events_recycler_view);
+        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(), this);
+        allEventsView.setAdapter(viewAdapter);
         return view;
+
     }
 
     @Override
@@ -85,15 +74,14 @@ public class AllItemsFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
 
         latestFilters.put("city", JwtUtil.getCity(requireContext()));
-        setContent(false);
 
-        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.items_swipe_refresh);
+        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.events_swipe_refresh);
         refreshLayout.setOnRefreshListener(() -> {
             refreshLayout.setRefreshing(false);
-            messageView.setVisibility(View.VISIBLE);
-            messageView.setText(R.string.fetching_data);
             setContent(false);
         });
+
+        setContent(false);
 
         setupButtonListeners(view);
 
@@ -101,29 +89,17 @@ public class AllItemsFragment extends Fragment
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        shakeDetector.stop();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        shakeDetector.start();
-    }
-
-    @Override
     public void onFiltersApplied() {
         page.resetToDefault();
         latestFilters = filtersFragment.getFilters();
-        sortOptionsFragment.scheduleReset(true);
+        sortOptionsFragment.scheduleReset();
         setContent(false);
     }
 
     @Override
     public void onFiltersReset() {
         page.resetToDefault();
-        sortOptionsFragment.scheduleReset(true);
+        sortOptionsFragment.scheduleReset();
         latestFilters = new HashMap<>();
         setContent(false);
     }
@@ -143,44 +119,27 @@ public class AllItemsFragment extends Fragment
     }
 
     @Override
-    public void onCardClicked(Integer entityId, String type) {
-        // TODO redirect to item details page
-    }
-
-    @Override
-    public void onShakeDetected() {
-        sortOptionsFragment.doShake();
-        onSortApplied(); // Must be called explicitly as the listener can be null in sortOptions
+    public void onCardClicked(BasicCard entity) {
+        // TODO redirect to event details page
     }
 
     private void setContent(boolean isUpdate) {
         isLoading = true;
         messageView.setText(R.string.fetching_data);
         Map<String, String> combinedFilters = combineFiltersAndSort();
-        switch (filtersFragment.getShownItemType().toLowerCase()) {
-            case "products":
-                handleServiceResponse(productService.filter(combinedFilters), isUpdate);
-                break;
-            case "services":
-                handleServiceResponse(serviceService.filter(combinedFilters), isUpdate);
-                break;
-        }
-    }
-
-    private void handleServiceResponse(Call<Page<BasicItemDTO>> serviceCall, boolean isUpdate) {
-        serviceCall.enqueue(new Callback<>() {
+        service.filter(combinedFilters).enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<Page<BasicItemDTO>> call,
-                                   @NonNull Response<Page<BasicItemDTO>> response) {
+            public void onResponse(@NonNull Call<Page<BasicEventDTO>> call,
+                                   @NonNull Response<Page<BasicEventDTO>> response) {
                 if (!isAdded()) return;
                 if (!isUpdate) viewAdapter.clear();
                 if (!response.isSuccessful()) {
                     messageView.setText(R.string.unable_to_contact_server);
                     return;
                 }
-                Page<BasicItemDTO> pagedResponse = response.body();
+                Page<BasicEventDTO> pagedResponse = response.body();
                 if (pagedResponse == null || pagedResponse.isEmpty()) {
-                    if (page.isFirst()) messageView.setText(R.string.no_items_to_show);
+                    if (page.isFirst()) messageView.setText(R.string.no_events_to_show);
                     return;
                 }
                 page.update(pagedResponse);
@@ -190,7 +149,7 @@ public class AllItemsFragment extends Fragment
             }
 
             @Override
-            public void onFailure(@NonNull Call<Page<BasicItemDTO>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Page<BasicEventDTO>> call, @NonNull Throwable t) {
                 messageView.setText(R.string.error_fetching_more_data);
                 isLoading = false;
             }
@@ -198,12 +157,12 @@ public class AllItemsFragment extends Fragment
     }
 
     private void setupButtonListeners(@NonNull View view) {
-        MaterialButton filtersButton = view.findViewById(R.id.item_filters_button);
+        MaterialButton filtersButton = view.findViewById(R.id.event_filters_button);
         filtersButton.setOnClickListener(v -> {
-            if (!hasShownFragment && getChildFragmentManager().findFragmentByTag("itemFiltersFragment") == null) {
+            if (!hasShownFragment && getChildFragmentManager().findFragmentByTag("eventFiltersFragment") == null) {
                 hasShownFragment = true;
                 filtersButton.setEnabled(false);
-                filtersFragment.show(getChildFragmentManager(), "itemFiltersFragment");
+                filtersFragment.show(getChildFragmentManager(), "eventFiltersFragment");
                 getChildFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
                     @Override
                     public void onFragmentDetached(@NonNull FragmentManager fm, @NonNull Fragment f) {
@@ -217,12 +176,12 @@ public class AllItemsFragment extends Fragment
             }
         });
 
-        MaterialButton sortButton = view.findViewById(R.id.item_sort_button);
+        MaterialButton sortButton = view.findViewById(R.id.event_sort_button);
         sortButton.setOnClickListener(v -> {
-            if (!hasShownFragment && getChildFragmentManager().findFragmentByTag("itemSortOptionsFragment") == null) {
+            if (!hasShownFragment && getChildFragmentManager().findFragmentByTag("eventSortOptionsFragment") == null) {
                 hasShownFragment = true;
                 sortButton.setEnabled(false);
-                sortOptionsFragment.show(getChildFragmentManager(), "itemSortOptionsFragment");
+                sortOptionsFragment.show(getChildFragmentManager(), "eventSortOptionsFragment");
                 getChildFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
                     @Override
                     public void onFragmentDetached(@NonNull FragmentManager fm, @NonNull Fragment f) {
@@ -243,7 +202,7 @@ public class AllItemsFragment extends Fragment
     }
 
     private void setupContentScrollListener() {
-        allItemsView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        allEventsView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -257,10 +216,8 @@ public class AllItemsFragment extends Fragment
 
     private void formatResponseMessage() {
         int total = page.getTotalElements();
-        String shownType = filtersFragment.getShownItemType().toLowerCase();
-        String resultCount = String.format(getString(R.string.n_item_search_results_found),
-                total, total == 1 ? shownType.substring(0, shownType.length()-1) : shownType);
+        String resultCount = String.format(getString(R.string.n_event_search_results_found),
+                total, total == 1 ? "" : "s");
         messageView.setText(resultCount);
     }
-
 }

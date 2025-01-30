@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.home.top;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,6 +23,7 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.item.DetailedItemDTO;
+import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.ProductService;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
@@ -56,8 +57,8 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
         super.onViewCreated(view, savedInstanceState);
 
         RecyclerView topItemsView = view.findViewById(R.id.top_items_recycler_view);
-        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(),
-                new ArrayList<>(), true, this);
+        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(),
+                this, true);
         topItemsView.setAdapter(viewAdapter);
 
         handleServiceResponse(productService.findTopFive(userCity));
@@ -117,7 +118,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
     }
 
     @Override
-    public void onCardClicked(Integer entityId, String type) {
+    public void onCardClicked(BasicCard entity) {
         // TODO redirect to item details page
     }
 }

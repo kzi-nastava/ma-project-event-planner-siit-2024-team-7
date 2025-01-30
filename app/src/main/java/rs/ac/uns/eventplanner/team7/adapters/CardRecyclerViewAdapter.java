@@ -113,19 +113,22 @@ public class CardRecyclerViewAdapter<T extends BasicCard>
         public void bindData(BasicCard entity) {
             titleView.setText(entity.getTitle());
             subtitleView.setText(entity.getSubtitle());
-            Picasso.get()
-                    .load(entity.getCoverImage())
-                    .placeholder(R.drawable.image_placeholder)
-                    .into(imageView);
-
-            if (entity instanceof DetailedCard) {
+            if (entity instanceof CardWithImage && imageView != null) {
+                Picasso.get()
+                        .load(((CardWithImage) entity).getCoverImage())
+                        .placeholder(R.drawable.image_placeholder)
+                        .error(R.drawable.image_placeholder)
+                        .into(imageView);
+            }
+            if (entity instanceof DetailedCard && descriptionView != null) {
                 DetailedCard detailedCard = (DetailedCard) entity;
                 descriptionView.setText(detailedCard.getDescription());
-                moreInfoButton.setOnClickListener(v -> cardClickListener.onCardClicked(detailedCard.getId(), detailedCard.getType()));
-                return;
             }
-            cardView.setOnClickListener(v -> cardClickListener.onCardClicked(entity.getId(), entity.getType()));
+            if (moreInfoButton != null) {
+                moreInfoButton.setOnClickListener(v -> cardClickListener.onCardClicked(entity));
+            } else {
+                cardView.setOnClickListener(v -> cardClickListener.onCardClicked(entity));
+            }
         }
     }
 }
-

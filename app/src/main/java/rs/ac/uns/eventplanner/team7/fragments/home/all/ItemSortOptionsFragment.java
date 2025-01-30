@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.home.all;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.TopEventsFragment"
+    tools:context=".fragments.home.top.TopEventsFragment"
     android:orientation="vertical"
     android:id="@+id/top_events_fragment">
 
@@ -37,7 +37,7 @@
             android:layout_height="match_parent"
             android:paddingHorizontal="45dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/normal_card"/>
+            tools:listitem="@layout/normal_image_card"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

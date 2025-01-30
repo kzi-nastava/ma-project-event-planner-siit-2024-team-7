@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.home.top;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -23,7 +22,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
+import rs.ac.uns.eventplanner.team7.dto.event.BasicEventDTO;
 import rs.ac.uns.eventplanner.team7.dto.event.DetailedEventDTO;
+import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.EventService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
@@ -53,8 +54,8 @@ public class TopEventsFragment extends Fragment implements CardClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(),
-                new ArrayList<>(), true, this);
+        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(),
+                this, true);
         eventsView.setAdapter(viewAdapter);
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.events_swipe_refresh);
@@ -98,7 +99,7 @@ public class TopEventsFragment extends Fragment implements CardClickListener {
     }
 
     @Override
-    public void onCardClicked(Integer entityId, String events) {
-        // TODO redirect to event details page
+    public void onCardClicked(BasicCard entity) {
+
     }
 }

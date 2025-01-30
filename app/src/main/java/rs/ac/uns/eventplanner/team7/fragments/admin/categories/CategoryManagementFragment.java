@@ -91,7 +91,6 @@ public class CategoryManagementFragment extends Fragment {
         } else if (category.getStatus() == CategoryStatus.ACTIVE) {
             title.setText(getString(R.string.update_category));
             acceptButton.setVisibility(View.GONE);
-            nameInput.setEnabled(false);
             setContent();
         } else if (category.getStatus() == CategoryStatus.PENDING) {
             title.setText(getString(R.string.suggested_category));

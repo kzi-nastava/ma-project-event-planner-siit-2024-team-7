@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,17 +25,17 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CategorySearchAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.CategorySelectAdapter;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class EventTypeCategoryManipulationFragment extends Fragment {
 
-    private List<CategoryResponseDTO> addableCategories;
+    private List<Category> addableCategories;
     @Getter
-    private List<CategoryResponseDTO> selectedCategories;
-    private List<CategoryResponseDTO> originalCategories;
+    private List<Category> selectedCategories;
+    private List<Category> originalCategories;
     private CategorySearchAdapter searchAdapter;
     private CategorySelectAdapter selectAdapter;
     private String lastSearch;
@@ -43,13 +43,13 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
     public interface CategorySelectionListener {
-        void onCategoriesSelected(List<CategoryResponseDTO> selectedCategories);
+        void onCategoriesSelected(List<Category> selectedCategories);
     }
 
     private CategorySelectionListener listener;
 
     public interface CategoriesFetchedListener {
-        void onCategoriesFetched(List<CategoryResponseDTO> categories);
+        void onCategoriesFetched(List<Category> categories);
     }
 
     @Setter
@@ -109,10 +109,10 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
     }
 
     private void fetchAllCategories() {
-        Call<List<CategoryResponseDTO>> call = categoryService.getAll(JwtUtil.getAuthorizationValue(requireContext()));
+        Call<List<Category>> call = categoryService.getAll(JwtUtil.getAuthorizationValue(requireContext()));
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<List<CategoryResponseDTO>> call, @NonNull Response<List<CategoryResponseDTO>> response) {
+            public void onResponse(@NonNull Call<List<Category>> call, @NonNull Response<List<Category>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     searchAdapter.updateData(response.body());
                     addableCategories = response.body();
@@ -124,7 +124,7 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<CategoryResponseDTO>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<Category>> call, @NonNull Throwable t) {
                 // Handle failure
             }
         });
@@ -134,7 +134,7 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                List<CategoryResponseDTO> filteredCategories = new ArrayList<>();
+                List<Category> filteredCategories = new ArrayList<>();
                 if (query.isEmpty()) {
                     return true;
                 }
@@ -163,12 +163,11 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
         searchAdapter.notifyDataSetChanged();
     }
 
-    public void notifyChange(List<CategoryResponseDTO> selectedCategories) {
+    public void notifyChange(List<Category> selectedCategories) {
         selectAdapter.updateData(selectedCategories);
-        List<CategoryResponseDTO> filteredAddableCategories = addableCategories.stream()
+        List<Category> filteredAddableCategories = addableCategories.stream()
                 .filter(category -> selectedCategories.stream()
-                        .noneMatch(selected -> selected.getId().equals(category.getId())))
-                .collect(Collectors.toList());
+                        .noneMatch(selected -> selected.getId().equals(category.getId()))).toList();
 
         searchAdapter.updateData(filteredAddableCategories);
     }

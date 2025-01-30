@@ -5,10 +5,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -25,17 +25,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeResponseDTO;
-import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class CreateEventTypeFragment extends Fragment {
 
-    private List<CategoryResponseDTO> selectedCategories;
+    private List<Category> selectedCategories;
     private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
 
     public CreateEventTypeFragment() {
@@ -77,11 +76,6 @@ public class CreateEventTypeFragment extends Fragment {
             call.enqueue(createCallback());
         });
 
-        ImageView back = view.findViewById(R.id.back_button);
-        back.setOnClickListener(v -> requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_main_fragment_container, new AllEventTypesFragment())
-                .commit());
-
         return view;
     }
 
@@ -108,15 +102,9 @@ public class CreateEventTypeFragment extends Fragment {
             public void onResponse(@NonNull Call<CreateEventTypeResponseDTO> call, @NonNull Response<CreateEventTypeResponseDTO> response) {
                 if (response.isSuccessful()) {
                     // Navigate back to the event type list
-                    Fragment fragment = new AllEventTypesFragment();
                     Bundle args = new Bundle();
                     args.putString("snackbar_message", "Event type created successfully!");
-                    fragment.setArguments(args);
-                    requireActivity().getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.home_main_fragment_container, fragment)
-                            .addToBackStack(null)
-                            .commit();
+                    Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_event_type_create, args);
                 } else {
                     try {
                         // Show error message

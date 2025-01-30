@@ -12,7 +12,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.dto.category.CreateCategoryRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.DeleteCategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.RejectCategoryRequestDTO;
@@ -24,21 +24,21 @@ public interface CategoryService {
             "Content-Type: application/json"
     })
     @GET("categories")
-    Call<List<CategoryResponseDTO>> getAll(@Header("Authorization") String token);
+    Call<List<Category>> getAll(@Header("Authorization") String token);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
     @GET("categories/all_active")
-    Call<List<CategoryResponseDTO>> findAllActive(@Header("Authorization") String token);
+    Call<List<Category>> findAllActive(@Header("Authorization") String token);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
     @GET("categories/all_pending")
-    Call<List<CategoryResponseDTO>> findAllPending(@Header("Authorization") String token);
+    Call<List<Category>> findAllPending(@Header("Authorization") String token);
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -52,14 +52,14 @@ public interface CategoryService {
             "Content-Type: application/json"
     })
     @POST("categories")
-    Call<CategoryResponseDTO> createCategory(@Header("Authorization") String token, @Body CreateCategoryRequestDTO dto);
+    Call<Category> createCategory(@Header("Authorization") String token, @Body CreateCategoryRequestDTO dto);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
     @PUT("categories/{id}")
-    Call<CategoryResponseDTO> updateCategory(@Header("Authorization") String token, @Body UpdateCategoryRequestDTO dto, @Path("id") Integer id);
+    Call<Category> updateCategory(@Header("Authorization") String token, @Body UpdateCategoryRequestDTO dto, @Path("id") Integer id);
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -80,21 +80,21 @@ public interface CategoryService {
             "Content-Type: application/json"
     })
     @GET("categories/filter/active")
-    Call<List<CategoryResponseDTO>> filterActiveCategoriesByName(@Header("Authorization") String token, @Query("name") String query);
+    Call<List<Category>> filterActiveCategoriesByName(@Header("Authorization") String token, @Query("name") String query);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
     @GET("categories/filter/pending")
-    Call<List<CategoryResponseDTO>> filterPendingCategoriesByName(@Header("Authorization") String token, @Query("name") String query);
+    Call<List<Category>> filterPendingCategoriesByName(@Header("Authorization") String token, @Query("name") String query);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
     @PUT("categories/recommended/{id}")
-    Call<CategoryResponseDTO> acceptRecommendedCategory(@Header("Authorization") String token, @Path("id") Integer id);
+    Call<Category> acceptRecommendedCategory(@Header("Authorization") String token, @Path("id") Integer id);
 
 }
 

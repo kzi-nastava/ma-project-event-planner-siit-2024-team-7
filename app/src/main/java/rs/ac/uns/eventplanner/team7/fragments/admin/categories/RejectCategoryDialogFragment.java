@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -26,25 +27,30 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.DeleteCategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.RejectCategoryRequestDTO;
+import rs.ac.uns.eventplanner.team7.fragments.MaterialDialogFragment;
+import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class RejectCategoryFragment extends MaterialDialogFragment {
-    private final Context context;
-    private final CategoryResponseDTO categoryDTO;
-
-    private List<CategoryResponseDTO> categories;
+public class RejectCategoryDialogFragment extends MaterialDialogFragment {
+    private Context context;
+    private Category category;
+    private List<Category> categories;
     private AutoCompleteTextView categoryDropdown;
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
-    public RejectCategoryFragment(Context context, CategoryResponseDTO categoryDTO) {
-        this.context = context;
+    public RejectCategoryDialogFragment() {
         this.categories = new ArrayList<>();
-        this.categoryDTO = categoryDTO;
+    }
+
+    public static RejectCategoryDialogFragment newInstance(Context context, Category category) {
+        RejectCategoryDialogFragment fragment = new RejectCategoryDialogFragment();
+        fragment.context = context;
+        fragment.category = category;
+        return fragment;
     }
 
     @Override
@@ -56,14 +62,12 @@ public class RejectCategoryFragment extends MaterialDialogFragment {
         fetchCategories();
 
         MaterialButton cancel = view.findViewById(R.id.cancel_btn);
-        cancel.setOnClickListener(v -> {
-            dismiss();
-        });
+        cancel.setOnClickListener(v -> dismiss());
 
         MaterialButton reject = view.findViewById(R.id.reject_category_btn);
         reject.setOnClickListener(v -> {
             RejectCategoryRequestDTO dto = new RejectCategoryRequestDTO();
-            for (CategoryResponseDTO categoryDTO : categories) {
+            for (Category categoryDTO : categories) {
                 if (categoryDTO.getName().equals(categoryDropdown.getText().toString()))
                     dto.setReplacementCategoryId(categoryDTO.getId());
             }
@@ -73,21 +77,17 @@ public class RejectCategoryFragment extends MaterialDialogFragment {
                 return;
             }
 
-            categoryService.rejectCategory(JwtUtil.getAuthorizationValue(requireContext()), categoryDTO.getId(), dto)
+            categoryService.rejectCategory(JwtUtil.getAuthorizationValue(requireContext()), category.getId(), dto)
                     .enqueue(new Callback<>() {
                         @Override
                         public void onResponse(@NonNull Call<DeleteCategoryResponseDTO> call,
                                                @NonNull Response<DeleteCategoryResponseDTO> response) {
+                            if (!isAdded()) return;
                             if (response.isSuccessful() && response.body() != null) {
-                                dismiss();
-                                AllCategoriesFragment fragment = new AllCategoriesFragment();
                                 Bundle args = new Bundle();
                                 args.putString("snackbar_message", "Category rejected successfully!");
-                                fragment.setArguments(args);
-                                requireActivity().getSupportFragmentManager()
-                                        .beginTransaction()
-                                        .replace(R.id.home_main_fragment_container, fragment)
-                                        .commit();
+                                Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_reject_category, args);
+                                dismiss();
                             } else {
                                 try {
                                     // Show error message
@@ -117,12 +117,12 @@ public class RejectCategoryFragment extends MaterialDialogFragment {
         categoryService.findAllActive(JwtUtil.getAuthorizationValue(context))
                 .enqueue(new Callback<>() {
                     @Override
-                    public void onResponse(@NonNull Call<List<CategoryResponseDTO>> call,
-                                           @NonNull Response<List<CategoryResponseDTO>> response) {
+                    public void onResponse(@NonNull Call<List<Category>> call,
+                                           @NonNull Response<List<Category>> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             categories = new ArrayList<>(response.body());
 
-                            ArrayAdapter<CategoryResponseDTO> adapter = new ArrayAdapter<>(
+                            ArrayAdapter<Category> adapter = new ArrayAdapter<>(
                                     context,
                                     android.R.layout.simple_list_item_1,
                                     categories
@@ -132,7 +132,7 @@ public class RejectCategoryFragment extends MaterialDialogFragment {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<List<CategoryResponseDTO>> call,
+                    public void onFailure(@NonNull Call<List<Category>> call,
                                           @NonNull Throwable t) {
                         Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                     }

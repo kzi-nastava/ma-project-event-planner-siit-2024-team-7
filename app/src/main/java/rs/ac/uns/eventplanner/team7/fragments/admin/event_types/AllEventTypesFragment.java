@@ -8,8 +8,8 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,17 +24,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.adapters.EventTypeCardAdapter;
-import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
+import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
+import rs.ac.uns.eventplanner.team7.model.EventType;
+import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
+import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 
-public class AllEventTypesFragment extends Fragment {
+public class AllEventTypesFragment extends Fragment implements CardClickListener {
 
-    private EventTypeCardAdapter adapter;
-    private List<GetEventTypeResponseDTO> eventTypes;
+    private CardRecyclerViewAdapter<EventType> adapter;
     private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
 
     @Override
@@ -44,8 +45,8 @@ public class AllEventTypesFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        eventTypes = new ArrayList<>();
-        adapter = new EventTypeCardAdapter(requireContext(), eventTypes);
+        adapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(), this,
+                false, getString(R.string.more));
         recyclerView.setAdapter(adapter);
 
         LinearLayout content = view.findViewById(R.id.content_view);
@@ -56,17 +57,8 @@ public class AllEventTypesFragment extends Fragment {
         fetchData(view);
 
         MaterialButton create = view.findViewById(R.id.create_event_type);
-        create.setOnClickListener(v -> {
-            Fragment fragment = new CreateEventTypeFragment();
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.home_main_fragment_container, fragment, "CreateEventTypeFragmentTag")
-                        .addToBackStack(null)
-                        .commit();
-            }
-
-        });
+        create.setOnClickListener(v -> Navigation.findNavController(requireView())
+                .navigate(R.id.navigate_to_event_type_create));
 
         return view;
     }
@@ -77,27 +69,23 @@ public class AllEventTypesFragment extends Fragment {
 
         // Check if a message was passed and show the Snackbar
         if (getArguments() != null && getArguments().containsKey("snackbar_message")) {
-            String message = getArguments().getString("snackbar_message");
+            Bundle args = getArguments();
+            String message = args.getString("snackbar_message");
             Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE);
 
-            snackbar.setAction("OK", v -> {
-                snackbar.dismiss();
-            });
-
-            snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.white));
-            snackbar.show();
+            snackbar.setAction("OK", v -> snackbar.dismiss()).show();
+            args.clear(); // Display this message only once!
         }
     }
 
     private void fetchData(View view) {
-        Call<List<GetEventTypeResponseDTO>> call = eventTypeService.getAll(JwtUtil.getAuthorizationValue(requireContext()));
+        Call<List<EventType>> call = eventTypeService.getAll(JwtUtil.getAuthorizationValue(requireContext()));
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<List<GetEventTypeResponseDTO>> call, @NonNull Response<List<GetEventTypeResponseDTO>> response) {
+            public void onResponse(@NonNull Call<List<EventType>> call, @NonNull Response<List<EventType>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    eventTypes.clear();
-                    eventTypes.addAll(response.body());
-                    adapter.notifyDataSetChanged();
+                    adapter.clear();
+                    adapter.addAll(response.body());
 
                     LinearLayout content = view.findViewById(R.id.content_view);
                     MaterialTextView loadingMsg = view.findViewById(R.id.loading_msg);
@@ -107,10 +95,17 @@ public class AllEventTypesFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<GetEventTypeResponseDTO>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<List<EventType>> call, @NonNull Throwable t) {
 
             }
         });
+    }
+
+    @Override
+    public void onCardClicked(BasicCard entity) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("eventTypeId", entity.getId());
+        Navigation.findNavController(requireView()).navigate(R.id.navigate_to_event_type_update, bundle);
     }
 }
 

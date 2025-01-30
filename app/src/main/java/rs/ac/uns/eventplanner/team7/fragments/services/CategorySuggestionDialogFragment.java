@@ -23,21 +23,22 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.dto.category.CreateCategoryRequestDTO;
+import rs.ac.uns.eventplanner.team7.fragments.MaterialDialogFragment;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class CategorySuggestionDialogFragment extends MaterialDialogFragment {
-    private List<CategoryResponseDTO> categories;
+    private List<Category> categories;
     private AutoCompleteTextView categoryDropdown;
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
     public CategorySuggestionDialogFragment() {
     }
 
-    public static CategorySuggestionDialogFragment newInstance(List<CategoryResponseDTO> categories,
+    public static CategorySuggestionDialogFragment newInstance(List<Category> categories,
                                                                AutoCompleteTextView categoryDropdown) {
         CategorySuggestionDialogFragment fragment = new CategorySuggestionDialogFragment();
         fragment.categories = categories;
@@ -67,8 +68,8 @@ public class CategorySuggestionDialogFragment extends MaterialDialogFragment {
                                 new CreateCategoryRequestDTO(name, description))
                         .enqueue(new Callback<>() {
                             @Override
-                            public void onResponse(@NonNull Call<CategoryResponseDTO> call,
-                                                   @NonNull Response<CategoryResponseDTO> response) {
+                            public void onResponse(@NonNull Call<Category> call,
+                                                   @NonNull Response<Category> response) {
                                 if (response.isSuccessful() && response.body() != null) {
                                     categories.add(response.body());
                                     categoryDropdown.setText(response.body().toString(), false);
@@ -89,7 +90,7 @@ public class CategorySuggestionDialogFragment extends MaterialDialogFragment {
                             }
 
                             @Override
-                            public void onFailure(@NonNull Call<CategoryResponseDTO> call,
+                            public void onFailure(@NonNull Call<Category> call,
                                                   @NonNull Throwable t) {
                                 Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                             }

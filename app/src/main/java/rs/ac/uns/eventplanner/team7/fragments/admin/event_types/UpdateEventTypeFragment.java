@@ -4,11 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -24,18 +24,17 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.dto.event_type.UpdateEventTypeRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.UpdateEventTypeResponseDTO;
-import rs.ac.uns.eventplanner.team7.model.Category;
+import rs.ac.uns.eventplanner.team7.model.EventType;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class UpdateEventTypeFragment extends Fragment {
 
-    private List<CategoryResponseDTO> selectedCategories;
+    private List<Category> selectedCategories;
     private Integer eventTypeId;
     private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
     private EventTypeCategoryManipulationFragment categoryFragment;
@@ -80,25 +79,20 @@ public class UpdateEventTypeFragment extends Fragment {
         MaterialButton updateButton = view.findViewById(R.id.update_event_type);
         updateButton.setOnClickListener(v -> update(isActive));
 
-        ImageView back = view.findViewById(R.id.back_button);
-        back.setOnClickListener(v -> requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_main_fragment_container, new AllEventTypesFragment())
-                .commit());
-
         return view;
     }
 
     private void fillFields(View view) {
-        Call<GetEventTypeResponseDTO> call = eventTypeService.get(JwtUtil.getAuthorizationValue(requireContext()), eventTypeId);
+        Call<EventType> call = eventTypeService.get(JwtUtil.getAuthorizationValue(requireContext()), eventTypeId);
         call.enqueue(updateCallBack(view));
     }
 
-    private Callback<GetEventTypeResponseDTO> updateCallBack(View view) {
+    private Callback<EventType> updateCallBack(View view) {
         return new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<GetEventTypeResponseDTO> call, @NonNull Response<GetEventTypeResponseDTO> response) {
+            public void onResponse(@NonNull Call<EventType> call, @NonNull Response<EventType> response) {
                 if (response.isSuccessful()) {
-                    GetEventTypeResponseDTO dto = response.body();
+                    EventType dto = response.body();
                     if (dto != null) {
                         isActive = dto.isActive();
                         fillFields(view, dto);
@@ -108,24 +102,24 @@ public class UpdateEventTypeFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<GetEventTypeResponseDTO> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<EventType> call, @NonNull Throwable t) {
 
             }
         };
     }
 
-    private void fillFields(View view, GetEventTypeResponseDTO dto) {
+    private void fillFields(View view, EventType dto) {
         TextInputEditText nameInput = view.findViewById(R.id.update_event_type_name);
         TextInputEditText descInput = view.findViewById(R.id.update_event_type_desc);
         nameInput.setText(dto.getName());
         descInput.setText(dto.getDescription());
         for (var cat : dto.getRecommendedCategories()) {
-            CategoryResponseDTO catDto = new CategoryResponseDTO();
-            catDto.setName(cat.getName());
-            catDto.setDescription(cat.getDescription());
-            catDto.setId(cat.getId());
-            catDto.setStatus(cat.getStatus());
-            selectedCategories.add(catDto);
+            Category category = new Category();
+            category.setName(cat.getName());
+            category.setDescription(cat.getDescription());
+            category.setId(cat.getId());
+            category.setStatus(cat.getStatus());
+            selectedCategories.add(category);
         }
         categoryFragment.notifyChange(selectedCategories);
     }
@@ -156,7 +150,7 @@ public class UpdateEventTypeFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<UpdateEventTypeResponseDTO> call, @NonNull Response<UpdateEventTypeResponseDTO> response) {
                 if (response.isSuccessful()) {
-                    navigateToEventTypeList("Event type updated successfully!");
+                    returnToBaseFragment("Event type updated successfully!");
                 }
             }
 
@@ -209,7 +203,7 @@ public class UpdateEventTypeFragment extends Fragment {
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     dialog.dismiss();
-                    navigateToEventTypeList("Event type deactivated successfully!");
+                    returnToBaseFragment("Event type deactivated successfully!");
                 } else {
                     dialog.dismiss();
                 }
@@ -230,15 +224,9 @@ public class UpdateEventTypeFragment extends Fragment {
                 .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
     }
 
-    private void navigateToEventTypeList(String msg) {
-        Fragment fragment = new AllEventTypesFragment();
+    private void returnToBaseFragment(String msg) {
         Bundle args = new Bundle();
         args.putString("snackbar_message", msg);
-        fragment.setArguments(args);
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.home_main_fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
+        Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_event_type_update, args);
     }
 }

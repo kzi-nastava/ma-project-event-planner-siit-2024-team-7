@@ -20,7 +20,7 @@
             android:padding="15dp"
             >
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/horizontal_card_title"
+                android:id="@+id/card_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -28,7 +28,7 @@
                 />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/horizontal_card_subtitle"
+                android:id="@+id/card_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Card subtitle"
@@ -39,7 +39,7 @@
         <include layout="@layout/space_divider"/>
 
         <ImageView
-            android:id="@+id/horizontal_card_image"
+            android:id="@+id/card_image"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             app:srcCompat="@drawable/image_placeholder"

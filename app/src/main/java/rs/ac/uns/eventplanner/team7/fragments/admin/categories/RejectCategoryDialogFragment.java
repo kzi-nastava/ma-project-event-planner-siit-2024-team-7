@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.admin.categories;
 
 import android.content.Context;
 import android.os.Bundle;

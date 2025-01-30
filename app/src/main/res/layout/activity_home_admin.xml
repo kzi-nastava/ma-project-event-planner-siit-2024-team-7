@@ -7,9 +7,7 @@
     android:layout_height="match_parent">
 
     <!-- Main Content -->
-    <include
-        android:id="@+id/activity_home_base"
-        layout="@layout/activity_home_base" />
+    <include layout="@layout/activity_home" />
 
     <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
@@ -17,6 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header"/>
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/admin_nav_drawer_menu"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -51,7 +51,14 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         role = UserRole.valueOf(JwtUtil.getRole(this));
-        setContentView(role == UserRole.ADMIN ? R.layout.activity_home_admin : R.layout.activity_home);
+        if (role == UserRole.ADMIN) {
+            setContentView(R.layout.activity_home_admin);
+        } else if (role == UserRole.GUEST) {
+            setContentView(R.layout.activity_home_base);
+        } else {
+            setContentView(R.layout.activity_home);
+        }
+
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         fragmentContainer = findViewById(R.id.home_main_fragment_container);
         this.toolbar = findViewById(R.id.toolbar);

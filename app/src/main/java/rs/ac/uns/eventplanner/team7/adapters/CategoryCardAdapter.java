@@ -17,14 +17,14 @@ import com.google.android.material.card.MaterialCardView;
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
-import rs.ac.uns.eventplanner.team7.fragments.CategoryManagementFragment;
+import rs.ac.uns.eventplanner.team7.fragments.admin.categories.CategoryManagementFragment;
+import rs.ac.uns.eventplanner.team7.model.Category;
 
 public class CategoryCardAdapter extends RecyclerView.Adapter<CategoryCardAdapter.ViewHolder> {
     private final Context context;
-    private final List<CategoryResponseDTO> categories;
+    private final List<Category> categories;
 
-    public CategoryCardAdapter(Context context, List<CategoryResponseDTO> categories) {
+    public CategoryCardAdapter(Context context, List<Category> categories) {
         this.context = context;
         this.categories = categories;
     }
@@ -39,7 +39,7 @@ public class CategoryCardAdapter extends RecyclerView.Adapter<CategoryCardAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CategoryResponseDTO category = categories.get(position);
+        Category category = categories.get(position);
         holder.titleView.setText(category.getName());
         holder.subtitleView.setVisibility(View.GONE);
         holder.descriptionView.setText(category.getDescription());
@@ -47,12 +47,12 @@ public class CategoryCardAdapter extends RecyclerView.Adapter<CategoryCardAdapte
         holder.moreInfoButton.setText(R.string.edit);
 
         holder.moreInfoButton.setOnClickListener(v -> {
-            CategoryManagementFragment fragment = new CategoryManagementFragment(category);
+            CategoryManagementFragment fragment = CategoryManagementFragment.newInstance(category);
             if (context instanceof FragmentActivity) {
                 FragmentActivity activity = (FragmentActivity) context;
                 activity.getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.home_main_fragment_container, fragment)
+                        .replace(R.id.nav_host_fragment, fragment)
                         .addToBackStack(null)
                         .commit();
             }

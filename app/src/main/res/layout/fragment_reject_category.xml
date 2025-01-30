@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".fragments.RejectCategoryFragment">
+    tools:context=".fragments.admin.categories.RejectCategoryDialogFragment">
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"

@@ -3,31 +3,33 @@ package rs.ac.uns.eventplanner.team7.adapters;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.Category;
 
 public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAdapter.ViewHolder> {
 
     private final Context context;
-    private final List<CategoryResponseDTO> categories;
-    private final List<CategoryResponseDTO> selectedCategories;  // List of selected categories
+    private final List<Category> categories;
+    private final List<Category> selectedCategories;  // List of selected categories
     private final CategorySelectAdapter selectAdapter;  // Reference to the select adapter
 
 
-    public CategorySearchAdapter(Context context, List<CategoryResponseDTO> categories, List<CategoryResponseDTO> selectedCategories, CategorySelectAdapter adapter) {
+    public CategorySearchAdapter(Context context, List<Category> categories, List<Category> selectedCategories, CategorySelectAdapter adapter) {
         this.context = context;
         this.categories = categories;
         this.selectedCategories = selectedCategories;
@@ -43,7 +45,7 @@ public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CategoryResponseDTO category = categories.get(position);
+        Category category = categories.get(position);
 
         // Prevent showing categories already selected
         if (selectedCategories.contains(category)) {
@@ -52,11 +54,12 @@ public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAd
             holder.itemView.setVisibility(VISIBLE);  // Show if not selected
         }
 
-        holder.titleView.setText(category.getName());
-        holder.subtitleView.setVisibility(View.GONE);
-        holder.fabView.setImageResource(R.drawable.baseline_add_24);  // Add button
+        holder.titleView.setVisibility(View.INVISIBLE);
+        holder.subtitleView.setText(category.getName());
+        Drawable icon = AppCompatResources.getDrawable(context, R.drawable.baseline_add_24);
+        holder.button.setIcon(icon);  // Add button
 
-        holder.fabView.setOnClickListener(v -> {
+        holder.button.setOnClickListener(v -> {
             if (!selectedCategories.contains(category)) {
                 selectedCategories.add(category);
                 categories.remove(category);
@@ -72,23 +75,23 @@ public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAd
         return categories.size();
     }
 
-    public void updateData(List<CategoryResponseDTO> newCategories) {
+    public void updateData(List<Category> newCategories) {
         categories.clear();
         categories.addAll(newCategories);
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         MaterialTextView titleView;
         MaterialTextView subtitleView;
-        FloatingActionButton fabView;
+        MaterialButton button;
         MaterialCardView cardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            titleView = itemView.findViewById(R.id.horizontal_card_title);
-            subtitleView = itemView.findViewById(R.id.horizontal_card_subtitle);
-            fabView = itemView.findViewById(R.id.horizontal_card_fab);
+            titleView = itemView.findViewById(R.id.card_title);
+            subtitleView = itemView.findViewById(R.id.card_subtitle);
+            button = itemView.findViewById(R.id.card_more_info_button);
             cardView = itemView.findViewById(R.id.horizontal_button_card);
         }
 

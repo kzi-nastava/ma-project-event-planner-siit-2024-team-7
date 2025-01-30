@@ -62,9 +62,9 @@ public class WorkDayAdapter extends RecyclerView.Adapter<WorkDayAdapter.ViewHold
 
         public ViewHolder(View itemView) {
             super(itemView);
-            titleView = itemView.findViewById(R.id.horizontal_card_title);
-            subtitleView = itemView.findViewById(R.id.horizontal_card_subtitle);
-            fabView = itemView.findViewById(R.id.horizontal_card_fab);
+            titleView = itemView.findViewById(R.id.card_title);
+            subtitleView = itemView.findViewById(R.id.card_subtitle);
+            fabView = itemView.findViewById(R.id.card_more_info_button);
             cardView = itemView.findViewById(R.id.horizontal_button_card);
         }
 

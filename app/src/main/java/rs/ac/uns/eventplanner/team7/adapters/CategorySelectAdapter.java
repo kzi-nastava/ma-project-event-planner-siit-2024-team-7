@@ -1,33 +1,35 @@
 package rs.ac.uns.eventplanner.team7.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
-import rs.ac.uns.eventplanner.team7.fragments.CreateEventTypeFragment;
-import rs.ac.uns.eventplanner.team7.fragments.EventTypeCategoryManipulationFragment;
-import rs.ac.uns.eventplanner.team7.fragments.UpdateEventTypeFragment;
+import rs.ac.uns.eventplanner.team7.fragments.admin.event_types.CreateEventTypeFragment;
+import rs.ac.uns.eventplanner.team7.fragments.admin.event_types.EventTypeCategoryManipulationFragment;
+import rs.ac.uns.eventplanner.team7.fragments.admin.event_types.UpdateEventTypeFragment;
+import rs.ac.uns.eventplanner.team7.model.Category;
 
 public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAdapter.ViewHolder> {
 
     private final Context context;
-    private final List<CategoryResponseDTO> selectedCategories;
-    private final List<CategoryResponseDTO> addableCategories;
+    private final List<Category> selectedCategories;
+    private final List<Category> addableCategories;
 
-    public CategorySelectAdapter(Context context, List<CategoryResponseDTO> categories, List<CategoryResponseDTO> addableCategories) {
+    public CategorySelectAdapter(Context context, List<Category> categories, List<Category> addableCategories) {
         this.context = context;
         this.selectedCategories = categories;
         this.addableCategories = addableCategories;
@@ -42,13 +44,14 @@ public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAd
 
     @Override
     public void onBindViewHolder(@NonNull CategorySelectAdapter.ViewHolder holder, int position) {
-        CategoryResponseDTO category = selectedCategories.get(position);
-        holder.titleView.setText(category.getName());
-        holder.subtitleView.setVisibility(View.GONE);
+        Category category = selectedCategories.get(position);
+        holder.subtitleView.setText(category.getName());
+        holder.titleView.setVisibility(View.INVISIBLE);
 
-        holder.fabView.setImageResource(R.drawable.baseline_cancel_24);
+        Drawable icon = AppCompatResources.getDrawable(context, R.drawable.baseline_cancel_24);
+        holder.button.setIcon(icon);
 
-        holder.fabView.setOnClickListener(v -> {
+        holder.button.setOnClickListener(v -> {
             selectedCategories.remove(category);
             addableCategories.add(category);
             notifyDataSetChanged();
@@ -57,7 +60,7 @@ public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAd
                 FragmentActivity activity = (FragmentActivity) context;
 
                 Fragment parentFragment = activity.getSupportFragmentManager()
-                        .findFragmentById(R.id.home_main_fragment_container);
+                        .findFragmentById(R.id.nav_host_fragment);
 
                 if (parentFragment instanceof CreateEventTypeFragment) {
                     EventTypeCategoryManipulationFragment fragment = (EventTypeCategoryManipulationFragment)
@@ -88,22 +91,22 @@ public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAd
         return selectedCategories.size();
     }
 
-    public void updateData(List<CategoryResponseDTO> newCategories) {
+    public void updateData(List<Category> newCategories) {
         selectedCategories.clear();
         selectedCategories.addAll(newCategories);
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         MaterialTextView titleView;
         MaterialTextView subtitleView;
-        FloatingActionButton fabView;
+        MaterialButton button;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            titleView = itemView.findViewById(R.id.horizontal_card_title);
-            subtitleView = itemView.findViewById(R.id.horizontal_card_subtitle);
-            fabView = itemView.findViewById(R.id.horizontal_card_fab);
+            titleView = itemView.findViewById(R.id.card_title);
+            subtitleView = itemView.findViewById(R.id.card_subtitle);
+            button = itemView.findViewById(R.id.card_more_info_button);
         }
     }
 }

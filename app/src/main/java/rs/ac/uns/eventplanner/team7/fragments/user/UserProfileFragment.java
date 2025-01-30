@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.user;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -107,6 +107,7 @@ public class UserProfileFragment extends Fragment {
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<BusynessDTO>> call, @NonNull Response<List<BusynessDTO>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     List<BusynessDTO> dtos = response.body();
                     DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -318,6 +319,7 @@ public class UserProfileFragment extends Fragment {
         return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     Log.d("UserProfileFragment", "Field updated successfully");
                 } else {
@@ -399,6 +401,7 @@ public class UserProfileFragment extends Fragment {
         return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     if (isOrganizer) {
                         GetOrganizerResponseDTO dto = (GetOrganizerResponseDTO) response.body();
@@ -463,12 +466,12 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void showChangePasswordDialog() {
-        ChangePasswordFragment fragment = ChangePasswordFragment.newInstance(role);
+        ChangePasswordDialogFragment fragment = ChangePasswordDialogFragment.newInstance(role);
         fragment.show(getParentFragmentManager(), "ChangePasswordFragment");
     }
 
     private void showConfirmDeactivationDialog() {
-        ConfirmDeactivationFragment fragment = ConfirmDeactivationFragment.newInstance(role);
+        AccountDeactivationDialogFragment fragment = AccountDeactivationDialogFragment.newInstance(role);
         fragment.show(getParentFragmentManager(), "ConfirmDeactivationFragment");
     }
 }

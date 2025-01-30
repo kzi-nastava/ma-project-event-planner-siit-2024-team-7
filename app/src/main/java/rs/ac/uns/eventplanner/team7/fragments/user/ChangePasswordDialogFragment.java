@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.user;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -26,12 +26,13 @@ import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.fragments.MaterialDialogFragment;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class ChangePasswordFragment extends MaterialDialogFragment {
+public class ChangePasswordDialogFragment extends MaterialDialogFragment {
 
     private static final String ARG_ROLE = "user_role";
 
@@ -39,8 +40,8 @@ public class ChangePasswordFragment extends MaterialDialogFragment {
     private UserRole role;
 
     // Factory method to create an instance with the role argument
-    public static ChangePasswordFragment newInstance(UserRole role) {
-        ChangePasswordFragment fragment = new ChangePasswordFragment();
+    public static ChangePasswordDialogFragment newInstance(UserRole role) {
+        ChangePasswordDialogFragment fragment = new ChangePasswordDialogFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_ROLE, role);
         fragment.setArguments(args);

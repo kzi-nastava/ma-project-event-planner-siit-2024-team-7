@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.user;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -21,12 +21,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.activities.LoginActivity;
+import rs.ac.uns.eventplanner.team7.fragments.MaterialDialogFragment;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class ConfirmDeactivationFragment extends MaterialDialogFragment {
+public class AccountDeactivationDialogFragment extends MaterialDialogFragment {
 
     private static final String ARG_ROLE = "user_role";
 
@@ -34,8 +35,8 @@ public class ConfirmDeactivationFragment extends MaterialDialogFragment {
     private UserRole role;
 
     // Factory method to create an instance with the role argument
-    public static ConfirmDeactivationFragment newInstance(UserRole role) {
-        ConfirmDeactivationFragment fragment = new ConfirmDeactivationFragment();
+    public static AccountDeactivationDialogFragment newInstance(UserRole role) {
+        AccountDeactivationDialogFragment fragment = new AccountDeactivationDialogFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_ROLE, role);
         fragment.setArguments(args);
@@ -82,7 +83,7 @@ public class ConfirmDeactivationFragment extends MaterialDialogFragment {
     }
 
     private Callback<Object> createDeactivationCallback(MaterialTextView errorMsg) {
-        return new Callback<Object>() {
+        return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
                 if (response.isSuccessful()) {

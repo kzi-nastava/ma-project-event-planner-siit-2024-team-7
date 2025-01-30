@@ -18,7 +18,7 @@
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Filters"
+            android:text="@string/filters"
             android:textSize="24sp"
             android:paddingHorizontal="20dp"
             />
@@ -35,7 +35,7 @@
         android:layout_marginVertical="2dp"
         android:paddingHorizontal="20dp"
         app:endIconMode="clear_text"
-        android:hint="Price">
+        android:hint="@string/price">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/item_price_filter"
@@ -45,45 +45,38 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RadioGroup
+        android:id="@+id/availability_radio_group"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_gravity="center"
-        android:gravity="center"
         android:paddingHorizontal="20dp"
-        android:layout_marginVertical="8dp">
+        android:layout_marginVertical="8dp"
+        android:orientation="horizontal">
 
-        <RadioGroup
-            android:id="@+id/availability_radio_group"
+        <RadioButton
+            android:id="@+id/radio_available"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="@string/available"
+            android:checked="false" />
 
-            <RadioButton
-                android:id="@+id/radio_available"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Available"
-                android:checked="false" />
+        <RadioButton
+            android:id="@+id/radio_unavailable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/unavailable"
+            android:checked="false" />
 
-            <RadioButton
-                android:id="@+id/radio_unavailable"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="Unavailable"
-                android:checked="false" />
-
-            <RadioButton
-                android:id="@+id/radio_both"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="Both"
-                android:checked="true" />
-        </RadioGroup>
-    </LinearLayout>
+        <RadioButton
+            android:id="@+id/radio_both"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/both"
+            android:checked="true" />
+    </RadioGroup>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/event_type_filter_layout"
@@ -138,7 +131,7 @@
             android:id="@+id/apply_service_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apply"
+            android:text="@string/apply"
             android:layout_weight="0.35"
             />
 
@@ -151,7 +144,7 @@
             android:id="@+id/reset_service_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reset"
+            android:text="@string/reset"
             android:layout_weight="0.35" />
 
     </LinearLayout>

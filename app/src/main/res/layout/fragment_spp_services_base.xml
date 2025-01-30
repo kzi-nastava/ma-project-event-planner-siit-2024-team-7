@@ -7,17 +7,11 @@
     tools:context=".fragments.SPPServicesBaseFragment"
     android:id="@+id/spp_services_base_fragment">
 
-    <LinearLayout
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/spp_services_fragment"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.services.SPPServicesFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/spp_services_fragment"
-            android:name="rs.ac.uns.eventplanner.team7.fragments.SPPServicesFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+        android:layout_height="wrap_content"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/new_service_button"

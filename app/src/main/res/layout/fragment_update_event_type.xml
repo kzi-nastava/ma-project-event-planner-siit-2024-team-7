@@ -11,13 +11,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/back"
-            android:src="@drawable/baseline_arrow_back_24"/>
-
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +22,7 @@
             android:id="@+id/loading_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Loading data..."
+            android:text="@string/loading_data"
             android:textSize="18sp"
             android:layout_marginTop="10dp"
             android:layout_gravity="center_horizontal"
@@ -55,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="false"
-                android:inputType="text" />
+                android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -74,7 +67,7 @@
                 android:maxLines="10"
                 android:scrollbars="vertical"
                 android:gravity="top|start"
-            android:inputType="textMultiLine" />
+            android:inputType="textCapSentences|textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <FrameLayout
@@ -91,22 +84,30 @@
             android:visibility="gone"
             />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/update_event_type"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
-            android:text="@string/update_event_type"/>
+            android:gravity="center">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/delete_event_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
-            android:backgroundTint="@color/red_delete"
-            android:text="@string/delete_event_type"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/update_event_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/update_event_type"/>
+
+            <include layout="@layout/space_divider"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/delete_event_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:backgroundTint="@color/red_delete"
+                android:text="@string/delete_event_type"/>
+
+        </LinearLayout>
 
         </LinearLayout>
 

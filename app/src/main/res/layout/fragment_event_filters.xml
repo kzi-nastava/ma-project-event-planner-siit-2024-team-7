@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".fragments.EventFiltersFragment">
+    tools:context=".fragments.home.all.EventFiltersFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

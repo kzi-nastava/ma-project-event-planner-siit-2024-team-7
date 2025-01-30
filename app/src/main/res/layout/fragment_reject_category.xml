@@ -11,14 +11,16 @@
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Confirm deletion"
+        android:text="@string/confirm_deletion"
         android:textAlignment="center"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textAlignment="center"
         android:text="@string/you_must_choose_a_replacement_category"/>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -53,8 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:layout_marginEnd="8dp"
-            android:text="Cancel"
-            android:textColor="@color/white" />
+            android:text="@string/cancel" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/reject_category_btn"
@@ -62,8 +63,7 @@
             android:layout_height="60dp"
             android:layout_marginStart="8dp"
             app:backgroundTint="@color/red_delete"
-            android:text="Reject and use\nreplacement"
-            android:textColor="@color/white" />
+            android:text="@string/reject_and_use_replacement" />
     </LinearLayout>
 
 </LinearLayout>

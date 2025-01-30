@@ -228,4 +228,6 @@
     <string name="account">Account</string>
     <string name="reject_and_use_replacement">Reject and use\nreplacement</string>
     <string name="confirm_deletion">Confirm deletion</string>
+    <string name="unavailable">Unavailable</string>
+    <string name="both">Both</string>
 </resources>

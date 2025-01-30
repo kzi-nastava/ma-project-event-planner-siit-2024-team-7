@@ -8,13 +8,33 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/categories_welcome_msg"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/all_active_categories"
-        android:textSize="24sp"/>
+        android:orientation="horizontal">
+
+        <include layout="@layout/space_divider"/>
+        <include layout="@layout/space_divider"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/categories_welcome_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/all_active_categories"
+            android:textSize="24sp"/>
+
+        <include layout="@layout/space_divider"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/new_category"
+            style="?attr/materialIconButtonFilledStyle"
+            app:icon="@drawable/ic_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"/>
+
+    </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/loading_msg"
@@ -44,25 +64,15 @@
                 android:id="@+id/suggested_categories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
                 android:layout_margin="8dp"
-                android:text="View Suggested" />
+                android:text="@string/view_suggested" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/active_categories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
                 android:layout_margin="8dp"
-                android:text="View Active"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/new_category"
-                style="?attr/materialIconButtonFilledStyle"
-                app:icon="@drawable/ic_add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"/>
+                android:text="@string/view_active"/>
 
         </LinearLayout>
 
@@ -90,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/reset"
-                app:icon="@drawable/baseline_cancel_24"
+                app:icon="@drawable/ic_refresh"
                 android:layout_gravity="center"
                 android:layout_marginStart="16dp"
                 />
@@ -100,12 +110,13 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categories_recycler_view"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_gravity="center_horizontal"
             android:clipToPadding="false"
-            android:scrollbars="vertical" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/normal_card"/>
 
     </LinearLayout>
 

@@ -7,4 +7,10 @@
         android:icon="@drawable/ic_account"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/nav_login_logout"
+        android:title="@string/logout"
+        android:icon="@drawable/ic_logout"
+        app:showAsAction="ifRoom"/>
+
 </menu>

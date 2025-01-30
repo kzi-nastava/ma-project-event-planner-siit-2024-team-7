@@ -6,15 +6,16 @@
         android:icon="@drawable/ic_home"/>
     <item
         android:id="@+id/nav_product"
-        android:title="@string/my_products"
-        android:icon="@drawable/ic_tv"/>
+        android:title="@string/products"
+        android:icon="@drawable/ic_products"/>
     <item
         android:id="@+id/nav_service"
-        android:title="@string/my_services"
-        android:icon="@drawable/ic_gears"/>
+        android:title="@string/services"
+        android:icon="@drawable/ic_services"/>
+
     <item android:id="@+id/nav_chats"
         android:title="@string/toolbar_chats"
-        android:icon="@drawable/ic_chat_bubble"/>
+        android:icon="@drawable/ic_chat"/>
 
     <item android:id="@+id/nav_notifications"
         android:title="@string/toolbar_notifications"

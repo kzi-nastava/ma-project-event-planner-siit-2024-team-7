@@ -6,7 +6,7 @@
         android:icon="@drawable/ic_home"/>
     <item android:id="@+id/nav_chats"
         android:title="@string/toolbar_chats"
-        android:icon="@drawable/ic_chat_bubble"/>
+        android:icon="@drawable/ic_chat"/>
 
     <item android:id="@+id/nav_notifications"
         android:title="@string/toolbar_notifications"

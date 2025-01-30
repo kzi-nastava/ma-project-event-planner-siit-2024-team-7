@@ -4,24 +4,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.textview.MaterialTextView;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,11 +28,6 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.ResponseMessageDTO;
 import rs.ac.uns.eventplanner.team7.dto.invitation.InvitationAcceptanceDTO;
-import rs.ac.uns.eventplanner.team7.fragments.AllCategoriesFragment;
-import rs.ac.uns.eventplanner.team7.fragments.AllEventTypesFragment;
-import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
-import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
-import rs.ac.uns.eventplanner.team7.fragments.UserProfileFragment;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
@@ -42,10 +36,11 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class HomeActivity extends AppCompatActivity {
 
     private final InvitationService invitationService = ClientUtils.injectService(InvitationService.class);
-    private Toolbar toolbar;
     private UserRole role;
+    private final Set<Integer> topLevelDestinations = new HashSet<>();
     private BottomNavigationView bottomNavigationView;
-    private FragmentContainerView fragmentContainer;
+    private NavController navController;
+    private AppBarConfiguration appBarConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,110 +55,77 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        fragmentContainer = findViewById(R.id.home_main_fragment_container);
-        this.toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        switch (role) {
-            case ADMIN:
-                setupAdminNav();
-                setupBottomNavbar();
-                break;
-            case AUTH:
-            case EVENT_ORG:
-            case SPP:
-                setupBottomNavbar();
-                break;
-            case GUEST:
-                ActionBar actionBar = Objects.requireNonNull(getSupportActionBar());
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_home);
-        }
+        setupNavigation();
 
         if (getIntent().getExtras() != null) handleInvitationAccepting();
     }
 
+    private void setupNavigation() {
+        NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        navController = Objects.requireNonNull(navHost).getNavController();
+
+        topLevelDestinations.add(R.id.nav_home);
+        if (role == UserRole.GUEST) {
+            appBarConfig = new AppBarConfiguration.Builder(topLevelDestinations).build();
+        } else {
+            setupBottomNavbar();
+            NavigationUI.setupWithNavController(bottomNavigationView, navController);
+            topLevelDestinations.addAll(Set.of(R.id.nav_event, R.id.nav_product,
+                    R.id.nav_service, R.id.nav_chats, R.id.nav_notifications));
+            final var appBarConfigurationBuilder = new AppBarConfiguration.Builder(topLevelDestinations);
+
+            NavigationView navigationView = findViewById(R.id.navigation_view);
+            if (navigationView != null) {
+                NavigationUI.setupWithNavController(navigationView, navController);
+                DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout);
+                appBarConfigurationBuilder.setOpenableLayout(drawerLayout);
+                navController.addOnDestinationChangedListener((controller, navDestination, bundle) -> {
+                    if (!topLevelDestinations.contains(navDestination.getId())) {
+                        drawerLayout.closeDrawers();
+                    }
+                });
+            }
+
+            appBarConfig = appBarConfigurationBuilder.build();
+        }
+
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(navController, appBarConfig) || super.onSupportNavigateUp();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        int menuLayout = role == UserRole.GUEST ? R.menu.guest_toolbar_menu : R.menu.toolbar_menu;
+        getMenuInflater().inflate(menuLayout, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == android.R.id.home) {
-            FragmentContainerView view = findViewById(R.id.home_main_fragment_container);
-            if (view.getFragment() instanceof HomeFragment) return false;
-            loadFragment(new HomeFragment());
-            toolbar.setTitle(R.string.home);
+        if (itemId == R.id.nav_login_logout) {
+            JwtUtil.setDefaultValues(this);
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
             return true;
-        } else if (itemId == R.id.nav_account) {
-            View profileMenuItemView = findViewById(R.id.nav_account);
-            PopupMenu popupMenu = new PopupMenu(this, profileMenuItemView);
-            if (role == UserRole.GUEST) {
-                popupMenu.getMenuInflater().inflate(R.menu.guest_profile_menu, popupMenu.getMenu());
-            } else {
-                popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
-            }
-            setAccountClickListener(popupMenu);
-            popupMenu.show();
+        } else if (itemId == R.id.nav_register) {
+            startActivity(new Intent(this, RegistrationActivity.class));
+            finish();
+            return true;
         }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void setAccountClickListener(PopupMenu popupMenu) {
-        popupMenu.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_logout || itemId == R.id.nav_sign_in) {
-                if (itemId == R.id.nav_logout) {
-                    JwtUtil.setDefaultValues(this);
-                }
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-                return true;
-            }
-            if (itemId == R.id.nav_my_account && (!(fragmentContainer.getFragment() instanceof UserProfileFragment))) {
-                loadFragment(new UserProfileFragment());
-                toolbar.setTitle(R.string.profile);
-                return true;
-            }
-            if (itemId == R.id.nav_sign_up) {
-                startActivity(new Intent(this, RegistrationActivity.class));
-                finish();
-                return true;
-            }
-            return false;
-        });
-    }
-
-    private void setupAdminNav() {
-        DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout);
-        NavigationView navigationView = findViewById(R.id.navigation_view);
-        MaterialTextView headerText = navigationView.getHeaderView(0).findViewById(R.id.nav_header_user_name);
-        headerText.setText(R.string.admin_options);
-        navigationView.inflateMenu(R.menu.admin_nav_drawer_menu);
-        navigationView.setVisibility(View.VISIBLE);
-
-        navigationView.setNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.event_type) {
-                loadFragment(new AllEventTypesFragment());
-                toolbar.setTitle(item.getTitle());
-            }
-            else if (item.getItemId() == R.id.category) {
-                loadFragment(new AllCategoriesFragment());
-                toolbar.setTitle(item.getTitle());
-            }
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        });
+        return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
     }
 
     private void setupBottomNavbar() {
-        bottomNavigationView.setVisibility(View.VISIBLE);
+        // Guest users don't have bottom navbar!
         if (role == UserRole.EVENT_ORG) {
             bottomNavigationView.inflateMenu(R.menu.event_organizer_menu);
         } else if (role == UserRole.SPP) {
@@ -171,35 +133,6 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             bottomNavigationView.inflateMenu(R.menu.basic_menu);
         }
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null, displayedFragment = fragmentContainer.getFragment();
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_home && (!(displayedFragment instanceof HomeFragment))) {
-                selectedFragment = new HomeFragment();
-                toolbar.setTitle(item.getTitle());
-            } else if (itemId == R.id.nav_event) {
-                // TODO
-            } else if (itemId == R.id.nav_product) {
-                // TODO
-            } else if (itemId == R.id.nav_service && (!(displayedFragment instanceof SPPServicesBaseFragment))) {
-                selectedFragment = new SPPServicesBaseFragment();
-                toolbar.setTitle(item.getTitle());
-            } else if (itemId == R.id.nav_chats) {
-                // TODO
-            } else if (itemId == R.id.nav_notifications) {
-                // TODO
-            }
-            if (selectedFragment != null) {
-                loadFragment(selectedFragment);
-            }
-            return true;
-        });
-    }
-
-    private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_main_fragment_container, fragment)
-                .commit();
     }
 
     private void handleInvitationAccepting() {

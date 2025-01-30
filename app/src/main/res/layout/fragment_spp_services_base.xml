@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SPPServicesBaseFragment"
+    tools:context=".fragments.services.SPPServicesBaseFragment"
     android:id="@+id/spp_services_base_fragment">
 
     <androidx.fragment.app.FragmentContainerView

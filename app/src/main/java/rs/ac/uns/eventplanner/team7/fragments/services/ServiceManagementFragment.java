@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.services;
 
 import android.app.Activity;
 import android.content.Intent;

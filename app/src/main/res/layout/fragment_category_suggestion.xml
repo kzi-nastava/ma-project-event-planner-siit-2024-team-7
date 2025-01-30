@@ -8,7 +8,7 @@
     android:id="@+id/category_suggestion_fragment"
     android:padding="20dp"
     style="@style/ThemeOverlay.Material3.Dialog"
-    tools:context=".fragments.CategorySuggestionDialogFragment">
+    tools:context=".fragments.services.CategorySuggestionDialogFragment">
 
     <TextView
         android:id="@+id/dialog_title"

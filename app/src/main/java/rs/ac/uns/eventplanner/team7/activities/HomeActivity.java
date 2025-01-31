@@ -106,7 +106,7 @@ public class HomeActivity extends AppCompatActivity {
 
         if (role == UserRole.ADMIN) {
             DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout);
-            appBarConfig = appBarConfigBuilder.setOpenableLayout(drawerLayout).build();
+            appBarConfigBuilder.setOpenableLayout(drawerLayout);
 
             NavigationView navigationDrawerView = findViewById(R.id.navigation_view);
             NavigationUI.setupWithNavController(navigationDrawerView, navController);

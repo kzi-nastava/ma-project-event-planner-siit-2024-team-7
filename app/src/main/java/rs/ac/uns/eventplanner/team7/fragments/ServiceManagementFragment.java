@@ -161,12 +161,12 @@ public class ServiceManagementFragment extends Fragment {
             imagePickerLauncher.launch(intent);
         });
 
-        workDayAdapter = new WorkDayAdapter(getContext(), workDayList);
+        workDayAdapter = new WorkDayAdapter(getContext(), workDayList, availableCheckBox);
         workDaysView.setLayoutManager(new LinearLayoutManager(getContext()));
         workDaysView.setHasFixedSize(true);
         workDaysView.setAdapter(workDayAdapter);
         addWorkDayBtn.setOnClickListener(v -> {
-            WorkDayDialogFragment fragment = new WorkDayDialogFragment(workDayList, workDayAdapter);
+            WorkDayDialogFragment fragment = new WorkDayDialogFragment(workDayList, workDayAdapter, availableCheckBox);
             fragment.show(requireActivity().getSupportFragmentManager(), "WorkDayDialog");
         });
 
@@ -475,6 +475,8 @@ public class ServiceManagementFragment extends Fragment {
 
         visibleCheckBox.setChecked(serviceDTO.isVisible());
         availableCheckBox.setChecked(serviceDTO.isAvailable());
+        if (!workDayList.isEmpty())
+            availableCheckBox.setEnabled(true);
 
         selectedEventTypes.clear();
         for (EventType et : serviceDTO.getAppliesTo())

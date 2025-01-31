@@ -109,6 +109,9 @@ public class ProductDetailsFragment extends Fragment {
                     });
         });
 
+        if (!productDTO.isAvailable())
+            buyButton.setEnabled(false);
+
         if (Objects.equals(JwtUtil.getRole(requireContext()), UserRole.SPP.toString())) {
             viewProviderButton.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);

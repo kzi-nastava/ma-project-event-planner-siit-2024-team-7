@@ -232,7 +232,8 @@
                 android:id="@+id/buy_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Buy Product"/>
+                android:text="Buy Product"
+                android:enabled="true"/>
 
         </LinearLayout>
 

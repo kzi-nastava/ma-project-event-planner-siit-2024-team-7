@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -30,10 +31,12 @@ import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 public class WorkDayDialogFragment extends DialogFragment {
     private final List<WorkDayDTO> workDayList;
     private final WorkDayAdapter adapter;
+    private final MaterialCheckBox availableCheckBox;
 
-    public WorkDayDialogFragment(List<WorkDayDTO> workDaysList, WorkDayAdapter adapter) {
+    public WorkDayDialogFragment(List<WorkDayDTO> workDaysList, WorkDayAdapter adapter, MaterialCheckBox availableCheckBox) {
         this.workDayList = workDaysList;
         this.adapter = adapter;
+        this.availableCheckBox = availableCheckBox;
     }
 
     @Nullable
@@ -75,6 +78,8 @@ public class WorkDayDialogFragment extends DialogFragment {
                     throw new IllegalArgumentException("Invalid start and end times");
                 WorkDayDTO workDay = new WorkDayDTO(DayOfWeek.valueOf(dayOfWeek), startTime, endTime);
                 workDayList.add(workDay);
+                availableCheckBox.setEnabled(true);
+                availableCheckBox.setChecked(true);
                 adapter.notifyDataSetChanged();
                 dismiss();
             }

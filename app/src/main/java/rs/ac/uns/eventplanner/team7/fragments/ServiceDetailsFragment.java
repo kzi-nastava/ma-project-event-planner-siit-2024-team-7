@@ -41,13 +41,13 @@ public class ServiceDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final GetServiceResponseDTO serviceDTO;
 
-    ImageView favouriteStar;
-    MaterialTextView nameView, descriptionView, specificsView, priceView, discountView, minDurationView, maxDurationView,
+    private ImageView favouriteStar;
+    private MaterialTextView nameView, descriptionView, specificsView, priceView, discountView, minDurationView, maxDurationView,
             reservationDeadlineView, cancellationDeadlineView, categoryView, eventTypesView, workDaysView, noImagesView;
-    RecyclerView imagesView;
-    ImageAdapter imageAdapter;
+    private RecyclerView imagesView;
+    private ImageAdapter imageAdapter;
 
-    MaterialButton reserveButton, cancelButton, viewProviderButton, chatWithProviderButton;
+    private MaterialButton reserveButton, cancelButton, viewProviderButton, chatWithProviderButton;
 
     public ServiceDetailsFragment(GetServiceResponseDTO serviceDTO) {
         this.serviceDTO = serviceDTO;
@@ -126,6 +126,14 @@ public class ServiceDetailsFragment extends Fragment {
             viewProviderButton.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);
         }
+
+        viewProviderButton.setOnClickListener(v -> {
+            SPPDetailsFragment fragment = new SPPDetailsFragment(serviceDTO.getId());
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.home_main_fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     private void fillDetails() {

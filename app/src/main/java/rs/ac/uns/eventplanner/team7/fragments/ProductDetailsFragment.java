@@ -40,12 +40,12 @@ public class ProductDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final GetProductResponseDTO productDTO;
 
-    ImageView favouriteStar;
-    MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView;
-    RecyclerView imagesView;
-    ImageAdapter imageAdapter;
+    private ImageView favouriteStar;
+    private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView;
+    private RecyclerView imagesView;
+    private ImageAdapter imageAdapter;
 
-    MaterialButton buyButton, viewProviderButton, chatWithProviderButton;
+    private MaterialButton buyButton, viewProviderButton, chatWithProviderButton;
 
     public ProductDetailsFragment(GetProductResponseDTO productDTO) {
         this.productDTO = productDTO;
@@ -113,6 +113,14 @@ public class ProductDetailsFragment extends Fragment {
             viewProviderButton.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);
         }
+
+        viewProviderButton.setOnClickListener(v -> {
+            SPPDetailsFragment fragment = new SPPDetailsFragment(productDTO.getId());
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.home_main_fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     private void fillDetails() {

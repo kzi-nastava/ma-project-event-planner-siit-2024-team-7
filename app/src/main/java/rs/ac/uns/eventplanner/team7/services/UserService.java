@@ -79,4 +79,11 @@ public interface UserService {
     })
     @PUT("users/{id}/favourites/items")
     Call<FavouriteItemResponseDTO> markItemAsFavourite(@Header("Authorization") String token, @Path("id") Integer id, @Body FavouriteItemRequestDTO dto);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("users/providers/by_item/{itemId}")
+    Call<GetProviderResponseDTO> getProviderByItemId(@Header("Authorization") String token, @Path("itemId") Integer itemId);
 }

@@ -1,13 +1,11 @@
 package rs.ac.uns.eventplanner.team7.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
@@ -39,8 +37,6 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.View
         String image = images.get(position);
         holder.titleView.setText(image);
         holder.subtitleView.setVisibility(View.GONE);
-        Drawable icon = AppCompatResources.getDrawable(context, R.drawable.baseline_cancel_24);
-        holder.button.setIcon(icon);
         holder.button.setOnClickListener(v -> {
             images.remove(image);
             notifyDataSetChanged();

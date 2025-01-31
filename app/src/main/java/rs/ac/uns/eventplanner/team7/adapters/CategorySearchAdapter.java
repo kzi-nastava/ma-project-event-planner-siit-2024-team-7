@@ -56,7 +56,7 @@ public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAd
 
         holder.titleView.setVisibility(View.INVISIBLE);
         holder.subtitleView.setText(category.getName());
-        Drawable icon = AppCompatResources.getDrawable(context, R.drawable.baseline_add_24);
+        Drawable icon = AppCompatResources.getDrawable(context, R.drawable.ic_add);
         holder.button.setIcon(icon);  // Add button
 
         holder.button.setOnClickListener(v -> {

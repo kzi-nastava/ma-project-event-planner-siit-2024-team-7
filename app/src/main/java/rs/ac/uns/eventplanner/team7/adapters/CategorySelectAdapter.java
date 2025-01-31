@@ -1,13 +1,11 @@
 package rs.ac.uns.eventplanner.team7.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,10 +45,6 @@ public class CategorySelectAdapter extends RecyclerView.Adapter<CategorySelectAd
         Category category = selectedCategories.get(position);
         holder.subtitleView.setText(category.getName());
         holder.titleView.setVisibility(View.INVISIBLE);
-
-        Drawable icon = AppCompatResources.getDrawable(context, R.drawable.baseline_cancel_24);
-        holder.button.setIcon(icon);
-
         holder.button.setOnClickListener(v -> {
             selectedCategories.remove(category);
             addableCategories.add(category);

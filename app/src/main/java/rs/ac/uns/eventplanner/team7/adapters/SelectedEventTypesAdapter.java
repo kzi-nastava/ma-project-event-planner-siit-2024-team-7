@@ -39,8 +39,6 @@ public class SelectedEventTypesAdapter extends RecyclerView.Adapter<SelectedEven
         EventType eventType = selectedEventTypes.get(position);
         holder.titleView.setText(eventType.getName());
         holder.subtitleView.setVisibility(View.GONE);
-        holder.fabView.setImageResource(R.drawable.baseline_cancel_24);
-
         holder.fabView.setOnClickListener(v -> {
             selectedEventTypes.remove(eventType);
             notifyDataSetChanged();

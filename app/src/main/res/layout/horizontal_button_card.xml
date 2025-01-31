@@ -48,7 +48,7 @@
             android:contentDescription="@string/button"
             android:layout_gravity="center"
             android:layout_marginEnd="20dp"
-            app:icon="@drawable/baseline_add_24"/>
+            app:icon="@drawable/ic_cancel_rounded"/>
 
 
     </LinearLayout>

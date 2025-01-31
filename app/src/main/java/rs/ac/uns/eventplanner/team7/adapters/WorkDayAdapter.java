@@ -39,7 +39,7 @@ public class WorkDayAdapter extends RecyclerView.Adapter<WorkDayAdapter.ViewHold
         WorkDayDTO workDay = workDaysList.get(position);
         holder.titleView.setText(workDay.getDay().toString());
         holder.subtitleView.setText(String.format("%s - %s", workDay.getWorkTimeStart(), workDay.getWorkTimeEnd()));
-        holder.fabView.setImageResource(R.drawable.ic_close);  // Remove button
+        holder.fabView.setImageResource(R.drawable.ic_cancel);  // Remove button
 
         holder.fabView.setOnClickListener(v -> {
             workDaysList.remove(workDay);

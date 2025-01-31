@@ -55,7 +55,7 @@ public class AccountDeactivationDialogFragment extends MaterialDialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_deactivation_confirmation, null);
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_account_deactivation, null);
         builder.setView(dialogView)
                 .setPositiveButton(R.string.yes, null) // Set to null for custom behavior
                 .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
@@ -86,9 +86,11 @@ public class AccountDeactivationDialogFragment extends MaterialDialogFragment {
         return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     dismiss();
                     startActivity(new Intent(requireActivity(), LoginActivity.class));
+                    requireActivity().finish();
                 } else {
                     try {
                         String errorBody = response.errorBody().string();

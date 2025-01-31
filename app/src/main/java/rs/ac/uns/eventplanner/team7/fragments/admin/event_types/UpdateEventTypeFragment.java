@@ -91,6 +91,7 @@ public class UpdateEventTypeFragment extends Fragment {
         return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<EventType> call, @NonNull Response<EventType> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     EventType dto = response.body();
                     if (dto != null) {
@@ -149,6 +150,7 @@ public class UpdateEventTypeFragment extends Fragment {
         return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<UpdateEventTypeResponseDTO> call, @NonNull Response<UpdateEventTypeResponseDTO> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     returnToBaseFragment("Event type updated successfully!");
                 }
@@ -201,6 +203,7 @@ public class UpdateEventTypeFragment extends Fragment {
         return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     dialog.dismiss();
                     returnToBaseFragment("Event type deactivated successfully!");

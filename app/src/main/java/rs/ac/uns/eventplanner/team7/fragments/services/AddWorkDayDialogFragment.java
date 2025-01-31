@@ -25,7 +25,7 @@ import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.fragments.MaterialDialogFragment;
 
-public class WorkDayDialogFragment extends MaterialDialogFragment {
+public class AddWorkDayDialogFragment extends MaterialDialogFragment {
 
     private List<WorkDayDTO> currentWorkDays;
     private CardRecyclerViewAdapter<WorkDayDTO> adapter;
@@ -34,7 +34,7 @@ public class WorkDayDialogFragment extends MaterialDialogFragment {
     private final ArrayList<String> timeOptions;
     String selectedDay, selectedStartTime, selectedEndTime;
 
-    public WorkDayDialogFragment() {
+    public AddWorkDayDialogFragment() {
         // Required empty public constructor
         timeOptions = new ArrayList<>();
         for (int i = 0; i < 24; i++) {
@@ -43,9 +43,9 @@ public class WorkDayDialogFragment extends MaterialDialogFragment {
         selectedDay = selectedStartTime = selectedEndTime = "";
     }
 
-    public static WorkDayDialogFragment newInstance(List<WorkDayDTO> currentWorkDays,
-                                                    CardRecyclerViewAdapter<WorkDayDTO> adapter) {
-        WorkDayDialogFragment fragment = new WorkDayDialogFragment();
+    public static AddWorkDayDialogFragment newInstance(List<WorkDayDTO> currentWorkDays,
+                                                       CardRecyclerViewAdapter<WorkDayDTO> adapter) {
+        AddWorkDayDialogFragment fragment = new AddWorkDayDialogFragment();
         fragment.adapter = adapter;
         fragment.currentWorkDays = currentWorkDays;
         return fragment;
@@ -53,7 +53,7 @@ public class WorkDayDialogFragment extends MaterialDialogFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_work_day_add, container, false);
+        View view = inflater.inflate(R.layout.dialog_add_work_day, container, false);
 
         dayOfWeekDropdown = view.findViewById(R.id.dropdown_day_of_week);
         startTimeDropdown = view.findViewById(R.id.dropdown_start_time);

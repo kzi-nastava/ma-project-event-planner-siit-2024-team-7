@@ -100,6 +100,7 @@ public class CreateEventTypeFragment extends Fragment {
         return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<CreateEventTypeResponseDTO> call, @NonNull Response<CreateEventTypeResponseDTO> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     // Navigate back to the event type list
                     Bundle args = new Bundle();

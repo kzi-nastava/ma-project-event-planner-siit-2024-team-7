@@ -133,9 +133,10 @@ public class ChangePasswordDialogFragment extends MaterialDialogFragment {
     }
 
     private Callback<?> createPasswordChangeCallback(MaterialTextView errorMsg) {
-        return new Callback<Object>() {
+        return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     dismiss();
                 } else {

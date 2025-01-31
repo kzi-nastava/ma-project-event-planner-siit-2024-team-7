@@ -56,7 +56,7 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_reject_category, container, false);
+        View view = inflater.inflate(R.layout.dialog_reject_category, container, false);
 
         categoryDropdown = view.findViewById(R.id.replacement_category_dropdown);
         fetchCategories();
@@ -119,6 +119,7 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
                     @Override
                     public void onResponse(@NonNull Call<List<Category>> call,
                                            @NonNull Response<List<Category>> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             categories = new ArrayList<>(response.body());
 

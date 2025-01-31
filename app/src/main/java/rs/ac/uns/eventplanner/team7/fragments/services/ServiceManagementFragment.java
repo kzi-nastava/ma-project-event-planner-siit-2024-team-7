@@ -87,7 +87,8 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
     private final List<EventType> selectedEventTypes;
     private List<Category> categories;
 
-    private TextInputEditText nameInput, descriptionInput, priceInput, discountInput, specificsInput, reservationInput, cancellationInput, minDurationInput, maxDurationInput;
+    private TextInputEditText nameInput, descriptionInput, priceInput, discountInput, specificsInput,
+            reservationInput, cancellationInput, minDurationInput, maxDurationInput;
     private AutoCompleteTextView categoryDropdown, eventTypesDropdown;
     private MaterialCheckBox visibleCheckBox, availableCheckBox;
     private MaterialButton selectImagesBtn, addWorkDayBtn, suggestCategoryBtn;
@@ -161,16 +162,15 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             imagePickerLauncher.launch(intent);
         });
-        Drawable icon = AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_cancel_24);
 
-        workDayAdapter = new CardRecyclerViewAdapter<>(requireContext(), workDays, this, icon);
+        workDayAdapter = new CardRecyclerViewAdapter<>(requireContext(), workDays, this, null);
         workDaysView.setAdapter(workDayAdapter);
         addWorkDayBtn.setOnClickListener(v -> {
-            WorkDayDialogFragment fragment = WorkDayDialogFragment.newInstance(workDays, workDayAdapter);
+            AddWorkDayDialogFragment fragment = AddWorkDayDialogFragment.newInstance(workDays, workDayAdapter);
             fragment.show(requireActivity().getSupportFragmentManager(), "WorkDayDialog");
         });
 
-        selectedEventTypesAdapter = new CardRecyclerViewAdapter<>(requireContext(), selectedEventTypes, this, icon);
+        selectedEventTypesAdapter = new CardRecyclerViewAdapter<>(requireContext(), selectedEventTypes, this, null);
         selectedEventTypesView.setAdapter(selectedEventTypesAdapter);
 
         fetchEventTypes();

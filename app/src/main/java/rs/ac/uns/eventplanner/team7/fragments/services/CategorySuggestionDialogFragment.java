@@ -50,7 +50,7 @@ public class CategorySuggestionDialogFragment extends MaterialDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_category_suggestion, container, false);
+        return inflater.inflate(R.layout.dialog_category_suggestion, container, false);
     }
 
     @Override
@@ -70,6 +70,7 @@ public class CategorySuggestionDialogFragment extends MaterialDialogFragment {
                             @Override
                             public void onResponse(@NonNull Call<Category> call,
                                                    @NonNull Response<Category> response) {
+                                if (!isAdded()) return;
                                 if (response.isSuccessful() && response.body() != null) {
                                     categories.add(response.body());
                                     categoryDropdown.setText(response.body().toString(), false);

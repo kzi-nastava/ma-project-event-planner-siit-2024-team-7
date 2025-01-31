@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".fragments.services.WorkDayDialogFragment"
+    tools:context=".fragments.services.AddWorkDayDialogFragment"
     android:padding="20dp"
     android:orientation="vertical">
 
@@ -33,7 +33,7 @@
             android:inputType="none"
             android:focusable="false"
             android:clickable="true"
-            android:hint="Weekday" />
+            android:hint="@string/weekday" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -51,7 +51,7 @@
             android:inputType="none"
             android:focusable="false"
             android:clickable="true"
-            android:hint="Start Time" />
+            android:hint="@string/start_time" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -69,7 +69,7 @@
             android:inputType="none"
             android:focusable="false"
             android:clickable="true"
-            android:hint="End Time" />
+            android:hint="@string/end_time" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout

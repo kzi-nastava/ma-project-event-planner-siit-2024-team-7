@@ -20,8 +20,8 @@
             android:id="@+id/change_org_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:text="Org name"
+            android:inputType="textCapWords"
+            android:text="@string/org_name"
             android:enabled="false"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -40,8 +40,8 @@
             android:id="@+id/change_org_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:text="Organization description"
+            android:inputType="textCapSentences"
+            android:text="@string/org_desc"
             android:enabled="false"
             android:minHeight="100dp"
             />

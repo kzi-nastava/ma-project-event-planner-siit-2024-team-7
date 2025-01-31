@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/event_type"
+        android:id="@+id/nav_event_types"
         android:title="@string/event_type_menu_item"
-        android:icon="@drawable/baseline_apps_24"/>
+        android:icon="@drawable/ic_square_grid"/>
+
+    <item
+        android:id="@+id/nav_categories"
+        android:title="@string/category_menu_item"
+        android:icon="@drawable/ic_mosaic"/>
 
 </menu>

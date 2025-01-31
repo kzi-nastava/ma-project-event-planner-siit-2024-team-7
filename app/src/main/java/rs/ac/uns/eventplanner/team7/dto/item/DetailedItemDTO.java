@@ -5,14 +5,14 @@ import java.util.Locale;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCard;
 import rs.ac.uns.eventplanner.team7.model.Item;
 import rs.ac.uns.eventplanner.team7.model.Location;
+import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCardWithImage;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class DetailedItemDTO extends BasicItemDTO implements DetailedCard {
+public class DetailedItemDTO extends BasicItemDTO implements DetailedCardWithImage {
 
     private String description;
     private Location location;

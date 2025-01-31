@@ -5,8 +5,6 @@ package rs.ac.uns.eventplanner.team7.model.interfaces;
  */
 public interface BasicCard {
     Integer getId();
-    String getType();
     String getTitle();
     String getSubtitle();
-    String getCoverImage();
 }

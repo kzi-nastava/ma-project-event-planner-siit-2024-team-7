@@ -1,6 +1,11 @@
 package rs.ac.uns.eventplanner.team7.dto.service;
 
-import java.util.Set;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,21 +19,86 @@ import rs.ac.uns.eventplanner.team7.model.EventType;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetServiceResponseDTO {
+public class GetServiceResponseDTO implements Parcelable {
     private Integer id;
     private String name;
     private String description;
-    private Set<String> images;
+    private List<String> images;
     private PricingResponseDTO pricing;
     private Category category;
     private String specifics;
-    private Set<WorkDayDTO> workDaysDTOs;
+    private List<WorkDayDTO> workDaysDTOs;
     private int minDurationInMinutes;
     private int maxDurationInMinutes;
     private int reservationDeadlineInDays;
     private int cancellationDeadlineInDays;
-    private Set<EventType> appliesTo;
+    private List<EventType> appliesTo;
     private boolean isOwn;
     private boolean visible;
     private boolean available;
+
+    protected GetServiceResponseDTO(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readInt();
+        }
+        name = in.readString();
+        description = in.readString();
+        images = in.createStringArrayList();
+        pricing = in.readParcelable(PricingResponseDTO.class.getClassLoader());
+        category = in.readParcelable(Category.class.getClassLoader());
+        specifics = in.readString();
+        workDaysDTOs = in.createTypedArrayList(WorkDayDTO.CREATOR);
+        minDurationInMinutes = in.readInt();
+        maxDurationInMinutes = in.readInt();
+        reservationDeadlineInDays = in.readInt();
+        cancellationDeadlineInDays = in.readInt();
+        appliesTo = in.createTypedArrayList(EventType.CREATOR);
+        isOwn = in.readByte() != 0;
+        visible = in.readByte() != 0;
+        available = in.readByte() != 0;
+    }
+
+    public static final Creator<GetServiceResponseDTO> CREATOR = new Creator<GetServiceResponseDTO>() {
+        @Override
+        public GetServiceResponseDTO createFromParcel(Parcel in) {
+            return new GetServiceResponseDTO(in);
+        }
+
+        @Override
+        public GetServiceResponseDTO[] newArray(int size) {
+            return new GetServiceResponseDTO[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(id);
+        }
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeStringList(images);
+        dest.writeParcelable(pricing, flags);
+        dest.writeParcelable(category, flags);
+        dest.writeString(specifics);
+        dest.writeTypedList(workDaysDTOs);
+        dest.writeInt(minDurationInMinutes);
+        dest.writeInt(maxDurationInMinutes);
+        dest.writeInt(reservationDeadlineInDays);
+        dest.writeInt(cancellationDeadlineInDays);
+        dest.writeTypedList(appliesTo);
+        dest.writeByte((byte) (isOwn ? 1 : 0));
+        dest.writeByte((byte) (visible ? 1 : 0));
+        dest.writeByte((byte) (available ? 1 : 0));
+    }
 }

@@ -20,14 +20,14 @@ import com.google.android.material.card.MaterialCardView;
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
-import rs.ac.uns.eventplanner.team7.fragments.UpdateEventTypeFragment;
+import rs.ac.uns.eventplanner.team7.fragments.admin.event_types.UpdateEventTypeFragment;
+import rs.ac.uns.eventplanner.team7.model.EventType;
 
 public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdapter.ViewHolder> {
     private final Context context;
-    private final List<GetEventTypeResponseDTO> eventTypes;
+    private final List<EventType> eventTypes;
 
-    public EventTypeCardAdapter(Context context, List<GetEventTypeResponseDTO> eventTypes) {
+    public EventTypeCardAdapter(Context context, List<EventType> eventTypes) {
         this.context = context;
         this.eventTypes = eventTypes;
     }
@@ -44,7 +44,7 @@ public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdap
         if (holder.titleView == null || holder.subtitleView == null || holder.descriptionView == null || holder.imageView == null) {
             return;
         }
-        GetEventTypeResponseDTO dto = eventTypes.get(position);
+        EventType dto = eventTypes.get(position);
         if (!dto.isActive()) {
             holder.cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.grey));
         }
@@ -94,7 +94,7 @@ public class EventTypeCardAdapter extends RecyclerView.Adapter<EventTypeCardAdap
 
                     activity.getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.home_main_fragment_container, fragment, "UpdateEventTypeFragmentTag")
+                            .replace(R.id.nav_host_fragment, fragment, "UpdateEventTypeFragmentTag")
                             .addToBackStack(null)
                             .commit();
                 }

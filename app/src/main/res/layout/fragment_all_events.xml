@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AllEventsFragment"
+    tools:context=".fragments.home.all.AllEventsFragment"
     android:orientation="vertical"
     android:id="@+id/all_events_fragment">
 
@@ -28,18 +28,22 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/event_filters_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
+            app:icon="@drawable/ic_filter"
             android:text="@string/filters" />
 
         <include layout="@layout/space_divider" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/event_sort_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
+            app:icon="@drawable/ic_sort"
             android:text="@string/sort" />
 
     </LinearLayout>
@@ -53,12 +57,19 @@
         android:text="@string/fetching_data"
         />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/all_events_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/horizontal_card"/>
+   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+       android:id="@+id/events_swipe_refresh"
+       android:layout_width="match_parent"
+       android:layout_height="0dp"
+       android:layout_weight="1">
+
+       <androidx.recyclerview.widget.RecyclerView
+           android:id="@+id/all_events_recycler_view"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+           tools:listitem="@layout/horizontal_card"/>
+
+   </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

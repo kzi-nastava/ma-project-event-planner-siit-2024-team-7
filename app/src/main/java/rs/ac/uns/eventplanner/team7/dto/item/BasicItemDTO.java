@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.Item;
 import rs.ac.uns.eventplanner.team7.model.Product;
+import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
+import rs.ac.uns.eventplanner.team7.model.interfaces.CardWithImage;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class BasicItemDTO implements BasicCard {
+public class BasicItemDTO implements BasicCard, CardWithImage {
 
     protected Integer id;
     protected String type;

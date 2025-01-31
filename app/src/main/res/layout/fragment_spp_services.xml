@@ -4,44 +4,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.SPPServicesFragment"
+    tools:context=".fragments.services.SPPServicesFragment"
     android:orientation="vertical"
     android:id="@+id/spp_services_fragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:orientation="vertical"
-        android:paddingTop="5dp"
-        android:paddingBottom="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/spp_services_search_view"
+        android:paddingHorizontal="10dp"
+        android:orientation="horizontal"
+        android:paddingVertical="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spp_services_search_view"
-        app:layout_constraintVertical_bias="0.001">
+        app:layout_constraintTop_toTopOf="parent">
 
         <SearchView
             android:id="@+id/spp_services_search_view"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:iconifiedByDefault="false"
             android:inputType="text"
-
             android:background="@drawable/searchview_border"
             android:queryHint="Search for services"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginEnd="8dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/service_filters_button"
-            android:layout_width="match_parent"
+            style="?attr/materialIconButtonFilledTonalStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="0.3"
-            android:text="@string/filters" />
-
+            android:tooltipText="@string/filters"
+            app:icon="@drawable/ic_filter"/>
     </LinearLayout>
+
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/services_search_result_message_view"

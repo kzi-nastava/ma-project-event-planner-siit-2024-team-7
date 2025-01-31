@@ -2,13 +2,12 @@ package rs.ac.uns.eventplanner.team7.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import rs.ac.uns.eventplanner.team7.fragments.AllEventsFragment;
-import rs.ac.uns.eventplanner.team7.fragments.AllItemsFragment;
-import rs.ac.uns.eventplanner.team7.fragments.TopEventsFragment;
-import rs.ac.uns.eventplanner.team7.fragments.TopItemsFragment;
+import rs.ac.uns.eventplanner.team7.fragments.home.all.AllEventsFragment;
+import rs.ac.uns.eventplanner.team7.fragments.home.all.AllItemsFragment;
+import rs.ac.uns.eventplanner.team7.fragments.home.top.TopEventsFragment;
+import rs.ac.uns.eventplanner.team7.fragments.home.top.TopItemsFragment;
 
 public class HomePagerAdapter extends FragmentStateAdapter {
 

@@ -145,33 +145,33 @@ public class CategoryManagementFragment extends Fragment {
                 "Category updated successfully!"));
     }
 
-    private void handleServiceCall(Call<Category> serviceCall, String responseMessage) {
+    private <T> void handleServiceCall(Call<T> serviceCall, String responseMessage) {
         serviceCall.enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Category> call,
-                                           @NonNull Response<Category> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            returnToBaseFragment(responseMessage);
-                        } else {
-                            try {
-                                // Show error message
-                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
-                                JSONObject jsonObject = new JSONObject(errorBody);
-                                String message = jsonObject.getString("message");
-                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
-                                errorMsg.setText(message);
-                                errorMsg.setVisibility(View.VISIBLE);
-                            } catch (Exception e) {
-                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
-                            }
-                        }
+            @Override
+            public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
+                if (!isAdded()) return;
+                if (response.isSuccessful() && response.body() != null) {
+                    returnToBaseFragment(responseMessage);
+                } else {
+                    try {
+                        // Show error message
+                        String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String message = jsonObject.getString("message");
+                        MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                        errorMsg.setText(message);
+                        errorMsg.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
                     }
+                }
+            }
 
-                    @Override
-                    public void onFailure(@NonNull Call<Category> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                    }
-                });
+            @Override
+            public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
     }
 
     private CreateCategoryRequestDTO createRequestDTO(View view) {
@@ -213,7 +213,10 @@ public class CategoryManagementFragment extends Fragment {
         AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Confirm Deletion")
                 .setMessage("Are you sure you want to delete this category?")
-                .setPositiveButton("Delete", (dialogInterface, which) -> deleteCategory())
+                .setPositiveButton("Delete", (dialogInterface, which) ->
+                        handleServiceCall(categoryService.deleteCategory
+                                (JwtUtil.getAuthorizationValue(requireContext()), category.getId()),
+                                "Category deleted successfully!"))
                 .setNegativeButton("Cancel", (dialogInterface, which) -> dialogInterface.dismiss())
                 .create();
 
@@ -223,36 +226,6 @@ public class CategoryManagementFragment extends Fragment {
                 deleteButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark));
         });
         dialog.show();
-    }
-
-    private void deleteCategory() {
-        categoryService.deleteCategory(JwtUtil.getAuthorizationValue(requireContext()), category.getId())
-                .enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<DeleteCategoryResponseDTO> call,
-                                           @NonNull Response<DeleteCategoryResponseDTO> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            returnToBaseFragment("Category deleted successfully!");
-                        } else {
-                            try {
-                                // Show error message
-                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
-                                JSONObject jsonObject = new JSONObject(errorBody);
-                                String message = jsonObject.getString("message");
-                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
-                                errorMsg.setText(message);
-                                errorMsg.setVisibility(View.VISIBLE);
-                            } catch (Exception e) {
-                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<DeleteCategoryResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                    }
-                });
     }
 
     private void returnToBaseFragment(String responseMessage) {

@@ -20,7 +20,7 @@
             android:padding="15dp"
             >
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/horizontal_card_title"
+                android:id="@+id/card_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxWidth="200dp"
@@ -29,7 +29,7 @@
                 />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/horizontal_card_subtitle"
+                android:id="@+id/card_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxWidth="200dp"
@@ -40,14 +40,15 @@
 
         <include layout="@layout/space_divider"/>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/horizontal_card_fab"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/card_more_info_button"
+            style="?attr/materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/button"
             android:layout_gravity="center"
             android:layout_marginEnd="20dp"
-            android:src="@drawable/baseline_add_24"/>
+            app:icon="@drawable/ic_cancel_rounded"/>
 
 
     </LinearLayout>

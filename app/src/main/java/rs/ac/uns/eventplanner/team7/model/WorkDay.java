@@ -1,5 +1,10 @@
 package rs.ac.uns.eventplanner.team7.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -12,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class WorkDay implements Comparable<WorkDay> {
+public class WorkDay implements Comparable<WorkDay>, Parcelable {
 
     private DayOfWeek day;
     private LocalTime workTimeStart;
@@ -26,12 +31,23 @@ public class WorkDay implements Comparable<WorkDay> {
         this.workTimeEnd = workTimeEnd;
     }
 
-    public boolean isWithinWorkingHours(LocalDateTime timeSlot) {
-        if (timeSlot.getDayOfWeek() != this.day) return false;
-        LocalTime time = timeSlot.toLocalTime();
-        return (this.workTimeStart.isBefore(time) || this.workTimeStart.equals(time))
-                && (this.workTimeEnd.isAfter(time) || this.workTimeEnd.equals(time)) ;
+    protected WorkDay(Parcel in) {
+        day = DayOfWeek.valueOf(in.readString());
+        workTimeStart = LocalTime.parse(in.readString());
+        workTimeEnd = LocalTime.parse(in.readString());
     }
+
+    public static final Creator<WorkDay> CREATOR = new Creator<>() {
+        @Override
+        public WorkDay createFromParcel(Parcel in) {
+            return new WorkDay(in);
+        }
+
+        @Override
+        public WorkDay[] newArray(int size) {
+            return new WorkDay[size];
+        }
+    };
 
     @Override
     public int compareTo(WorkDay other) {
@@ -55,5 +71,17 @@ public class WorkDay implements Comparable<WorkDay> {
     @Override
     public int hashCode() {
         return Objects.hash(day, workTimeStart, workTimeEnd);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(day.toString());
+        dest.writeString(workTimeStart.toString());
+        dest.writeString(workTimeEnd.toString());
     }
 }

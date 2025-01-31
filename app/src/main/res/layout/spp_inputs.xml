@@ -31,6 +31,6 @@
                     android:id="@+id/org_desc"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:inputType="textMultiLine|textCapWords"/>
+                    android:inputType="textMultiLine|textCapSentences"/>
         </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

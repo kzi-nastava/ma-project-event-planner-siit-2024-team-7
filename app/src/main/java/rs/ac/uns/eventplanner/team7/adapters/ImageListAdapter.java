@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
@@ -37,9 +37,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.View
         String image = images.get(position);
         holder.titleView.setText(image);
         holder.subtitleView.setVisibility(View.GONE);
-        holder.fabView.setImageResource(R.drawable.baseline_cancel_24);  // Remove button
-
-        holder.fabView.setOnClickListener(v -> {
+        holder.button.setOnClickListener(v -> {
             images.remove(image);
             notifyDataSetChanged();
             holder.setVisibility(View.GONE);
@@ -64,14 +62,14 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.View
     public static class ViewHolder extends RecyclerView.ViewHolder {
         MaterialTextView titleView;
         MaterialTextView subtitleView;
-        FloatingActionButton fabView;
+        MaterialButton button;
         MaterialCardView cardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            titleView = itemView.findViewById(R.id.horizontal_card_title);
-            subtitleView = itemView.findViewById(R.id.horizontal_card_subtitle);
-            fabView = itemView.findViewById(R.id.horizontal_card_fab);
+            titleView = itemView.findViewById(R.id.card_title);
+            subtitleView = itemView.findViewById(R.id.card_subtitle);
+            button = itemView.findViewById(R.id.card_more_info_button);
             cardView = itemView.findViewById(R.id.horizontal_button_card);
         }
 

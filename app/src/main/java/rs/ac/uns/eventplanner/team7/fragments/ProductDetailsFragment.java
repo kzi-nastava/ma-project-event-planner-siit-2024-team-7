@@ -1,18 +1,17 @@
 package rs.ac.uns.eventplanner.team7.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -118,9 +117,10 @@ public class ProductDetailsFragment extends Fragment {
         }
 
         viewProviderButton.setOnClickListener(v -> {
+            // TODO add route to nav graph for this and use NavController to navigate to it
             SPPDetailsFragment fragment = new SPPDetailsFragment(productDTO.getId());
             requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.home_main_fragment_container, fragment)
+                    .replace(R.id.nav_host_fragment, fragment)
                     .addToBackStack(null)
                     .commit();
         });

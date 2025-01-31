@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_navigation"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.home.HomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home"/>
+
+    <fragment
+        android:id="@+id/nav_chats"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.chats.ChatsFragment"
+        android:label="@string/toolbar_chats"
+        tools:layout="@layout/fragment_chats"/>
+
+    <fragment
+        android:id="@+id/nav_notifications"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.notifications.NotificationsFragment"
+        android:label="@string/toolbar_notifications"
+        tools:layout="@layout/fragment_notifications"/>
+
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.user.UserProfileFragment"
+        android:label="@string/account"
+        tools:layout="@layout/fragment_user_profile" />
+
+    <fragment
+        android:id="@+id/nav_service"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.services.SPPServicesBaseFragment"
+        android:label="@string/my_services"
+        tools:layout="@layout/fragment_spp_services_base">
+        <action
+            android:id="@+id/navigate_to_service_management_creation"
+            app:destination="@id/nav_service_management" />
+        <action
+            android:id="@+id/navigate_to_service_management_update"
+            app:destination="@id/nav_service_management" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_types"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.event_types.AllEventTypesFragment"
+        android:label="@string/event_types"
+        tools:layout="@layout/fragment_all_event_types">
+        <action
+            android:id="@+id/navigate_to_event_type_create"
+            app:destination="@id/nav_event_type_create" />
+        <action
+            android:id="@+id/navigate_to_event_type_update"
+            app:destination="@id/nav_event_type_update"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_categories"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.categories.AllCategoriesFragment"
+        android:label="@string/categories"
+        tools:layout="@layout/fragment_all_categories">
+        <action
+            android:id="@+id/navigate_to_category_management"
+            app:destination="@id/nav_category_management"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_service_management"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.services.ServiceManagementFragment"
+        android:label="@string/my_services"
+        tools:layout="@layout/fragment_service_management">
+        <action
+            android:id="@+id/navigate_back_from_service_management"
+            app:destination="@id/nav_service"
+            app:popUpTo="@id/nav_service"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_category_management"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.categories.CategoryManagementFragment"
+        android:label="@string/categories"
+        tools:layout="@layout/fragment_category_management" >
+        <action
+            android:id="@+id/navigate_back_from_category_management"
+            app:destination="@id/nav_categories"
+            app:popUpTo="@id/nav_categories"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_type_create"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.event_types.CreateEventTypeFragment"
+        android:label="@string/event_types"
+        tools:layout="@layout/fragment_create_event_type" >
+        <action
+            android:id="@+id/navigate_back_from_event_type_create"
+            app:destination="@id/nav_event_types"
+            app:popUpTo="@id/nav_event_types"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_type_update"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.event_types.UpdateEventTypeFragment"
+        android:label="@string/event_types"
+        tools:layout="@layout/fragment_update_event_type" >
+        <action
+            android:id="@+id/navigate_back_from_event_type_update"
+            app:destination="@id/nav_event_types"
+            app:popUpTo="@id/nav_event_types"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/nav_reject_category"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.categories.RejectCategoryDialogFragment"
+        tools:layout="@layout/dialog_reject_category" >
+        <action
+            android:id="@+id/navigate_back_from_reject_category"
+            app:destination="@id/nav_categories"
+            app:popUpTo="@id/nav_categories"
+            app:popUpToInclusive="true" />
+    </dialog>
+
+</navigation>

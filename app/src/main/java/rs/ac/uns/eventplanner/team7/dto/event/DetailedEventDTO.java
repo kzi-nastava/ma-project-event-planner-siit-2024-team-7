@@ -3,14 +3,14 @@ package rs.ac.uns.eventplanner.team7.dto.event;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCard;
 import rs.ac.uns.eventplanner.team7.model.Event;
 import rs.ac.uns.eventplanner.team7.model.Location;
+import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCardWithImage;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class DetailedEventDTO extends BasicEventDTO implements DetailedCard {
+public class DetailedEventDTO extends BasicEventDTO implements DetailedCardWithImage {
 
     private String description;
     private int maxParticipants;

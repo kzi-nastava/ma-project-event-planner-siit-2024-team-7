@@ -71,11 +71,14 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/change_password"
+        style="?attr/materialIconButtonFilledTonalStyle"
         android:layout_gravity="start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/change_pass"
         android:layout_marginBottom="8dp"
+        app:icon="@drawable/ic_key"
+        app:iconPadding="8dp"
         android:textSize="16sp" />
 
     <include
@@ -102,8 +105,8 @@
             android:id="@+id/change_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:text="+381612345678"
+            android:inputType="textCapCharacters|phone"
+            android:text="@string/placeholder_phone"
             android:enabled="false"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -121,8 +124,8 @@
             android:id="@+id/change_country"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:text="Country"
+            android:inputType="textCapWords"
+            android:text="@string/country"
             android:enabled="false"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -139,8 +142,8 @@
             android:id="@+id/change_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:text="City"
+            android:inputType="textCapWords"
+            android:text="@string/city"
             android:enabled="false"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -157,8 +160,8 @@
             android:id="@+id/change_street"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:text="Street"
+            android:inputType="textCapSentences"
+            android:text="@string/street"
             android:enabled="false"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -176,7 +179,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:text="House Number"
+            android:text="@string/house_number"
             android:enabled="false"/>
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

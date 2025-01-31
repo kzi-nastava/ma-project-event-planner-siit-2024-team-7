@@ -44,7 +44,7 @@ public class CardRecyclerViewAdapter<T extends BasicCard>
         this.cardType = R.layout.horizontal_card;
     }
 
-    /// Horizontal card with button layout and custom button layout
+    /// Horizontal card with button layout and optional custom button image
     public CardRecyclerViewAdapter(Context context, List<T> data, CardClickListener listener,
                                    Drawable buttonImage) {
         this.context = context;

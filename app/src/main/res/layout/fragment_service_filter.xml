@@ -23,6 +23,10 @@
             android:paddingHorizontal="20dp"
             />
 
+        <include layout="@layout/space_divider"/>
+
+        <include android:id="@+id/service_filters_close_button" layout="@layout/view_close_button"/>
+
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -41,38 +45,81 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Event type"
-        android:paddingHorizontal="20dp"
-        />
+<!--    <com.google.android.material.textview.MaterialTextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Event type"-->
+<!--        android:paddingHorizontal="20dp"-->
+<!--        />-->
 
-    <Spinner
+<!--    <Spinner-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:layout_marginVertical="2dp"-->
+<!--        android:paddingHorizontal="20dp"-->
+<!--        android:id="@+id/event_type_filter"-->
+<!--        />-->
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/event_type_filter_layout"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        android:id="@+id/event_type_filter"
-        />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Category"
+        android:layout_marginVertical="8dp"
         android:paddingHorizontal="20dp"
-        />
+        app:endIconMode="dropdown_menu">
 
-    <Spinner
+        <AutoCompleteTextView
+            android:id="@+id/event_type_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="18sp"
+            android:paddingEnd="5sp"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"
+            android:hint="@string/event_type" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+<!--    <com.google.android.material.textview.MaterialTextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Category"-->
+<!--        android:paddingHorizontal="20dp"-->
+<!--        />-->
+
+<!--    <Spinner-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:layout_marginVertical="2dp"-->
+<!--        android:paddingHorizontal="20dp"-->
+<!--        android:id="@+id/category_filter"-->
+<!--        />-->
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/category_filter_layout"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginVertical="2dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
         android:paddingHorizontal="20dp"
-        android:id="@+id/category_filter"
-        />
+        app:endIconMode="dropdown_menu">
+
+        <AutoCompleteTextView
+            android:id="@+id/category_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="18sp"
+            android:paddingEnd="5sp"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"
+            android:hint="@string/category" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
 
     <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/service_available_filter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Available"
@@ -86,6 +133,7 @@
         android:padding="10dp"
         >
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/apply_service_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Apply"
@@ -98,6 +146,7 @@
             android:layout_weight="0.4"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/reset_service_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reset"

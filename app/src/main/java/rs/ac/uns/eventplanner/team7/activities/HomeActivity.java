@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
@@ -56,7 +57,6 @@ public class HomeActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.navigation_view);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (role == UserRole.ADMIN) {
             setupAdminNav();
@@ -130,6 +130,11 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupAdminNav() {
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.openDrawer,  R.string.closeDrawer);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
         MaterialTextView headerText = navigationView.getHeaderView(0).findViewById(R.id.nav_header_user_name);
         headerText.setText(R.string.admin_options);
         navigationView.inflateMenu(R.menu.admin_nav_drawer_menu);

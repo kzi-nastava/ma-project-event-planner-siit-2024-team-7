@@ -32,32 +32,12 @@ public class SPPServicesBaseFragment extends Fragment {
 
         MaterialButton newServiceButton = view.findViewById(R.id.new_service_button);
         newServiceButton.setOnClickListener(v -> {
-            openServiceManagement("SERVICE CREATION");
+            ServiceManagementFragment fragment = new ServiceManagementFragment(null);
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.home_main_fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
         });
 
-        View card1 = view.findViewById(R.id.service_card_1);
-        View card2 = view.findViewById(R.id.service_card_2);
-        View card3 = view.findViewById(R.id.service_card_3);
-        View card4 = view.findViewById(R.id.service_card_4);
-        View card5 = view.findViewById(R.id.service_card_5);
-
-        card1.setOnClickListener(v -> openServiceManagement("SERVICE UPDATE"));
-        card2.setOnClickListener(v -> openServiceManagement("SERVICE UPDATE"));
-        card3.setOnClickListener(v -> openServiceManagement("SERVICE UPDATE"));
-        card4.setOnClickListener(v -> openServiceManagement("SERVICE UPDATE"));
-        card5.setOnClickListener(v -> openServiceManagement("SERVICE UPDATE"));
-    }
-
-    private void openServiceManagement(String title) {
-        ServiceManagementFragment fragment = new ServiceManagementFragment();
-
-        Bundle args = new Bundle();
-        args.putString("message_key", title);
-        fragment.setArguments(args);
-
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.home_main_fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
     }
 }

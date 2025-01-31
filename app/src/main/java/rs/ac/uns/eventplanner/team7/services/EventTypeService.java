@@ -11,6 +11,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
@@ -59,4 +60,11 @@ public interface EventTypeService {
     })
     @GET("event_types/all_names")
     Call<List<String>> findAllNames();
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("event_types/active")
+    Call<List<GetEventTypeResponseDTO>> findAllActive(@Header("Authorization") String token);
 }

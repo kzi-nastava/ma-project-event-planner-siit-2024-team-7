@@ -1,7 +1,5 @@
 package rs.ac.uns.eventplanner.team7.adapters;
 
-import static android.view.View.VISIBLE;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,21 +15,14 @@ import com.google.android.material.textview.MaterialTextView;
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 
-public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAdapter.ViewHolder> {
-
+public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ViewHolder> {
     private final Context context;
-    private final List<CategoryResponseDTO> categories;
-    private final List<CategoryResponseDTO> selectedCategories;  // List of selected categories
-    private final CategorySelectAdapter selectAdapter;  // Reference to the select adapter
+    private final List<String> images;
 
-
-    public CategorySearchAdapter(Context context, List<CategoryResponseDTO> categories, List<CategoryResponseDTO> selectedCategories, CategorySelectAdapter adapter) {
+    public ImageListAdapter(Context context, List<String> images) {
         this.context = context;
-        this.categories = categories;
-        this.selectedCategories = selectedCategories;
-        this.selectAdapter = adapter;
+        this.images = images;
     }
 
     @NonNull
@@ -43,42 +34,34 @@ public class CategorySearchAdapter extends RecyclerView.Adapter<CategorySearchAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CategoryResponseDTO category = categories.get(position);
-
-        // Prevent showing categories already selected
-        if (selectedCategories.contains(category)) {
-            holder.itemView.setVisibility(View.GONE); // Hide if already selected
-        } else {
-            holder.itemView.setVisibility(VISIBLE);  // Show if not selected
-        }
-
-        holder.titleView.setText(category.getName());
+        String image = images.get(position);
+        holder.titleView.setText(image);
         holder.subtitleView.setVisibility(View.GONE);
-        holder.fabView.setImageResource(R.drawable.baseline_add_24);  // Add button
+        holder.fabView.setImageResource(R.drawable.baseline_cancel_24);  // Remove button
 
         holder.fabView.setOnClickListener(v -> {
-            if (!selectedCategories.contains(category)) {
-                selectedCategories.add(category);
-                categories.remove(category);
-                notifyDataSetChanged();
-                selectAdapter.notifyDataSetChanged();
-                holder.setVisibility(View.GONE);
-            }
+            images.remove(image);
+            notifyDataSetChanged();
+            holder.setVisibility(View.GONE);
         });
+        holder.itemView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public int getItemCount() {
-        return categories.size();
+        return images.size();
     }
 
-    public void updateData(List<CategoryResponseDTO> newCategories) {
-        categories.clear();
-        categories.addAll(newCategories);
+    public void addImage(String imageName) {
+        for (String image : images) {
+            if (imageName == null || imageName.isEmpty() || image.equals(imageName))
+                return;
+        }
+        images.add(imageName);
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         MaterialTextView titleView;
         MaterialTextView subtitleView;
         FloatingActionButton fabView;

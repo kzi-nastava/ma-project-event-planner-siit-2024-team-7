@@ -16,7 +16,7 @@ import com.google.android.material.textview.MaterialTextView;
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.fragments.CreateEventTypeFragment;
 import rs.ac.uns.eventplanner.team7.fragments.EventTypeCategoryManipulationFragment;
 import rs.ac.uns.eventplanner.team7.fragments.UpdateEventTypeFragment;

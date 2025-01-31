@@ -25,7 +25,7 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CategorySearchAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.CategorySelectAdapter;
-import rs.ac.uns.eventplanner.team7.dto.CategoryResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.category.CategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;

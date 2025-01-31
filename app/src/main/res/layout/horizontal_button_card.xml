@@ -23,6 +23,7 @@
                 android:id="@+id/horizontal_card_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="200dp"
                 android:layout_marginBottom="10dp"
                 android:text="Card title"
                 />
@@ -31,6 +32,7 @@
                 android:id="@+id/horizontal_card_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="200dp"
                 android:text="Card subtitle"
                 />
 

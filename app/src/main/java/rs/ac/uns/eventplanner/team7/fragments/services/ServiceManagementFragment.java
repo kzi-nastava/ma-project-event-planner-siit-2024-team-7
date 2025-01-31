@@ -3,7 +3,6 @@ package rs.ac.uns.eventplanner.team7.fragments.services;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -21,7 +20,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -30,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
@@ -52,11 +49,8 @@ import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.ImageListAdapter;
 import rs.ac.uns.eventplanner.team7.dto.pricing.PricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceRequestDTO;
-import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.service.DeleteServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceRequestDTO;
-import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.model.EventType;
@@ -196,82 +190,32 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
                 try {
                     dto = createRequestDTO(view);
                 } catch (IllegalArgumentException e) {
-                    Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(e.getMessage()), Snackbar.LENGTH_SHORT);
-                    snackbar.show();
+                    Toast.makeText(getContext(), Objects.requireNonNull(e.getMessage()),
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                serviceService.createService(JwtUtil.getAuthorizationValue(requireContext()), dto)
-                        .enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<CreateServiceResponseDTO> call, @NonNull Response<CreateServiceResponseDTO> response) {
-                        if (!isAdded()) return;
-                        if (response.isSuccessful() && response.body() != null) {
-                            returnToBaseFragment("Service created successfully!");
-                        } else {
-                            try {
-                                // Show error message
-                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
-                                JSONObject jsonObject = new JSONObject(errorBody);
-                                String message = jsonObject.getString("message");
-                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
-                                errorMsg.setText(message);
-                                errorMsg.setVisibility(View.VISIBLE);
-                            } catch (Exception e) {
-                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<CreateServiceResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                    }
-                });
+                handleServiceCall(serviceService.createService(
+                        JwtUtil.getAuthorizationValue(requireContext()), dto),
+                        getString(R.string.service_created_successfully));
             }
             else {
                 UpdateServiceRequestDTO dto;
                 try {
                     dto = updateRequestDTO(view);
                 } catch (IllegalArgumentException e) {
-                    Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(e.getMessage()), Snackbar.LENGTH_SHORT);
-                    snackbar.show();
+                    Toast.makeText(getContext(), Objects.requireNonNull(e.getMessage()),
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
-                serviceService.updateService(JwtUtil.getAuthorizationValue(requireContext()),
-                        serviceDTO.getId(), dto).enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<UpdateServiceResponseDTO> call, @NonNull Response<UpdateServiceResponseDTO> response) {
-                        if (!isAdded()) return;
-                        if (response.isSuccessful() && response.body() != null) {
-                            returnToBaseFragment("Service updated successfully!");
-                        } else {
-                            try {
-                                // Show error message
-                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
-                                JSONObject jsonObject = new JSONObject(errorBody);
-                                String message = jsonObject.getString("message");
-                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
-                                errorMsg.setText(message);
-                                errorMsg.setVisibility(View.VISIBLE);
-                            } catch (Exception e) {
-                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<UpdateServiceResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                    }
-                });
+                handleServiceCall(serviceService.updateService(
+                        JwtUtil.getAuthorizationValue(requireContext()), serviceDTO.getId(), dto),
+                        getString(R.string.service_updated_successfully));
             }
         });
 
         MaterialButton deleteButton = view.findViewById(R.id.delete_service_button);
-        deleteButton.setOnClickListener(v -> {
-            showDeleteConfirmationDialog();
-        });
+        deleteButton.setOnClickListener(v -> showDeleteConfirmationDialog());
     }
 
 
@@ -521,8 +465,12 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Confirm Deletion")
                 .setMessage("Are you sure you want to delete this service?")
-                .setPositiveButton("Delete", (d, which) -> deleteService())
-                .setNegativeButton("Cancel", (dialogInterface, which) -> dialogInterface.dismiss())
+                .setPositiveButton("Delete", (d, which) ->
+                        handleServiceCall(serviceService.deleteService(
+                        JwtUtil.getAuthorizationValue(getContext()),
+                        Objects.requireNonNull(serviceDTO).getId()),
+                        getString(R.string.service_deleted_successfully)))
+                .setNegativeButton("Cancel", (d, which) -> d.dismiss())
                 .create();
 
         dialog.setOnShowListener(dialogInterface -> {
@@ -534,15 +482,13 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         dialog.show();
     }
 
-    private void deleteService() {
-        Call<DeleteServiceResponseDTO> call = serviceService.deleteService(JwtUtil.getAuthorizationValue(getContext()), Objects.requireNonNull(serviceDTO).getId());
-        call.enqueue(new Callback<>() {
+    private <T> void handleServiceCall(Call<T> serviceCall, String responseMessage) {
+        serviceCall.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<DeleteServiceResponseDTO> call,
-                                   @NonNull Response<DeleteServiceResponseDTO> response) {
+            public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
                 if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
-                    returnToBaseFragment("Service deleted successfully!");
+                    returnToBaseFragment(responseMessage);
                 } else {
                     try {
                         // Show error message
@@ -559,12 +505,11 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
             }
 
             @Override
-            public void onFailure(@NonNull Call<DeleteServiceResponseDTO> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
                 Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
             }
         });
     }
-
 
     private void handleEventTypeSelection(EventType selectedEventType) {
         boolean isUnknownSelected = selectedEventType.getName().equals("UNKNOWN");

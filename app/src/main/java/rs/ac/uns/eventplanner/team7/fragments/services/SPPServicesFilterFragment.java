@@ -56,7 +56,7 @@ public class SPPServicesFilterFragment extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_service_filter, container, false);
+        View view = inflater.inflate(R.layout.fragment_spp_services_filter, container, false);
         priceInput = view.findViewById(R.id.item_price_filter);
         eventTypeDropdown = view.findViewById(R.id.event_type_filter);
         categoryDropdown = view.findViewById(R.id.category_filter);
@@ -125,6 +125,7 @@ public class SPPServicesFilterFragment extends BottomSheetDialogFragment {
             @Override
             public void onResponse(@NonNull Call<List<String>> call,
                                    @NonNull Response<List<String>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     List<String> eventTypes = new ArrayList<>(response.body());
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -148,6 +149,7 @@ public class SPPServicesFilterFragment extends BottomSheetDialogFragment {
             @Override
             public void onResponse(@NonNull Call<List<String>> call,
                                    @NonNull Response<List<String>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     List<String> categories = new ArrayList<>(response.body());
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(

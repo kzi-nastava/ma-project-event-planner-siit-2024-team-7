@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
+        android:paddingHorizontal="10dp"
         android:orientation="horizontal"
         android:paddingVertical="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -32,9 +32,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/service_filters_button"
+            style="?attr/materialIconButtonFilledStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/filters" />
+            android:tooltipText="@string/filters"
+            app:icon="@drawable/ic_filter"/>
     </LinearLayout>
 
 

@@ -64,7 +64,6 @@
     <string name="tab_all_services_products">All items</string>
     <string name="toolbar_chats">Chats</string>
     <string name="toolbar_notifications">Notifications</string>
-    <string name="toolbar_notifications_spp">Updates</string> <!-- name too long to fit-->
     <string name="toolbar_account">Account</string>
     <string name="search_bar">Search</string>
     <string name="filters">Filters</string>
@@ -187,7 +186,7 @@
     <string name="new_category_suggestion">New category suggestion</string>
     <string name="add_new_work_day">Add new work day</string>
     <string name="cant_find_a_suitable_category">Can\'t find a suitable category?</string>
-    <string name="suggest_a_new_category">Suggest a new one</string>
+    <string name="suggest_a_new_category">Suggest new</string>
     <string name="account_deactivation">Account deactivation</string>
     <string name="event_type_deactivation_message">You are about to deactivate this event type. Are you sure?</string>
     <string name="event_type_deactivation">Event type deactivation</string>
@@ -230,4 +229,11 @@
     <string name="confirm_deletion">Confirm deletion</string>
     <string name="unavailable">Unavailable</string>
     <string name="both">Both</string>
+    <string name="create_service">Create service</string>
+    <string name="service_created_successfully">Service created successfully!</string>
+    <string name="service_updated_successfully">Service updated successfully!</string>
+    <string name="service_deleted_successfully">Service deleted successfully!</string>
+    <string name="weekday">Weekday</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
 </resources>

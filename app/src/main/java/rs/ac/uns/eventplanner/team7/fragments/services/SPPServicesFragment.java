@@ -10,6 +10,7 @@ import android.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -81,8 +82,21 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
         setupSearchView();
 
         MaterialButton filtersButton = view.findViewById(R.id.service_filters_button);
-        filtersButton.setOnClickListener(v -> filterFragment.show(getChildFragmentManager(),
-                filterFragment.getTag()));
+        filtersButton.setOnClickListener(v -> {
+            filtersButton.setEnabled(false);
+            if (getChildFragmentManager().findFragmentByTag("serviceFilters") != null) return;
+            filterFragment.show(getChildFragmentManager(), "serviceFilters");
+            getChildFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+                @Override
+                public void onFragmentDetached(@NonNull FragmentManager fm, @NonNull Fragment f) {
+                    if (f == filterFragment) {
+                        filtersButton.setEnabled(true);
+                        getChildFragmentManager().unregisterFragmentLifecycleCallbacks(this);
+                    }
+                }
+            }, false);
+
+        });
 
         setupContentScrollListener();
     }
@@ -126,6 +140,7 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
             @Override
             public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
                                    @NonNull Response<GetServiceResponseDTO> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("serviceDTO", response.body());

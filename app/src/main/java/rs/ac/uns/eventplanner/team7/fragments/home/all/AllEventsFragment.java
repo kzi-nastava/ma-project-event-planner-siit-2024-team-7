@@ -150,7 +150,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
 
             @Override
             public void onFailure(@NonNull Call<Page<BasicEventDTO>> call, @NonNull Throwable t) {
-                messageView.setText(R.string.error_fetching_more_data);
+                messageView.setText(R.string.unable_to_contact_server);
                 isLoading = false;
             }
         });

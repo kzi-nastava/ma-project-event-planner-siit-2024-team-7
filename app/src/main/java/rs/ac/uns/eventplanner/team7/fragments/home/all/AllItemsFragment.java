@@ -198,7 +198,7 @@ public class AllItemsFragment extends Fragment
 
             @Override
             public void onFailure(@NonNull Call<Page<BasicItemDTO>> call, @NonNull Throwable t) {
-                messageView.setText(R.string.error_fetching_more_data);
+                messageView.setText(R.string.unable_to_contact_server);
                 isLoading = false;
             }
         });

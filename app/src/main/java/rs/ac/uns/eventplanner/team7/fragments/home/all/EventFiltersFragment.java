@@ -229,6 +229,7 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
             @Override
             public void onResponse(@NonNull Call<List<String>> call,
                                    @NonNull Response<List<String>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     var eventTypeNames = response.body();
                     if (eventTypeDropdown.getAdapter() instanceof ArrayAdapter) {
@@ -249,6 +250,7 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
             @Override
             public void onResponse(@NonNull Call<List<String>> call,
                                    @NonNull Response<List<String>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     var locations = response.body();
                     if (eventLocationDropdown.getAdapter() instanceof ArrayAdapter) {

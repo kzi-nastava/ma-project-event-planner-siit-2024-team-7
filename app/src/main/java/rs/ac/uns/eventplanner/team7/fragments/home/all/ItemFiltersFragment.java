@@ -333,7 +333,7 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
             @Override
             public void onResponse(@NonNull Call<List<String>> call,
                                    @NonNull Response<List<String>> response) {
-
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     var categoryNames = response.body();
                     if (itemCategoryDropdown.getAdapter() instanceof ArrayAdapter) {
@@ -354,6 +354,7 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
             @Override
             public void onResponse(@NonNull Call<List<String>> call,
                                    @NonNull Response<List<String>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     var locations = response.body();
                     if (itemLocationDropdown.getAdapter() instanceof ArrayAdapter) {

@@ -261,6 +261,7 @@
                 android:id="@+id/btn_open_work_day_dialog"
                 style="?attr/materialIconButtonFilledTonalStyle"
                 app:icon="@drawable/ic_add"
+                android:tooltipText="@string/add_new_work_day"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp" />
@@ -298,6 +299,7 @@
                 android:id="@+id/button_select_images"
                 style="?attr/materialIconButtonFilledTonalStyle"
                 app:icon="@drawable/ic_add"
+                android:tooltipText="@string/select_images"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"/>
@@ -365,6 +367,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center"
+            android:gravity="center"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.button.MaterialButton
@@ -375,9 +378,8 @@
                 android:text="@string/save_service"
                 app:icon="@drawable/ic_save"
                 app:iconPadding="8dp"
+                android:padding="10dp"
                 />
-
-            <include layout="@layout/space_divider"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/delete_service_button"
@@ -386,6 +388,8 @@
                 android:text="@string/delete_service"
                 android:backgroundTint="@color/red_delete"
                 app:icon="@drawable/ic_delete"
+                android:padding="10dp"
+                android:layout_marginStart="10dp"
                 />
 
         </LinearLayout>

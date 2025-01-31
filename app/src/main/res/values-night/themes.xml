@@ -31,6 +31,6 @@
         <item name="itemIconTint">@color/white</item>
         <item name="itemTextColor">@color/white</item>
     </style>
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar" />
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
+    <style name="AppTheme.AppBarOverlay" parent="Widget.Material3.AppBarLayout" />
+    <style name="AppTheme.PopupOverlay" parent="Widget.Material3.PopupMenu" />
 </resources>

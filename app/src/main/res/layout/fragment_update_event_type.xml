@@ -100,6 +100,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/update_event_type"
                 app:iconPadding="8dp"
+                android:padding="10dp"
                 app:icon="@drawable/ic_save"/>
 
             <include layout="@layout/space_divider"/>
@@ -112,6 +113,7 @@
                 android:backgroundTint="@color/red_delete"
                 app:icon="@drawable/ic_delete"
                 app:iconPadding="8dp"
+                android:padding="10dp"
                 android:text="@string/delete_event_type"/>
 
         </LinearLayout>

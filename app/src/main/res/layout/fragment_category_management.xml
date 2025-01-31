@@ -60,6 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_margin="10dp"
             android:layout_gravity="center"
             android:gravity="center">
 
@@ -70,26 +71,23 @@
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_save"
                 app:iconPadding="8dp"
-                android:layout_margin="10dp"
                 android:text="@string/save_category"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/accept_category"
-                android:visibility="gone"
                 style="?attr/materialIconButtonFilledTonalStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 app:icon="@drawable/ic_save"
                 app:iconPadding="8dp"
                 android:text="@string/accept_category"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/delete_category"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:layout_margin="10dp"
+                android:layout_marginStart="10dp"
+                android:padding="10dp"
                 app:icon="@drawable/ic_delete"
                 android:backgroundTint="@color/red_delete"
                 android:text="@string/delete_category"/>

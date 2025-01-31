@@ -60,10 +60,12 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_suggest_category"
+                style="?attr/materialIconButtonFilledTonalStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:icon="@drawable/ic_add"
+                app:iconPadding="6dp"
                 android:text="@string/suggest_a_new_category" />
         </LinearLayout>
 
@@ -257,7 +259,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_open_work_day_dialog"
-                style="?attr/materialIconButtonFilledStyle"
+                style="?attr/materialIconButtonFilledTonalStyle"
                 app:icon="@drawable/ic_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -294,7 +296,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_select_images"
-                style="?attr/materialIconButtonFilledStyle"
+                style="?attr/materialIconButtonFilledTonalStyle"
                 app:icon="@drawable/ic_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -363,23 +365,27 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_gravity="center"
-            android:gravity="center">
+            android:layout_marginTop="8dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/save_service_button"
+                style="?attr/materialIconButtonFilledTonalStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/save_service"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                app:icon="@drawable/ic_save"
+                app:iconPadding="8dp"
                 />
+
+            <include layout="@layout/space_divider"/>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/delete_service_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/delete_service"
                 android:backgroundTint="@color/red_delete"
-                android:layout_marginTop="8dp"
+                app:icon="@drawable/ic_delete"
                 />
 
         </LinearLayout>

@@ -29,9 +29,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/item_filters_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
+            app:icon="@drawable/ic_filter"
             android:text="@string/filters"
             />
 
@@ -39,9 +41,11 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/item_sort_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
+            app:icon="@drawable/ic_sort"
             android:text="@string/sort"/>
 
     </LinearLayout>

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.admin.event_types.UpdateEventTypeFragment">
 
     <LinearLayout
@@ -66,6 +67,7 @@
                 android:minLines="1"
                 android:maxLines="10"
                 android:scrollbars="vertical"
+                android:overScrollMode="ifContentScrolls"
                 android:gravity="top|start"
             android:inputType="textCapSentences|textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -93,9 +95,12 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/update_event_type"
+                style="?attr/materialIconButtonFilledTonalStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/update_event_type"/>
+                android:text="@string/update_event_type"
+                app:iconPadding="8dp"
+                app:icon="@drawable/ic_save"/>
 
             <include layout="@layout/space_divider"/>
 
@@ -105,6 +110,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:backgroundTint="@color/red_delete"
+                app:icon="@drawable/ic_delete"
+                app:iconPadding="8dp"
                 android:text="@string/delete_event_type"/>
 
         </LinearLayout>

@@ -38,7 +38,6 @@ public class HomeActivity extends AppCompatActivity {
     private final InvitationService invitationService = ClientUtils.injectService(InvitationService.class);
     private UserRole role;
     private final Set<Integer> topLevelDestinations = new HashSet<>();
-    private BottomNavigationView bottomNavigationView;
     private NavController navController;
     private AppBarConfiguration appBarConfig;
 
@@ -54,44 +53,11 @@ public class HomeActivity extends AppCompatActivity {
             setContentView(R.layout.activity_home);
         }
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupNavigation();
 
         if (getIntent().getExtras() != null) handleInvitationAccepting();
-    }
-
-    private void setupNavigation() {
-        NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        navController = Objects.requireNonNull(navHost).getNavController();
-
-        topLevelDestinations.add(R.id.nav_home);
-        if (role == UserRole.GUEST) {
-            appBarConfig = new AppBarConfiguration.Builder(topLevelDestinations).build();
-        } else {
-            setupBottomNavbar();
-            NavigationUI.setupWithNavController(bottomNavigationView, navController);
-            topLevelDestinations.addAll(Set.of(R.id.nav_event, R.id.nav_product,
-                    R.id.nav_service, R.id.nav_chats, R.id.nav_notifications));
-            final var appBarConfigurationBuilder = new AppBarConfiguration.Builder(topLevelDestinations);
-
-            NavigationView navigationView = findViewById(R.id.navigation_view);
-            if (navigationView != null) {
-                NavigationUI.setupWithNavController(navigationView, navController);
-                DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout);
-                appBarConfigurationBuilder.setOpenableLayout(drawerLayout);
-                navController.addOnDestinationChangedListener((controller, navDestination, bundle) -> {
-                    if (!topLevelDestinations.contains(navDestination.getId())) {
-                        drawerLayout.closeDrawers();
-                    }
-                });
-            }
-
-            appBarConfig = appBarConfigurationBuilder.build();
-        }
-
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig);
     }
 
     @Override
@@ -124,15 +90,50 @@ public class HomeActivity extends AppCompatActivity {
         return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
     }
 
+    private void setupNavigation() {
+        NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        navController = Objects.requireNonNull(navHost).getNavController();
+
+        topLevelDestinations.add(R.id.nav_home);
+        if (role == UserRole.GUEST) {
+            appBarConfig = new AppBarConfiguration.Builder(topLevelDestinations).build();
+            NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig);
+            return;
+        }
+        setupBottomNavbar();
+        topLevelDestinations.addAll(Set.of(R.id.nav_chats, R.id.nav_account));
+        final var appBarConfigBuilder = new AppBarConfiguration.Builder(topLevelDestinations);
+
+        if (role == UserRole.ADMIN) {
+            DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout);
+            appBarConfig = appBarConfigBuilder.setOpenableLayout(drawerLayout).build();
+
+            NavigationView navigationDrawerView = findViewById(R.id.navigation_view);
+            NavigationUI.setupWithNavController(navigationDrawerView, navController);
+            navController.addOnDestinationChangedListener((controller, navDestination, bundle) -> {
+                if (!topLevelDestinations.contains(navDestination.getId())) {
+                    drawerLayout.closeDrawers();
+                }
+            });
+        }
+
+        appBarConfig = appBarConfigBuilder.build();
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig);
+    }
+
     private void setupBottomNavbar() {
         // Guest users don't have bottom navbar!
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         if (role == UserRole.EVENT_ORG) {
             bottomNavigationView.inflateMenu(R.menu.event_organizer_menu);
+            topLevelDestinations.add(R.id.nav_event);
         } else if (role == UserRole.SPP) {
             bottomNavigationView.inflateMenu(R.menu.spp_menu);
+            topLevelDestinations.addAll(Set.of(R.id.nav_product, R.id.nav_service));
         } else {
             bottomNavigationView.inflateMenu(R.menu.basic_menu);
         }
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 
     private void handleInvitationAccepting() {

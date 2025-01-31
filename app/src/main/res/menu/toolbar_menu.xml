@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/nav_account"
-        android:title="@string/toolbar_account"
-        android:icon="@drawable/ic_account"
-        app:showAsAction="always" />
+    <item android:id="@+id/nav_notifications"
+        android:title="@string/toolbar_notifications"
+        android:icon="@drawable/ic_notifications"
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/nav_login_logout"

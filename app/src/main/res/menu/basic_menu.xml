@@ -4,11 +4,12 @@
         android:id="@+id/nav_home"
         android:title="@string/home"
         android:icon="@drawable/ic_home"/>
+
     <item android:id="@+id/nav_chats"
         android:title="@string/toolbar_chats"
         android:icon="@drawable/ic_chat"/>
 
-    <item android:id="@+id/nav_notifications"
-        android:title="@string/toolbar_notifications"
-        android:icon="@drawable/ic_notifications"/>
+    <item android:id="@+id/nav_account"
+        android:title="@string/toolbar_account"
+        android:icon="@drawable/ic_account"/>
 </menu>

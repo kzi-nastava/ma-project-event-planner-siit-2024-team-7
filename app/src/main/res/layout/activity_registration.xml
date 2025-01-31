@@ -137,7 +137,7 @@
                 android:id="@+id/phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapWords|phone" />
+                android:inputType="textCapCharacters|phone" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -198,12 +198,16 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/register_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="false"
             android:text="@string/select_first"
             android:layout_marginTop="24dp"
-            android:textSize="24sp"
+            android:textSize="16sp"
+            android:padding="15dp"
+            app:iconPadding="10dp"
+            app:icon="@drawable/ic_create_account"
             />
 
         <com.google.android.material.textview.MaterialTextView

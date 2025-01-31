@@ -6,18 +6,18 @@
         android:icon="@drawable/ic_home"/>
     <item
         android:id="@+id/nav_product"
-        android:title="@string/products"
+        android:title="@string/my_products"
         android:icon="@drawable/ic_products"/>
     <item
         android:id="@+id/nav_service"
-        android:title="@string/services"
+        android:title="@string/my_services"
         android:icon="@drawable/ic_services"/>
 
     <item android:id="@+id/nav_chats"
         android:title="@string/toolbar_chats"
         android:icon="@drawable/ic_chat"/>
 
-    <item android:id="@+id/nav_notifications"
-        android:title="@string/toolbar_notifications"
-        android:icon="@drawable/ic_notifications"/>
+    <item android:id="@+id/nav_account"
+        android:title="@string/toolbar_account"
+        android:icon="@drawable/ic_account" />
 </menu>

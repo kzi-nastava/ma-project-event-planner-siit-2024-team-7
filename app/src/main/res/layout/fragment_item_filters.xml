@@ -76,7 +76,7 @@
                     android:id="@+id/item_name_filter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text" />
+                    android:inputType="textCapWords" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -167,7 +167,7 @@
                         android:id="@+id/service_specifics_filter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text" />
+                        android:inputType="textCapSentences" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -259,7 +259,7 @@
                     android:id="@+id/item_description_filter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
+                    android:inputType="textCapSentences|textMultiLine"
                     android:gravity="top"
                     android:minLines="3"
                     android:maxLines="3"

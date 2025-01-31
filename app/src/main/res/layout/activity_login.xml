@@ -84,13 +84,14 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/loginButton"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sign_in"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:padding="15dp"
+            app:iconPadding="10dp"
+            app:icon="@drawable/ic_login"
             android:layout_marginBottom="16dp" />
 
         <com.google.android.material.textview.MaterialTextView

@@ -5,10 +5,10 @@
         android:id="@+id/nav_login_logout"
         android:title="@string/sign_in"
         android:icon="@drawable/ic_login"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
     <item
         android:id="@+id/nav_register"
         android:title="@string/sign_up"
         android:icon="@drawable/ic_create_account"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 </menu>

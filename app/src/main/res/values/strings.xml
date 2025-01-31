@@ -236,4 +236,9 @@
     <string name="weekday">Weekday</string>
     <string name="start_time">Start Time</string>
     <string name="end_time">End Time</string>
+    <string name="favourite_events">Favourite Events</string>
+    <string name="favourite_products">Favourite Products</string>
+    <string name="favourite_services">Favourite Services</string>
+    <string name="your_future_activities">Your future activities:</string>
+    <string name="placeholder_phone">+381612345678</string>
 </resources>

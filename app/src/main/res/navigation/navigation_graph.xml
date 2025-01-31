@@ -10,37 +10,19 @@
         android:id="@+id/nav_home"
         android:name="rs.ac.uns.eventplanner.team7.fragments.home.HomeFragment"
         android:label="@string/home"
-        tools:layout="@layout/fragment_home">
-        <action
-            android:id="@+id/action_nav_home_self"
-            app:destination="@id/nav_home"
-            app:popUpTo="@id/nav_home"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_home"/>
 
     <fragment
         android:id="@+id/nav_chats"
         android:name="rs.ac.uns.eventplanner.team7.fragments.chats.ChatsFragment"
         android:label="@string/toolbar_chats"
-        tools:layout="@layout/fragment_chats">
-        <action
-            android:id="@+id/action_nav_chats_self"
-            app:destination="@id/nav_chats"
-            app:popUpTo="@id/nav_home"
-            app:popUpToInclusive="false" />
-    </fragment>
+        tools:layout="@layout/fragment_chats"/>
 
     <fragment
         android:id="@+id/nav_notifications"
         android:name="rs.ac.uns.eventplanner.team7.fragments.notifications.NotificationsFragment"
         android:label="@string/toolbar_notifications"
-        tools:layout="@layout/fragment_notifications">
-        <action
-            android:id="@+id/action_nav_notifications_self"
-            app:destination="@id/nav_notifications"
-            app:popUpTo="@id/nav_home"
-            app:popUpToInclusive="false" />
-    </fragment>
+        tools:layout="@layout/fragment_notifications"/>
 
     <fragment
         android:id="@+id/nav_account"
@@ -59,9 +41,6 @@
         <action
             android:id="@+id/navigate_to_service_management_update"
             app:destination="@id/nav_service_management" />
-        <action
-            android:id="@+id/action_nav_service_self"
-            app:destination="@id/nav_service" />
     </fragment>
 
     <fragment
@@ -140,7 +119,7 @@
     <dialog
         android:id="@+id/nav_reject_category"
         android:name="rs.ac.uns.eventplanner.team7.fragments.admin.categories.RejectCategoryDialogFragment"
-        tools:layout="@layout/fragment_reject_category" >
+        tools:layout="@layout/dialog_reject_category" >
         <action
             android:id="@+id/navigate_back_from_reject_category"
             app:destination="@id/nav_categories"

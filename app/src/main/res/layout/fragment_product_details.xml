@@ -9,9 +9,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="36dp"
                 android:contentDescription="Favourite star"
-                android:src="@drawable/ic_star_border" />
+                android:src="@drawable/ic_star" />
         </LinearLayout>
 
         <com.google.android.material.textview.MaterialTextView
@@ -214,6 +214,7 @@
             android:clipToPadding="false"
             android:clipChildren="false"
             android:overScrollMode="never"
+            tools:listitem="@layout/image_view"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -230,27 +231,36 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buy_button"
+                style="?attr/materialIconButtonFilledTonalStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Buy Product"
+                app:icon="@drawable/ic_shopping_cart"
+                app:iconPadding="8dp"
                 android:enabled="true"/>
 
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/view_provider_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="View Provider"
+            app:icon="@drawable/ic_info"
+            app:iconPadding="8dp"
             android:layout_marginTop="20dp"
             android:layout_marginStart="4dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/chat_w_provider_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Chat with Provider"
+            app:icon="@drawable/ic_add_comment"
+            app:iconPadding="8dp"
             android:layout_marginStart="4dp"/>
-
     </LinearLayout>
+
 </ScrollView>

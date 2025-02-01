@@ -8,8 +8,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/provider_org_name_title"
@@ -123,23 +124,23 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_star_border" />
+                android:src="@drawable/ic_star" />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_star_border" />
+                android:src="@drawable/ic_star" />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_star_border" />
+                android:src="@drawable/ic_star" />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_star_border" />
+                android:src="@drawable/ic_star" />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_star_border" />
+                android:src="@drawable/ic_star" />
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -147,14 +148,17 @@
                 android:layout_marginStart="10dp"
                 android:textColor="@color/black" />
 
-        </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/rate_provider_button"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rate"
+                app:iconPadding="8dp"
+                app:icon="@drawable/ic_add"
+                android:layout_marginStart="8dp"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/rate_provider_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rate"
-            android:layout_marginStart="4dp"/>
+        </LinearLayout>
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
@@ -185,7 +189,7 @@
             android:id="@+id/provider_comment_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Write a Comment"
+            android:hint="Leave a comment"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -197,19 +201,50 @@
 
         <include layout="@layout/divider_thin"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/chat_w_provider_button"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chat with Provider"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="4dp"/>
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="20dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/report_account_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Report Account"
-            android:layout_marginStart="4dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/chat_w_provider_button"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Open chat"
+                app:icon="@drawable/ic_add_comment"
+                app:iconPadding="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/report_account_button"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:backgroundTint="@color/orange_warning"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:text="Report"
+                app:icon="@drawable/ic_feedback"
+                app:iconPadding="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/block_account_button"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:backgroundTint="@color/red_delete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:text="Block"
+                app:icon="@drawable/ic_block"
+                app:iconPadding="8dp" />
+        </LinearLayout>
+
+
     </LinearLayout>
+
+
 </ScrollView>

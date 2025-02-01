@@ -12,5 +12,6 @@
     <color name="teal_600">#00897B</color>
     <color name="teal_700">#00796B</color>
     <color name="teal_900">#004D40</color>
+    <color name="orange_warning">#FB8C00</color>
     <color name="red_delete">#F5425A</color>
 </resources>

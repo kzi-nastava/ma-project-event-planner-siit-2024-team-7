@@ -127,13 +127,13 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
 
     @Override
     public void onCardClicked(BasicCard entity) {
-        // TODO split product and services recycler views as there is no way now
-        //  to find out selected item type
-        if (true) {
-            serviceService.getService(JwtUtil.getAuthorizationValue(getContext()), entity.getId()).enqueue(new Callback<>() {
+        final String token = JwtUtil.getAuthorizationValue(requireContext());
+        if (((DetailedItemDTO)entity).getType().equals("services")) {
+            serviceService.getService(token, entity.getId()).enqueue(new Callback<>() {
                 @Override
                 public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
                                        @NonNull Response<GetServiceResponseDTO> response) {
+                    if (!isAdded()) return;
                     if (response.isSuccessful() && response.body() != null) {
                         // TODO add route to nav graph for this and use NavController to navigate to it
                         ServiceDetailsFragment fragment = new ServiceDetailsFragment(response.body());
@@ -141,8 +141,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
                                 .replace(R.id.nav_host_fragment, fragment)
                                 .addToBackStack(null)
                                 .commit();
-                    }
-                    else {
+                    } else {
                         try {
                             // Show error message
                             String errorBody = Objects.requireNonNull(response.errorBody()).string();
@@ -164,7 +163,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
             });
         }
         else {
-            productService.getProduct(JwtUtil.getAuthorizationValue(requireContext()), entity.getId()).enqueue(new Callback<>() {
+            productService.getProduct(token, entity.getId()).enqueue(new Callback<>() {
                 @Override
                 public void onResponse(@NonNull Call<GetProductResponseDTO> call,
                                        @NonNull Response<GetProductResponseDTO> response) {
@@ -175,8 +174,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
                                 .replace(R.id.nav_host_fragment, fragment)
                                 .addToBackStack(null)
                                 .commit();
-                    }
-                    else {
+                    } else {
                         try {
                             // Show error message
                             String errorBody = Objects.requireNonNull(response.errorBody()).string();

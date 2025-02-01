@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.products;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +38,7 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class ProductDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
-    private final GetProductResponseDTO productDTO;
+    private GetProductResponseDTO productDTO;
 
     private ImageView favouriteStar;
     private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView;
@@ -46,8 +47,16 @@ public class ProductDetailsFragment extends Fragment {
 
     private MaterialButton buyButton, viewProviderButton, chatWithProviderButton;
 
-    public ProductDetailsFragment(GetProductResponseDTO productDTO) {
-        this.productDTO = productDTO;
+    public ProductDetailsFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            productDTO = getArguments().getParcelable("productDTO", GetProductResponseDTO.class);
+        }
     }
 
     @Override
@@ -85,7 +94,7 @@ public class ProductDetailsFragment extends Fragment {
             if (productDTO.isFavourite())
                 favouriteStar.setImageResource(R.drawable.ic_star_filled);
             else
-                favouriteStar.setImageResource(R.drawable.ic_star_border);
+                favouriteStar.setImageResource(R.drawable.ic_star);
 
             userService.markItemAsFavourite(JwtUtil.getAuthorizationValue(requireContext()),
                             JwtUtil.extractId(requireContext()),
@@ -117,12 +126,11 @@ public class ProductDetailsFragment extends Fragment {
         }
 
         viewProviderButton.setOnClickListener(v -> {
-            // TODO add route to nav graph for this and use NavController to navigate to it
-            SPPDetailsFragment fragment = new SPPDetailsFragment(productDTO.getId());
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.nav_host_fragment, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            Bundle args = new Bundle();
+            args.putInt("itemId", productDTO.getId());
+            View view1 = getView();
+            if (view1 == null) return;
+            Navigation.findNavController(view1).navigate(R.id.navigate_to_spp_details_from_product, args);
         });
     }
 

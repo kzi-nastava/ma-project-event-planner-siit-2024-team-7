@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.services;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,7 +39,7 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class ServiceDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
-    private final GetServiceResponseDTO serviceDTO;
+    private GetServiceResponseDTO serviceDTO;
 
     private ImageView favouriteStar;
     private MaterialTextView nameView, descriptionView, specificsView, priceView, discountView, minDurationView, maxDurationView,
@@ -48,8 +49,16 @@ public class ServiceDetailsFragment extends Fragment {
 
     private MaterialButton reserveButton, cancelButton, viewProviderButton, chatWithProviderButton;
 
-    public ServiceDetailsFragment(GetServiceResponseDTO serviceDTO) {
-        this.serviceDTO = serviceDTO;
+    public ServiceDetailsFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            serviceDTO = getArguments().getParcelable("serviceDTO", GetServiceResponseDTO.class);
+        }
     }
 
     @Override
@@ -93,7 +102,7 @@ public class ServiceDetailsFragment extends Fragment {
             if (serviceDTO.isFavourite())
                 favouriteStar.setImageResource(R.drawable.ic_star_filled);
             else
-                favouriteStar.setImageResource(R.drawable.ic_star_border);
+                favouriteStar.setImageResource(R.drawable.ic_star);
 
             userService.markItemAsFavourite(JwtUtil.getAuthorizationValue(requireContext()),
                                             JwtUtil.extractId(requireContext()),
@@ -127,12 +136,11 @@ public class ServiceDetailsFragment extends Fragment {
         }
 
         viewProviderButton.setOnClickListener(v -> {
-            // TODO add route to nav graph for this and use NavController to navigate to it
-            SPPDetailsFragment fragment = new SPPDetailsFragment(serviceDTO.getId());
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.nav_host_fragment, fragment)
-                    .addToBackStack(null)
-                    .commit();
+            Bundle args = new Bundle();
+            args.putInt("itemId", serviceDTO.getId());
+            View view1 = getView();
+            if (view1 == null) return;
+            Navigation.findNavController(view1).navigate(R.id.navigate_to_spp_details_from_service, args);
         });
     }
 

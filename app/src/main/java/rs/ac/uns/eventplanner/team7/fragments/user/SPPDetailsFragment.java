@@ -1,4 +1,4 @@
-package rs.ac.uns.eventplanner.team7.fragments;
+package rs.ac.uns.eventplanner.team7.fragments.user;
 
 import android.os.Bundle;
 
@@ -31,8 +31,16 @@ public class SPPDetailsFragment extends Fragment {
     private Integer itemId;
     private MaterialTextView titleNameView, emailView, descriptionView, addressView, phoneView;
 
-    public SPPDetailsFragment(Integer itemId) {
-        this.itemId = itemId;
+    public SPPDetailsFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            itemId = getArguments().getInt("itemId");
+        }
     }
 
     @Override

@@ -5,11 +5,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -35,8 +37,7 @@ import rs.ac.uns.eventplanner.team7.dto.Page;
 import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.dto.product.GetProductResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
-import rs.ac.uns.eventplanner.team7.fragments.ProductDetailsFragment;
-import rs.ac.uns.eventplanner.team7.fragments.ServiceDetailsFragment;
+import rs.ac.uns.eventplanner.team7.fragments.products.ProductDetailsFragment;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.model.interfaces.SearchActionsListener;
@@ -152,75 +153,80 @@ public class AllItemsFragment extends Fragment
 
     @Override
     public void onCardClicked(BasicCard entity) {
-        switch (filtersFragment.getShownItemType().toLowerCase()) {
-            case "products":
-                productService.getProduct(JwtUtil.getAuthorizationValue(requireContext()), entity.getId()).enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<GetProductResponseDTO> call,
-                                           @NonNull Response<GetProductResponseDTO> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            // TODO add route to nav graph for this and use NavController to navigate to it
-                            ProductDetailsFragment fragment = new ProductDetailsFragment(response.body());
-                            requireActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.nav_host_fragment, fragment)
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-                        else {
-                            try {
-                                // Show error message
-                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
-                                JSONObject jsonObject = new JSONObject(errorBody);
-                                String message = jsonObject.getString("message");
-                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
-                                errorMsg.setText(message);
-                                errorMsg.setVisibility(View.VISIBLE);
-                            } catch (Exception e) {
-                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
-                            }
-                        }
+        final String token = JwtUtil.getAuthorizationValue(requireContext());
+        if (((BasicItemDTO)entity).getType().equals("services")) {
+            serviceService.getService(token, entity.getId()).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
+                                       @NonNull Response<GetServiceResponseDTO> response) {
+                    if (!isAdded()) return;
+                    if (response.isSuccessful() && response.body() != null) {
+                        Bundle args = new Bundle();
+                        args.putParcelable("serviceDTO", response.body());
+                        View view = getView();
+                        if (view == null) return;
+                        Navigation.findNavController(view).navigate(R.id.navigate_to_service_details, args);
+                        return;
                     }
+                    try {
+                        // Show error message
+                        if (response.errorBody() == null) {
+                            showToast("Service not found");
+                            return;
+                        }
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String message = jsonObject.getString("message");
+                        showToast(message);
+                    } catch (Exception e) {
+                        String message = e.getMessage();
+                        if (message == null) return;
+                        Log.d("ERROR", message);
+                        showToast(message);
+                    }
+                }
 
-                    @Override
-                    public void onFailure(@NonNull Call<GetProductResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                @Override
+                public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
+                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                }
+            });
+        } else {
+            productService.getProduct(token, entity.getId()).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<GetProductResponseDTO> call,
+                                       @NonNull Response<GetProductResponseDTO> response) {
+                    if (!isAdded()) return;
+                    if (response.isSuccessful() && response.body() != null) {
+                        Bundle args = new Bundle();
+                        args.putParcelable("productDTO", response.body());
+                        View view = getView();
+                        if (view == null) return;
+                        Navigation.findNavController(view).navigate(R.id.navigate_to_product_details, args);
+                        return;
                     }
-                });
-                break;
-            case "services":
-                serviceService.getService(JwtUtil.getAuthorizationValue(getContext()), entity.getId()).enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
-                                           @NonNull Response<GetServiceResponseDTO> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            // TODO add route to nav graph for this and use NavController to navigate to it
-                            ServiceDetailsFragment fragment = new ServiceDetailsFragment(response.body());
-                            requireActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.nav_host_fragment, fragment)
-                                    .addToBackStack(null)
-                                    .commit();
+                    try {
+                        if (response.errorBody() == null) {
+                            showToast("Product not found");
+                            return;
                         }
-                        else {
-                            try {
-                                // Show error message
-                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
-                                JSONObject jsonObject = new JSONObject(errorBody);
-                                String message = jsonObject.getString("message");
-                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
-                                errorMsg.setText(message);
-                                errorMsg.setVisibility(View.VISIBLE);
-                            } catch (Exception e) {
-                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
-                            }
-                        }
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String message = jsonObject.getString("message");
+                        showToast(message);
+                    } catch (Exception e) {
+                        String message = e.getMessage();
+                        if (message == null) return;
+                        Log.d("ERROR", message);
+                        showToast(message);
                     }
+                }
 
-                    @Override
-                    public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                    }
-                });
-                break;
+                @Override
+                public void onFailure(@NonNull Call<GetProductResponseDTO> call, @NonNull Throwable t) {
+                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                }
+            });
         }
     }
 
@@ -338,6 +344,10 @@ public class AllItemsFragment extends Fragment
         String resultCount = String.format(getString(R.string.n_item_search_results_found),
                 total, total == 1 ? shownType.substring(0, shownType.length()-1) : shownType);
         messageView.setText(resultCount);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 
 }

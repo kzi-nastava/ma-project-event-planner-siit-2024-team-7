@@ -7,29 +7,27 @@ import androidx.annotation.NonNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Location implements Parcelable {
     private String country;
     private String city;
     private String street;
     private String houseNumber;
 
-    public Location() {}
-
-    public Location(String country, String city, String street, String houseNumber) {
-        this.city = city;
-        this.country = country;
-        this.street = street;
-        this.houseNumber = houseNumber;
-    }
-
     protected Location(Parcel in) {
-
+        country = in.readString();
+        city = in.readString();
+        street = in.readString();
+        houseNumber = in.readString();
     }
 
-    public static final Creator<Location> CREATOR = new Creator<>() {
+    public static final Creator<Location> CREATOR = new Creator<Location>() {
         @Override
         public Location createFromParcel(Parcel in) {
             return new Location(in);
@@ -48,7 +46,10 @@ public class Location implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-
+        dest.writeString(country);
+        dest.writeString(city);
+        dest.writeString(street);
+        dest.writeString(houseNumber);
     }
 
     public String toAddressString() {

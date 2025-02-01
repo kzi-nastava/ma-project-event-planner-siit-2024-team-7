@@ -1,17 +1,22 @@
 package rs.ac.uns.eventplanner.team7.fragments.home.top;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.textview.MaterialTextView;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +28,8 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.item.DetailedItemDTO;
+import rs.ac.uns.eventplanner.team7.dto.product.GetProductResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.ProductService;
@@ -74,6 +81,92 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
         });
     }
 
+    @Override
+    public void onCardClicked(BasicCard entity) {
+        final String token = JwtUtil.getAuthorizationValue(requireContext());
+        if (((DetailedItemDTO)entity).getType().equals("services")) {
+            serviceService.getService(token, entity.getId()).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
+                                       @NonNull Response<GetServiceResponseDTO> response) {
+                    if (!isAdded()) return;
+                    if (response.isSuccessful() && response.body() != null) {
+                        Bundle args = new Bundle();
+                        args.putParcelable("serviceDTO", response.body());
+                        View view = getView();
+                        if (view == null) return;
+                        Navigation.findNavController(view).navigate(R.id.navigate_to_service_details, args);
+                        return;
+                    }
+                    try {
+                        // Show error message
+                        if (response.errorBody() == null) {
+                            showToast("Service not found");
+                            return;
+                        }
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String message = jsonObject.getString("message");
+                        showToast(message);
+                    } catch (Exception e) {
+                        String message = e.getMessage();
+                        if (message == null) return;
+                        Log.d("ERROR", message);
+                        showToast(message);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
+                    String message = t.getMessage();
+                    if (message == null) return;
+                    Log.d("ERROR", message);
+                    showToast(message);
+                }
+            });
+        }
+        else {
+            productService.getProduct(token, entity.getId()).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<GetProductResponseDTO> call,
+                                       @NonNull Response<GetProductResponseDTO> response) {
+                    if (!isAdded()) return;
+                    if (response.isSuccessful() && response.body() != null) {
+                        Bundle args = new Bundle();
+                        args.putParcelable("productDTO", response.body());
+                        View view = getView();
+                        if (view == null) return;
+                        Navigation.findNavController(view).navigate(R.id.navigate_to_product_details, args);
+                        return;
+                    }
+                    try {
+                        if (response.errorBody() == null) {
+                            showToast("Product not found");
+                            return;
+                        }
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        String message = jsonObject.getString("message");
+                        showToast(message);
+                    } catch (Exception e) {
+                        String message = e.getMessage();
+                        if (message == null) return;
+                        Log.d("ERROR", message);
+                        showToast(message);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<GetProductResponseDTO> call, @NonNull Throwable t) {
+                    String message = t.getMessage();
+                    if (message == null) return;
+                    Log.d("ERROR", message);
+                    showToast(message);
+                }
+            });
+        }
+    }
+
     private void handleServiceResponse(Call<List<DetailedItemDTO>> serviceCall) {
         serviceCall.enqueue(new Callback<>() {
             @Override
@@ -117,8 +210,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
         }
     }
 
-    @Override
-    public void onCardClicked(BasicCard entity) {
-        // TODO redirect to item details page
+    private void showToast(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

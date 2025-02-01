@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.time.DayOfWeek;
@@ -118,7 +119,6 @@ public class AddWorkDayDialogFragment extends MaterialDialogFragment {
                 adapter.remove(existingWorkDay);
             }
             adapter.add(workDay);
-
             dismiss();
         }
         catch (IllegalArgumentException e) {

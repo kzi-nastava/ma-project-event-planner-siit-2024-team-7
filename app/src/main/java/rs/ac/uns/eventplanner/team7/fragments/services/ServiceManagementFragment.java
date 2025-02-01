@@ -163,6 +163,18 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
             AddWorkDayDialogFragment fragment = AddWorkDayDialogFragment.newInstance(workDays, workDayAdapter);
             fragment.show(requireActivity().getSupportFragmentManager(), "WorkDayDialog");
         });
+        workDayAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                if (workDays.isEmpty()) {
+                    availableCheckBox.setEnabled(false);
+                    availableCheckBox.setChecked(false);
+                } else {
+                    availableCheckBox.setEnabled(true);
+                    availableCheckBox.setChecked(true);
+                }
+            }
+        });
 
         selectedEventTypesAdapter = new CardRecyclerViewAdapter<>(requireContext(), selectedEventTypes, this, null);
         selectedEventTypesView.setAdapter(selectedEventTypesAdapter);
@@ -400,7 +412,6 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         imageListAdapter.notifyDataSetChanged();
 
         visibleCheckBox.setChecked(serviceDTO.isVisible());
-        availableCheckBox.setChecked(serviceDTO.isAvailable());
 
         selectedEventTypesAdapter.addAll(serviceDTO.getAppliesTo());
     }

@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -20,10 +21,12 @@ import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 public class WorkDayAdapter extends RecyclerView.Adapter<WorkDayAdapter.ViewHolder> {
     private final Context context;
     private final List<WorkDayDTO> workDaysList;
+    private final MaterialCheckBox availableCheckBox;
 
-    public WorkDayAdapter(Context context, List<WorkDayDTO> workDaysSet) {
+    public WorkDayAdapter(Context context, List<WorkDayDTO> workDaysSet, MaterialCheckBox availableCheckBox) {
         this.workDaysList = workDaysSet;
         this.context = context;
+        this.availableCheckBox = availableCheckBox;
     }
 
     @NonNull
@@ -45,6 +48,10 @@ public class WorkDayAdapter extends RecyclerView.Adapter<WorkDayAdapter.ViewHold
             workDaysList.remove(workDay);
             notifyDataSetChanged();
             holder.setVisibility(View.GONE);
+            if (workDaysList.isEmpty()) {
+                availableCheckBox.setEnabled(false);
+                availableCheckBox.setChecked(false);
+            }
         });
         holder.itemView.setVisibility(View.VISIBLE);
     }

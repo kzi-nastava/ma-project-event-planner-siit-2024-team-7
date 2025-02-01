@@ -10,7 +10,17 @@
         android:id="@+id/nav_home"
         android:name="rs.ac.uns.eventplanner.team7.fragments.home.HomeFragment"
         android:label="@string/home"
-        tools:layout="@layout/fragment_home"/>
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_nav_product_details"
+            app:destination="@id/nav_product_details" />
+        <action
+            android:id="@+id/navigate_to_service_details"
+            app:destination="@id/nav_service_details" />
+        <action
+            android:id="@+id/navigate_to_product_details"
+            app:destination="@id/nav_product_details" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_chats"
@@ -126,5 +136,30 @@
             app:popUpTo="@id/nav_categories"
             app:popUpToInclusive="true" />
     </dialog>
+
+    <fragment
+        android:id="@+id/nav_spp_details"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.user.SPPDetailsFragment"
+        android:label="User Details"/>
+
+    <fragment
+        android:id="@+id/nav_product_details"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.products.ProductDetailsFragment"
+        android:label="Product Details"
+        tools:layout="@layout/fragment_product_details">
+        <action
+            android:id="@+id/navigate_to_spp_details_from_product"
+            app:destination="@id/nav_spp_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_service_details"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.services.ServiceDetailsFragment"
+        android:label="Service Details"
+        tools:layout="@layout/fragment_service_details" >
+        <action
+            android:id="@+id/navigate_to_spp_details_from_service"
+            app:destination="@id/nav_spp_details" />
+    </fragment>
 
 </navigation>

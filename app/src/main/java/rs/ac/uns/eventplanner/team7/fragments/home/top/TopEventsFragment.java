@@ -22,7 +22,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
-import rs.ac.uns.eventplanner.team7.dto.event.BasicEventDTO;
 import rs.ac.uns.eventplanner.team7.dto.event.DetailedEventDTO;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;

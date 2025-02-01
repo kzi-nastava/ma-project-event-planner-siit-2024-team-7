@@ -230,6 +230,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/available"
                 android:layout_marginStart="20dp"
+                android:enabled="false"
                 />
             <!--            <com.google.android.material.checkbox.MaterialCheckBox-->
             <!--                android:id="@+id/automated_conformation"-->

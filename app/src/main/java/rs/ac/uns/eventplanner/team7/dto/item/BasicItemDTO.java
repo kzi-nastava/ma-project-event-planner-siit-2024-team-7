@@ -8,12 +8,12 @@ import lombok.Setter;
 import rs.ac.uns.eventplanner.team7.model.Item;
 import rs.ac.uns.eventplanner.team7.model.Product;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
-import rs.ac.uns.eventplanner.team7.model.interfaces.CardWithImage;
+import rs.ac.uns.eventplanner.team7.model.interfaces.WithImage;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class BasicItemDTO implements BasicCard, CardWithImage {
+public class BasicItemDTO implements BasicCard, WithImage {
 
     protected Integer id;
     protected String type;

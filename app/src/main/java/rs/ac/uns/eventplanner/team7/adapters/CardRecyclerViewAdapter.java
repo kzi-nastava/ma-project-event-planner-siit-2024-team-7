@@ -23,7 +23,7 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCard;
-import rs.ac.uns.eventplanner.team7.model.interfaces.CardWithImage;
+import rs.ac.uns.eventplanner.team7.model.interfaces.WithImage;
 
 public class CardRecyclerViewAdapter<T extends BasicCard>
         extends RecyclerView.Adapter<CardRecyclerViewAdapter.ViewHolder> {
@@ -164,9 +164,9 @@ public class CardRecyclerViewAdapter<T extends BasicCard>
         public void bindData(BasicCard entity) {
             titleView.setText(entity.getTitle());
             subtitleView.setText(entity.getSubtitle());
-            if (entity instanceof CardWithImage && imageView != null) {
+            if (entity instanceof WithImage && imageView != null) {
                 Picasso.get()
-                        .load(((CardWithImage) entity).getCoverImage())
+                        .load(((WithImage) entity).getCoverImage())
                         .placeholder(R.drawable.image_placeholder)
                         .error(R.drawable.image_placeholder)
                         .into(imageView);

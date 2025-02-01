@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import rs.ac.uns.eventplanner.team7.model.Event;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
-import rs.ac.uns.eventplanner.team7.model.interfaces.CardWithImage;
+import rs.ac.uns.eventplanner.team7.model.interfaces.WithImage;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class BasicEventDTO implements BasicCard, CardWithImage {
+public class BasicEventDTO implements BasicCard, WithImage {
 
     protected Integer id;
     protected String name;

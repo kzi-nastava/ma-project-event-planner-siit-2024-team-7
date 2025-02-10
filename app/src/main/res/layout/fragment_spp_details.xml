@@ -21,6 +21,19 @@
             android:layout_marginBottom="20dp"
             android:textSize="24sp" />
 
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/spp_profile_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            app:shapeAppearanceOverlay="@style/circleImageView"
+            app:srcCompat="@drawable/image_placeholder"
+            android:maxWidth="200dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center"
+            />
+
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -10,8 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.google.android.material.textview.MaterialTextView;
+import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -20,6 +22,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.interfaces.WithImage;
 import rs.ac.uns.eventplanner.team7.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
@@ -30,6 +33,7 @@ public class SPPDetailsFragment extends Fragment {
     private GetProviderResponseDTO providerDTO = null;
     private Integer itemId;
     private MaterialTextView titleNameView, emailView, descriptionView, addressView, phoneView;
+    private ImageView providerImage;
 
     public SPPDetailsFragment() {
         // Required empty public constructor
@@ -53,6 +57,7 @@ public class SPPDetailsFragment extends Fragment {
         descriptionView = view.findViewById(R.id.provider_description);
         addressView = view.findViewById(R.id.provider_address);
         phoneView = view.findViewById(R.id.provider_phone);
+        providerImage = view.findViewById(R.id.spp_profile_pic);
 
         return view;
     }
@@ -87,5 +92,12 @@ public class SPPDetailsFragment extends Fragment {
                 providerDTO.getLocation().getHouseNumber(), providerDTO.getLocation().getCity(),
                 providerDTO.getLocation().getCountry()));
         phoneView.setText(providerDTO.getPhone());
+        if (providerDTO.getPhotoURL() != null && !providerDTO.getPhotoURL().isEmpty()) {
+            Picasso.get()
+                    .load(providerDTO.getPhotoURL())
+                    .error(R.drawable.image_placeholder)
+                    .placeholder(R.drawable.image_placeholder)
+                    .into(providerImage);
+        }
     }
 }

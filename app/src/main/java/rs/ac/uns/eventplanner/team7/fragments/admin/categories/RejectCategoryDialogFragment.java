@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.button.MaterialButton;
@@ -38,8 +39,9 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 public class RejectCategoryDialogFragment extends MaterialDialogFragment {
     private Context context;
     private Category category;
-    private List<Category> categories;
+    private final List<Category> categories;
     private AutoCompleteTextView categoryDropdown;
+    private ArrayAdapter<Category> categoriesAdapter;
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
     public RejectCategoryDialogFragment() {
@@ -57,8 +59,21 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_reject_category, container, false);
-
         categoryDropdown = view.findViewById(R.id.replacement_category_dropdown);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        categoriesAdapter = new ArrayAdapter<>(
+                context,
+                android.R.layout.simple_list_item_1,
+                categories
+        );
+        categoryDropdown.setAdapter(categoriesAdapter);
+
         fetchCategories();
 
         MaterialButton cancel = view.findViewById(R.id.cancel_btn);
@@ -67,9 +82,9 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
         MaterialButton reject = view.findViewById(R.id.reject_category_btn);
         reject.setOnClickListener(v -> {
             RejectCategoryRequestDTO dto = new RejectCategoryRequestDTO();
-            for (Category categoryDTO : categories) {
-                if (categoryDTO.getName().equals(categoryDropdown.getText().toString()))
-                    dto.setReplacementCategoryId(categoryDTO.getId());
+            for (Category category : categories) {
+                if (category.getName().equals(categoryDropdown.getText().toString()))
+                    dto.setReplacementCategoryId(category.getId());
             }
             if (dto.getReplacementCategoryId() == null) {
                 Log.d("ERROR", "Must choose a replacement category!");
@@ -110,7 +125,6 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
                     });
         });
 
-        return view;
     }
 
     private void fetchCategories() {
@@ -121,14 +135,8 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
                                            @NonNull Response<List<Category>> response) {
                         if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
-                            categories = new ArrayList<>(response.body());
-
-                            ArrayAdapter<Category> adapter = new ArrayAdapter<>(
-                                    context,
-                                    android.R.layout.simple_list_item_1,
-                                    categories
-                            );
-                            categoryDropdown.setAdapter(adapter);
+                            categoriesAdapter.clear();
+                            categoriesAdapter.addAll(response.body());
                         }
                     }
 

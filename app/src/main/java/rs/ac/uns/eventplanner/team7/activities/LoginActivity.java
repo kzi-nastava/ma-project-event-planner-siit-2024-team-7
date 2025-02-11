@@ -1,17 +1,19 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
+
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,15 +28,13 @@ import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private AuthService authService;
+    private final AuthService authService = ClientUtils.injectService(AuthService.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        authService = ClientUtils.retrofit.create(AuthService.class);
         setupNavigation();
-        checkRedirection();
     }
 
     @Override
@@ -58,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
         MaterialTextView guestButton = findViewById(R.id.continue_as_guest);
         guestButton.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            intent.putExtra("isGuest", true);
             startActivity(intent);
             finish();
         });
@@ -70,29 +69,29 @@ public class LoginActivity extends AppCompatActivity {
     private void handleLogin() {
         TextInputEditText emailInput = findViewById(R.id.usernameInput);
         TextInputEditText passwordInput = findViewById(R.id.passwordInput);
-        String email = emailInput.getText().toString().trim();
-        String password = passwordInput.getText().toString().trim();
+        String email = Objects.requireNonNull(emailInput.getText()).toString().trim();
+        String password = Objects.requireNonNull(passwordInput.getText()).toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.enter_email_and_password, Toast.LENGTH_SHORT).show();
             return;
         }
 
         LoginRequestDTO loginRequest = new LoginRequestDTO(email, password);
 
         Call<LoginResponseDTO> call = authService.login(loginRequest);
-        call.enqueue(new Callback<LoginResponseDTO>() {
+        call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<LoginResponseDTO> call, Response<LoginResponseDTO> response) {
+            public void onResponse(@NonNull Call<LoginResponseDTO> call,
+                                   @NonNull Response<LoginResponseDTO> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponseDTO loginResponse = response.body();
                     String token = loginResponse.getToken();
-                    Integer userId = loginResponse.getId();
                     UserRole role = loginResponse.getRole();
                     JwtUtil.saveToken(LoginActivity.this, token);
                     JwtUtil.saveRole(LoginActivity.this, role.toString());
-                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                    finish();
+                    JwtUtil.saveCity(LoginActivity.this, loginResponse.getCity());
+                    switchToHomeActivity();
                 } else {
                     clearFocus();
                     MaterialTextView errorMsg = findViewById(R.id.error_login);
@@ -101,10 +100,20 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<LoginResponseDTO> call, Throwable t) {
+            public void onFailure(@NonNull Call<LoginResponseDTO> call, @NonNull Throwable t) {
                 Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void switchToHomeActivity() {
+        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        Bundle params = getIntent().getExtras();
+        if (params != null) {
+            intent.putExtras(params);
+        }
+        startActivity(intent);
+        finish();
     }
 
     private void clearFocus() {
@@ -116,15 +125,12 @@ public class LoginActivity extends AppCompatActivity {
         passwordInput.clearFocus();
     }
 
+    /// Redirection can occur when accepting invitations
     private void checkRedirection() {
-        Uri data = getIntent().getData();
-        if (data != null) {
-            String email = data.getQueryParameter("email");
-            if (email != null)  {
-                TextInputEditText emailInput = findViewById(R.id.usernameInput);
-                emailInput.setText(email);
-            }
-        }
+        Bundle data = getIntent().getExtras();
+        if (data == null) return;
+        String email = data.getString("email");
+        TextInputEditText emailInput = findViewById(R.id.usernameInput);
+        emailInput.setText(email);
     }
-
 }

@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:windowBackground"
-    android:padding="24dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="12dp"
-    android:layout_gravity="center_horizontal">
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +21,6 @@
             android:layout_marginTop="20dp"
             android:textStyle="bold"
             android:textSize="40sp"
-            android:textColor="@color/black"
             android:layout_marginBottom="10dp" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -36,7 +31,6 @@
             android:layout_marginTop="20dp"
             android:textStyle="italic"
             android:textSize="30sp"
-            android:textColor="@color/black"
             android:layout_marginBottom="24dp" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -49,7 +43,7 @@
             android:textSize="20sp"
             android:textColor="@color/red_delete"
             android:layout_marginBottom="24dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <!-- Username input field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -58,13 +52,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:padding="10dp"
+            app:endIconMode="clear_text"
             android:hint="@string/prompt_email">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/usernameInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="textEmailAddress" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -75,6 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:padding="10dp"
+            app:endIconMode="password_toggle"
             android:hint="@string/prompt_password">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -88,28 +84,26 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/loginButton"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sign_in"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:padding="15dp"
+            app:iconPadding="10dp"
+            app:icon="@drawable/ic_login"
             android:layout_marginBottom="16dp" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/signupLink"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/sign_up_ul"
-                android:textColor="@color/black"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="8dp"
-                android:height="48dp"
-                android:textSize="16sp"
-                />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/signupLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_up_ul"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:height="48dp"
+            android:textSize="16sp" />
 
 
         <com.google.android.material.textview.MaterialTextView
@@ -117,13 +111,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/continue_as_guest_ul"
-            android:textColor="@color/black"
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
             android:height="48dp"
-            android:textSize="16sp"
-            />
+            android:textSize="16sp" />
     </LinearLayout>
-
-</com.google.android.material.card.MaterialCardView>
+</ScrollView>

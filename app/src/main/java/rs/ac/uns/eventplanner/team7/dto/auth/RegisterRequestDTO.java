@@ -1,15 +1,13 @@
 package rs.ac.uns.eventplanner.team7.dto.auth;
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import rs.ac.uns.eventplanner.team7.model.Location;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequestDTO {
     private String email;
@@ -19,10 +17,16 @@ public class RegisterRequestDTO {
     // AccountStatus not necessary, it will be set internally
     private String photoURL;
     private String phone;
-    private Location address;
+    private Location location = new Location();
     private String firstName;
     private String lastName;
     private String orgName;
     private String orgDesc;
+    private String authToken;
 
+    public boolean areValidFields() {
+        return email != null && password != null && password2 != null && phone != null &&
+                location.getCountry() != null && location.getCity() != null && location.getStreet()
+                != null && location.getHouseNumber() != null;
+    }
 }

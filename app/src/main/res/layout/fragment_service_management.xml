@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.ServiceManagementFragment"
+    tools:context=".fragments.services.ServiceManagementFragment"
+    android:background="@color/background"
     android:id="@+id/service_management_fragment">
 
     <LinearLayout
@@ -14,75 +15,97 @@
         android:gravity="center"
         android:padding="16dp">
 
-        <ImageButton
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/rounded_arrow_back_24"
-            android:background="@color/background"
-            android:layout_gravity="start"/>
-
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/welcomeMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Service creation"
-            android:textSize="24sp"
-            android:textColor="@color/black"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="24dp" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Category"
-            android:layout_gravity="start"
-            android:paddingHorizontal="20dp"
-            />
-        <Spinner
-            android:id="@+id/service_category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_recommend_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="start"
-            android:text="Recommend category" />
+            android:layout_gravity="center"
+            android:text="@string/service_creation"
+            android:textSize="24sp"/>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/categories_dropdown_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Service name"
+            android:layout_marginVertical="8dp"
+            app:endIconMode="dropdown_menu">
+
+            <AutoCompleteTextView
+                android:id="@+id/categories_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="18sp"
+                android:paddingEnd="5sp"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"
+                android:hint="@string/category" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/cant_find_category_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingHorizontal="16dp"
+                android:layout_gravity="center"
+                android:textSize="16sp"
+                android:text="@string/cant_find_a_suitable_category"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_suggest_category"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:icon="@drawable/ic_add"
+                app:iconPadding="6dp"
+                android:text="@string/suggest_a_new_category" />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_name_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/service_name"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/service_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_description_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Service description"
+            android:hint="@string/service_description"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/service_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine" />
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLines="3"
+                android:scrollbars="vertical"
+                android:overScrollMode="ifContentScrolls"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_price_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:endIconMode="clear_text"
-            android:hint="Price"
+            android:hint="@string/price"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -94,10 +117,11 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_discount_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:endIconMode="clear_text"
-            android:hint="Discount"
+            android:hint="@string/discount"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -109,143 +133,82 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/service_specifics_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Specifics"
+            android:hint="@string/service_specifics"
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/specifics"
+                android:id="@+id/service_specifics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine" />
+                android:inputType="textCapSentences|textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <LinearLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/reservation_deadline_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            app:endIconMode="clear_text"
+            android:hint="@string/reservation_deadline"
             android:layout_marginTop="8dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="200dp"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reservation_deadline"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:endIconMode="clear_text"
-                android:hint="Reservation deadline"
-                android:layout_marginEnd="8dp">
+                android:inputType="number" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/reservation_deadline"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(days)" />
-
-        </LinearLayout>
-
-        <LinearLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/cancellation_deadline_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            app:endIconMode="clear_text"
+            android:hint="@string/cancellation_deadline"
             android:layout_marginTop="8dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="200dp"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/cancellation_deadline"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:endIconMode="clear_text"
-                android:hint="Cancellation deadline"
-                android:layout_marginEnd="8dp">
+                android:inputType="number" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/cancellation_deadline"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(days)" />
-
-        </LinearLayout>
-
-        <LinearLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/min_duration_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            app:endIconMode="clear_text"
+            android:hint="@string/minimum_duration"
             android:layout_marginTop="8dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="200dp"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/min_duration"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:endIconMode="clear_text"
-                android:hint="Minimum duration"
-                android:layout_marginEnd="8dp">
+                android:inputType="number" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/min_duration"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(hours)" />
-
-        </LinearLayout>
-
-        <LinearLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/max_duration_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            app:endIconMode="clear_text"
+            android:hint="@string/maximum_duration"
             android:layout_marginTop="8dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="200dp"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/max_duration"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:endIconMode="clear_text"
-                android:hint="Maximum duration"
-                android:layout_marginEnd="8dp">
+                android:inputType="number" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/max_duration"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(hours)" />
-
-        </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_select_images"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="start"
-            android:text="Select Images" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_images"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -258,57 +221,176 @@
                 android:id="@+id/service_visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Visible"
+                android:text="@string/visible"
                 android:layout_marginStart="20dp"
                 />
             <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/service_available"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Available"
+                android:text="@string/available"
                 android:layout_marginStart="20dp"
+                android:enabled="false"
                 />
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/automated_conformation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Automated conformation"
-                android:layout_marginStart="20dp"
-                />
+            <!--            <com.google.android.material.checkbox.MaterialCheckBox-->
+            <!--                android:id="@+id/automated_conformation"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:text="Automated conformation"-->
+            <!--                android:layout_marginStart="20dp"-->
+            <!--                />-->
 
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/event_types_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Event types"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="start"
-            />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingHorizontal="16dp"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:text="@string/work_days"
+                />
+
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/save_service_button"
+                android:id="@+id/btn_open_work_day_dialog"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                app:icon="@drawable/ic_add"
+                android:tooltipText="@string/add_new_work_day"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save service"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_gravity="start"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_work_days"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:overScrollMode="always"
+            android:scrollbars="vertical"
+            android:layout_marginTop="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/horizontal_button_card"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingHorizontal="16dp"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:text="@string/images"
                 />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_select_images"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                app:icon="@drawable/ic_add"
+                android:tooltipText="@string/select_images"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_images"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:overScrollMode="always"
+            android:scrollbars="vertical"
+            android:layout_marginTop="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/horizontal_button_card"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/event_type_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:paddingHorizontal="20dp"
+            app:endIconMode="dropdown_menu">
+
+            <AutoCompleteTextView
+                android:id="@+id/event_type_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="18sp"
+                android:paddingEnd="5sp"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"
+                android:hint="@string/event_types" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:text="@string/select_event_types" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_selected_event_types"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:overScrollMode="always"
+            android:scrollbars="vertical"
+            android:layout_marginTop="16dp"
+            android:paddingBottom="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/horizontal_button_card"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/error_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/red_delete"
+            android:visibility="gone"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_service_button"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save_service"
+                app:icon="@drawable/ic_save"
+                app:iconPadding="8dp"
+                android:padding="10dp"
+                />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/delete_service_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delete service"
+                android:text="@string/delete_service"
                 android:backgroundTint="@color/red_delete"
-                android:layout_marginTop="8dp"
-                android:layout_gravity="start"
+                app:icon="@drawable/ic_delete"
+                android:padding="10dp"
+                android:layout_marginStart="10dp"
                 />
 
         </LinearLayout>

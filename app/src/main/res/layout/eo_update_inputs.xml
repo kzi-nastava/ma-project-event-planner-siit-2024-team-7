@@ -19,8 +19,8 @@
             android:id="@+id/change_first_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:text="First name"
+            android:inputType="textCapWords"
+            android:text="@string/first_name"
             android:enabled="false"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -39,8 +39,8 @@
             android:id="@+id/change_last_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:text="Last name"
+            android:inputType="textCapWords"
+            android:text="@string/last_name"
             android:enabled="false"
             />
     </com.google.android.material.textfield.TextInputLayout>

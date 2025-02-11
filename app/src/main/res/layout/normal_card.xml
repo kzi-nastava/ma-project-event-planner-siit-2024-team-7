@@ -1,41 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
-    android:id="@+id/normal_card"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:id="@+id/normal_card"
+    android:layout_width="260dp"
     android:layout_height="wrap_content"
     android:layout_margin="20dp"
     >
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Media -->
-        <ImageView
-            android:id="@+id/card_image"
-            android:layout_width="match_parent"
-            android:layout_height="194dp"
-            app:srcCompat="@drawable/image_placeholder"
-            android:scaleType="fitXY"
-            android:contentDescription="Card description"
-            />
-
+        <!-- Title, subtitle, description -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/text_container"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:minHeight="150dp"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <!-- Title, secondary and supporting text -->
             <TextView
                 android:id="@+id/card_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Card title"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                />
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
             <TextView
                 android:id="@+id/card_subtitle"
                 android:layout_width="wrap_content"
@@ -43,8 +38,8 @@
                 android:layout_marginTop="8dp"
                 android:text="Card subtitle"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?android:attr/textColorSecondary"
-                />
+                android:textColor="?android:attr/textColorSecondary" />
+
             <TextView
                 android:id="@+id/card_description"
                 android:layout_width="wrap_content"
@@ -52,28 +47,29 @@
                 android:layout_marginTop="16dp"
                 android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textColor="?android:attr/textColorSecondary"
-                />
-
+                android:textColor="?android:attr/textColorSecondary" />
         </LinearLayout>
 
+        <!-- More Info Button -->
         <LinearLayout
+            android:id="@+id/button_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             android:orientation="horizontal"
-            android:layout_gravity="end"
-            >
+            android:paddingBottom="4dp"
+            app:layout_constraintTop_toBottomOf="@id/text_container"
+            app:layout_constraintEnd_toEndOf="parent">
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/card_more_info_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:text="@string/more_info"
-                style="?attr/materialButtonStyle"
-                />
+                style="?attr/materialButtonStyle" />
         </LinearLayout>
 
-    </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

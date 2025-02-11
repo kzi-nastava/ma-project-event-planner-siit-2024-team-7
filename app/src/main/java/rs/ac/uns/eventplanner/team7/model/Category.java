@@ -10,27 +10,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import rs.ac.uns.eventplanner.team7.model.enums.CategoryStatus;
+import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCard;
 
-
-@Getter @Setter
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class Category implements Parcelable {
-
+public class Category implements DetailedCard, Parcelable {
     private Integer id;
     private String name;
     private String description;
-    protected CategoryStatus status;
-
-    public Category() {}
-
-    public Category(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
+    private CategoryStatus status;
 
     protected Category(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readInt();
+        }
         name = in.readString();
         description = in.readString();
+        status = CategoryStatus.valueOf(in.readString());
     }
 
     public static final Creator<Category> CREATOR = new Creator<>() {
@@ -45,6 +45,22 @@ public class Category implements Parcelable {
         }
     };
 
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public String getTitle() {
+        return name;
+    }
+
+    @Override
+    public String getSubtitle() {
+        return "";
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -52,7 +68,15 @@ public class Category implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(id);
+        }
         dest.writeString(name);
         dest.writeString(description);
+        dest.writeString(status.toString());
     }
 }
+

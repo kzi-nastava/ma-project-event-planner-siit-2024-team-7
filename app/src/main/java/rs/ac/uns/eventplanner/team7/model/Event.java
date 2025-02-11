@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,9 +48,9 @@ public class Event implements Parcelable {
         description = in.readString();
         maxParticipants = in.readInt();
         date = DateConverter.toLocalDateTime(in.readLong());
-        place = in.readParcelable(Location.class.getClassLoader());
+        place = in.readParcelable(Location.class.getClassLoader(), Location.class);
         visibility = EventVisibility.fromInteger(in.readInt());
-        type = in.readParcelable(EventType.class.getClassLoader());
+        type = in.readParcelable(EventType.class.getClassLoader(), EventType.class);
         activities = in.createTypedArrayList(Activity.CREATOR);
     }
 

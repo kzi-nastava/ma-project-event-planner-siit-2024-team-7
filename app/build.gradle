@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "rs.ac.uns.eventplanner.team7"
-        minSdk 30
+        minSdk 34
         targetSdk 34
         versionCode 1
         versionName "1.0"
@@ -55,8 +55,11 @@ dependencies {
     implementation libs.material
     implementation libs.material.calendarview
     implementation libs.navigation.fragment
-    implementation libs.retrofit
+    implementation libs.navigation.fragment.ktx
+    implementation libs.navigation.ui.ktx
     implementation libs.picasso
+    implementation libs.retrofit
+    implementation libs.swiperefreshlayout
     implementation libs.threetenabp
     runtimeOnly libs.jjwt.impl
     runtimeOnly libs.jjwt.jackson

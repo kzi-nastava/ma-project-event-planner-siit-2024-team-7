@@ -13,9 +13,9 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.CreateEventTypeResponseDTO;
-import rs.ac.uns.eventplanner.team7.dto.event_type.GetEventTypeResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.UpdateEventTypeRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.event_type.UpdateEventTypeResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.EventType;
 
 public interface EventTypeService {
     @Headers({
@@ -23,7 +23,7 @@ public interface EventTypeService {
             "Content-Type: application/json"
     })
     @GET("event_types")
-    Call<List<GetEventTypeResponseDTO>> getAll(@Header("Authorization") String token);
+    Call<List<EventType>> getAll(@Header("Authorization") String token);
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -37,7 +37,7 @@ public interface EventTypeService {
             "Content-Type: application/json"
     })
     @GET("event_types/{id}")
-    Call<GetEventTypeResponseDTO> get(@Header("Authorization") String token, @Path("id") Integer id);
+    Call<EventType> get(@Header("Authorization") String token, @Path("id") Integer id);
 
     @Headers({
             "User-Agent: Mobile-Android",
@@ -52,4 +52,18 @@ public interface EventTypeService {
     })
     @DELETE("event_types/{id}")
     Call<Void> delete(@Header("Authorization") String token, @Path("id") Integer id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("event_types/all_names")
+    Call<List<String>> findAllNames();
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("event_types/active")
+    Call<List<EventType>> findAllActive(@Header("Authorization") String token);
 }

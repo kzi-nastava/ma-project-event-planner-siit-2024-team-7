@@ -33,7 +33,7 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.normal_card, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.normal_image_card, parent, false);
         return new ViewHolder(view);
     }
 
@@ -44,18 +44,18 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         }
         if (type.equals("events")) {
             BasicEventDTO event = (BasicEventDTO) items.get(position);
-            holder.titleView.setText(event.getName());
-            holder.subtitleView.setText(event.getDate());
-            holder.descriptionView.setText("");
+            holder.titleView.setText(event.getTitle());
+            holder.subtitleView.setText(event.getSubtitle());
+            holder.descriptionView.setVisibility(View.GONE);
             Picasso.get()
                     .load(event.getCoverImage())
                     .placeholder(R.drawable.image_placeholder)
                     .into(holder.imageView);
         } else if (type.equals("items")) {
             BasicItemDTO item = (BasicItemDTO) items.get(position);
-            holder.titleView.setText(item.getName());
-            holder.subtitleView.setText(item.getType());
-            holder.descriptionView.setText(String.valueOf(item.getPrice()));
+            holder.titleView.setText(item.getTitle());
+            holder.subtitleView.setText(item.getSubtitle());
+            holder.descriptionView.setVisibility(View.GONE);
             Picasso.get()
                     .load(item.getCoverImage())
                     .placeholder(R.drawable.image_placeholder)
@@ -68,7 +68,7 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         return items.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView titleView;
         TextView subtitleView;

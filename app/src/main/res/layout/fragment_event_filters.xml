@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".fragments.EventFiltersFragment">
+    tools:context=".fragments.home.all.EventFiltersFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,138 +25,148 @@
 
         <include layout="@layout/space_divider"/>
 
-        <include layout="@layout/view_close_button"/>
+        <include android:id="@+id/event_filters_close_button" layout="@layout/view_close_button"/>
 
     </LinearLayout>
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@color/black"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        />
+    <include layout="@layout/divider_thick"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/event_begin_date_layout"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        app:endIconMode="custom"
-        app:endIconDrawable="@drawable/ic_calendar"
-        android:hint="@string/begin_date"
-        >
+        android:layout_height="0dp"
+        android:layout_weight="0.75">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/event_begin_date_input"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="false"
-            android:inputType="none" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="vertical">
 
-    <include layout="@layout/divider_thin"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="clear_text"
+                android:hint="@string/name">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/event_end_date_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        app:endIconMode="custom"
-        app:endIconDrawable="@drawable/ic_calendar"
-        android:hint="@string/end_date">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_name_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/event_end_date_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:clickable="true"
-            android:inputType="none" />
-    </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <include layout="@layout/divider_thin"/>
+            <include layout="@layout/divider_thin"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        app:endIconMode="clear_text"
-        android:hint="@string/event_name">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/event_date_range_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_calendar"
+                android:hint="@string/date_range">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/event_name_filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_date_range_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:inputType="none"/>
 
-    </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <include layout="@layout/divider_thin"/>
+            <include layout="@layout/divider_thin"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        app:endIconMode="clear_text"
-        android:hint="@string/max_participants">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="clear_text"
+                android:hint="@string/max_participants">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/event_max_participants_filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_max_participants_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <include layout="@layout/divider_thin"/>
+            <include layout="@layout/divider_thin"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/event_type"
-        android:paddingHorizontal="20dp"
-        />
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="clear_text"
+                android:hint="@string/description">
 
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        android:id="@+id/event_type_filter"
-        />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/event_description_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:gravity="top"
+                    android:minLines="3"
+                    android:maxLines="3"
+                    android:scrollbars="vertical"
+                    android:overScrollMode="always" />
 
-    <include layout="@layout/divider_thin"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/event_location"
-        android:paddingHorizontal="20dp"
-        />
+            <include layout="@layout/divider_thin"/>
 
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="8dp"
-        android:paddingHorizontal="20dp"
-        android:id="@+id/event_location_filter"
-        />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/event_type_filter_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="dropdown_menu">
 
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/event_type_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="18sp"
+                    android:paddingEnd="5sp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:hint="@string/event_type" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@color/black"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        />
+            <include layout="@layout/divider_thin"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/event_location_filter_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="dropdown_menu">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/event_location_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="18sp"
+                    android:paddingEnd="5sp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:hint="@string/event_location" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <include layout="@layout/divider_thick"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -165,6 +175,7 @@
         android:padding="10dp"
         >
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/apply_event_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/apply"
@@ -174,7 +185,7 @@
         <include layout="@layout/space_divider"/>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/event_filter_reset_button"
+            android:id="@+id/reset_event_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/reset"

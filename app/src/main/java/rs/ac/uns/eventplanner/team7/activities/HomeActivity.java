@@ -4,165 +4,172 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.textview.MaterialTextView;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.fragments.EventTypeListFragment;
-import rs.ac.uns.eventplanner.team7.fragments.HomeFragment;
-import rs.ac.uns.eventplanner.team7.fragments.SPPServicesBaseFragment;
-import rs.ac.uns.eventplanner.team7.fragments.UserProfileFragment;
+import rs.ac.uns.eventplanner.team7.dto.ResponseMessageDTO;
+import rs.ac.uns.eventplanner.team7.dto.invitation.InvitationAcceptanceDTO;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.services.InvitationService;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class HomeActivity extends AppCompatActivity {
-    private Toolbar toolbar;
-    private UserRole role = UserRole.GUEST;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
+
+    private final InvitationService invitationService = ClientUtils.injectService(InvitationService.class);
+    private UserRole role;
+    private final Set<Integer> topLevelDestinations = new HashSet<>();
+    private NavController navController;
+    private AppBarConfiguration appBarConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-
-        boolean isGuest = getIntent().getBooleanExtra("isGuest", false);
-        if (!isGuest) role =  UserRole.valueOf(JwtUtil.getRole(this));
-
-        // Initialize the DrawerLayout and Toolbar
-        drawerLayout = findViewById(R.id.home_drawer_layout);
-        navigationView = findViewById(R.id.navigation_view);
-        this.toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        role = UserRole.valueOf(JwtUtil.getRole(this));
         if (role == UserRole.ADMIN) {
-            setupAdminNav();
+            setContentView(R.layout.activity_home_admin);
+        } else if (role == UserRole.GUEST) {
+            setContentView(R.layout.activity_home_base);
+        } else {
+            setContentView(R.layout.activity_home);
         }
-        setupBottomNavbar();
-        loadFragment(new HomeFragment());
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        setupNavigation();
+
+        if (getIntent().getExtras() != null) handleInvitationAccepting();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(navController, appBarConfig) || super.onSupportNavigateUp();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        MenuItem chatItem = menu.findItem(R.id.nav_chats);
-        MenuItem notificationsItem = menu.findItem(R.id.nav_notifications);
-        if (role == UserRole.ADMIN) {
-            chatItem.setVisible(false);
-        } else if (role == UserRole.GUEST) {
-            chatItem.setVisible(false);
-            notificationsItem.setVisible(false);
-        }
+        int menuLayout = role == UserRole.GUEST ? R.menu.guest_toolbar_menu : R.menu.toolbar_menu;
+        getMenuInflater().inflate(menuLayout, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.nav_chats) {
-            // TODO
-        } else if (item.getItemId() == R.id.nav_notifications) {
-            // TODO
-        } else if (item.getItemId() == R.id.nav_account) {
-            View profileMenuItemView = findViewById(R.id.nav_account);
-            PopupMenu popupMenu = new PopupMenu(this, profileMenuItemView);
-            if (role == UserRole.GUEST) { //inflate it with guest menu
-                popupMenu.getMenuInflater().inflate(R.menu.guest_profile_menu, popupMenu.getMenu());
-            } else {
-                popupMenu.getMenuInflater().inflate(R.menu.profile_menu, popupMenu.getMenu());
-            }
-            setAccountClickListener(popupMenu);
-            popupMenu.show();
+        int itemId = item.getItemId();
+        if (itemId == R.id.nav_login_logout) {
+            JwtUtil.setDefaultValues(this);
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            return true;
+        } else if (itemId == R.id.nav_register) {
+            startActivity(new Intent(this, RegistrationActivity.class));
+            finish();
+            return true;
+        }
+        return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
+    }
+
+    private void setupNavigation() {
+        NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        navController = Objects.requireNonNull(navHost).getNavController();
+
+        topLevelDestinations.add(R.id.nav_home);
+        if (role == UserRole.GUEST) {
+            appBarConfig = new AppBarConfiguration.Builder(topLevelDestinations).build();
+            NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig);
+            return;
+        }
+        setupBottomNavbar();
+        topLevelDestinations.addAll(Set.of(R.id.nav_chats, R.id.nav_account));
+        final var appBarConfigBuilder = new AppBarConfiguration.Builder(topLevelDestinations);
+
+        if (role == UserRole.ADMIN) {
+            DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout);
+            appBarConfigBuilder.setOpenableLayout(drawerLayout);
+
+            NavigationView navigationDrawerView = findViewById(R.id.navigation_view);
+            NavigationUI.setupWithNavController(navigationDrawerView, navController);
+            navController.addOnDestinationChangedListener((controller, navDestination, bundle) -> {
+                if (!topLevelDestinations.contains(navDestination.getId())) {
+                    drawerLayout.closeDrawers();
+                }
+            });
         }
 
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        JwtUtil.clearToken(HomeActivity.this);
-        JwtUtil.clearRole(HomeActivity.this);
-    }
-
-    private void setAccountClickListener(PopupMenu popupMenu) {
-        popupMenu.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.nav_logout || itemId == R.id.nav_sign_in) {
-                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-                return true;
-            }
-            if (itemId == R.id.nav_my_account) {
-                loadFragment(new UserProfileFragment());
-                toolbar.setTitle(R.string.profile);
-                return true;
-            }
-            if (itemId == R.id.nav_sign_up) {
-                startActivity(new Intent(HomeActivity.this, RegistrationActivity.class));
-                finish();
-                return true;
-            }
-            return false;
-        });
-    }
-
-    private void setupAdminNav() {
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.openDrawer,  R.string.closeDrawer);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-        MaterialTextView headerText = navigationView.getHeaderView(0).findViewById(R.id.nav_header_user_name);
-        headerText.setText(R.string.admin_options);
-        navigationView.inflateMenu(R.menu.admin_nav_drawer_menu);
-
-        navigationView.setNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.event_type) {
-                loadFragment(new EventTypeListFragment());
-                toolbar.setTitle(item.getTitle());
-            }
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        });
+        appBarConfig = appBarConfigBuilder.build();
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig);
     }
 
     private void setupBottomNavbar() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-            if (item.getItemId() == R.id.nav_home) {
-                selectedFragment = new HomeFragment();
-                toolbar.setTitle(item.getTitle());
-            } else if (item.getItemId() == R.id.nav_service) {
-                selectedFragment = new SPPServicesBaseFragment();
-                toolbar.setTitle(item.getTitle());
-            }
-            if (selectedFragment != null) {
-                loadFragment(selectedFragment);
-            }
-            return true;
-        });
+        // Guest users don't have bottom navbar!
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        if (role == UserRole.EVENT_ORG) {
+            bottomNavigationView.inflateMenu(R.menu.event_organizer_menu);
+            topLevelDestinations.add(R.id.nav_event);
+        } else if (role == UserRole.SPP) {
+            bottomNavigationView.inflateMenu(R.menu.spp_menu);
+            topLevelDestinations.addAll(Set.of(R.id.nav_product, R.id.nav_service));
+        } else {
+            bottomNavigationView.inflateMenu(R.menu.basic_menu);
+        }
+        NavigationUI.setupWithNavController(bottomNavigationView, navController);
     }
 
-    private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frameLayout, fragment)
-                .commit();
+    private void handleInvitationAccepting() {
+        String bearerToken = JwtUtil.getAuthorizationValue(this);
+        Bundle params = Objects.requireNonNull(getIntent().getExtras());
+        InvitationAcceptanceDTO dto = new InvitationAcceptanceDTO(params);
+        invitationService.acceptInvitation(bearerToken, dto).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseMessageDTO> call, @NonNull Response<ResponseMessageDTO> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(HomeActivity.this,
+                            Objects.requireNonNull(response.body()).getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+                switch (response.code()) {
+                    case 400:
+                        Toast.makeText(HomeActivity.this,
+                                Objects.requireNonNull(response.body()).getMessage(),
+                                Toast.LENGTH_LONG).show();
+                        break;
+                    case 401:
+                        Toast.makeText(HomeActivity.this, R.string.invitation_not_found,
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        Toast.makeText(HomeActivity.this, R.string.error_accepting_invitation,
+                                Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseMessageDTO> call, @NonNull Throwable t) {
+                Toast.makeText(HomeActivity.this, R.string.error_accepting_invitation,
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }

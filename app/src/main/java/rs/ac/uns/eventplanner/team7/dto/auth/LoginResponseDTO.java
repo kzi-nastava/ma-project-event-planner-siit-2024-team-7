@@ -5,13 +5,12 @@ import lombok.Getter;
 import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 
 @AllArgsConstructor
+@Getter
 public class LoginResponseDTO {
-    @Getter
     private String token;
-    @Getter
     private Integer id; // helps when trying to retrieve id for My Account
-    @Getter
     private UserRole role; // helps dynamically change UI
+    private String city;
 
 
 }

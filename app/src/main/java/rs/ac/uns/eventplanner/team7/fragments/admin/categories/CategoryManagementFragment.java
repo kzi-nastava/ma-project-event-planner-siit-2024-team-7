@@ -131,8 +131,7 @@ public class CategoryManagementFragment extends Fragment {
             if (category.getStatus() == CategoryStatus.ACTIVE)
                 showDeleteConfirmationDialog();
             else {
-                RejectCategoryDialogFragment fragment = RejectCategoryDialogFragment.newInstance
-                        (requireContext(), category);
+                RejectCategoryDialogFragment fragment = RejectCategoryDialogFragment.newInstance(category);
                 fragment.show(requireActivity().getSupportFragmentManager(), "RejectCategoryDialog");
             }
 

@@ -1,6 +1,5 @@
 package rs.ac.uns.eventplanner.team7.fragments.admin.categories;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,10 +36,8 @@ import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class RejectCategoryDialogFragment extends MaterialDialogFragment {
-    private Context context;
     private Category category;
     private final List<Category> categories;
-    private AutoCompleteTextView categoryDropdown;
     private ArrayAdapter<Category> categoriesAdapter;
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
 
@@ -48,9 +45,8 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
         this.categories = new ArrayList<>();
     }
 
-    public static RejectCategoryDialogFragment newInstance(Context context, Category category) {
+    public static RejectCategoryDialogFragment newInstance(Category category) {
         RejectCategoryDialogFragment fragment = new RejectCategoryDialogFragment();
-        fragment.context = context;
         fragment.category = category;
         return fragment;
     }
@@ -58,17 +54,15 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_reject_category, container, false);
-        categoryDropdown = view.findViewById(R.id.replacement_category_dropdown);
-        return view;
+        return inflater.inflate(R.layout.dialog_reject_category, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        AutoCompleteTextView categoryDropdown = view.findViewById(R.id.replacement_category_dropdown);
         categoriesAdapter = new ArrayAdapter<>(
-                context,
+                requireContext(),
                 android.R.layout.simple_list_item_1,
                 categories
         );
@@ -82,8 +76,9 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
         MaterialButton reject = view.findViewById(R.id.reject_category_btn);
         reject.setOnClickListener(v -> {
             RejectCategoryRequestDTO dto = new RejectCategoryRequestDTO();
+            String selectedCategoryName = categoryDropdown.getText().toString();
             for (Category category : categories) {
-                if (category.getName().equals(categoryDropdown.getText().toString()))
+                if (category.getName().equals(selectedCategoryName))
                     dto.setReplacementCategoryId(category.getId());
             }
             if (dto.getReplacementCategoryId() == null) {
@@ -93,59 +88,59 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
             }
 
             categoryService.rejectCategory(JwtUtil.getAuthorizationValue(requireContext()), category.getId(), dto)
-                    .enqueue(new Callback<>() {
-                        @Override
-                        public void onResponse(@NonNull Call<DeleteCategoryResponseDTO> call,
-                                               @NonNull Response<DeleteCategoryResponseDTO> response) {
-                            if (!isAdded()) return;
-                            if (response.isSuccessful() && response.body() != null) {
-                                Bundle args = new Bundle();
-                                args.putString("snackbar_message", "Category rejected successfully!");
-                                Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_reject_category, args);
-                                dismiss();
-                            } else {
-                                try {
-                                    // Show error message
-                                    String errorBody = Objects.requireNonNull(response.errorBody()).string();
-                                    JSONObject jsonObject = new JSONObject(errorBody);
-                                    String message = jsonObject.getString("message");
-                                    MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
-                                    errorMsg.setText(message);
-                                    errorMsg.setVisibility(View.VISIBLE);
-                                } catch (Exception e) {
-                                    Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
-                                }
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<DeleteCategoryResponseDTO> call,
+                                           @NonNull Response<DeleteCategoryResponseDTO> response) {
+                        if (!isAdded()) return;
+                        if (response.isSuccessful() && response.body() != null) {
+                            Bundle args = new Bundle();
+                            args.putString("snackbar_message", "Category rejected successfully!");
+                            Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_reject_category, args);
+                            dismiss();
+                        } else {
+                            try {
+                                // Show error message
+                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                                JSONObject jsonObject = new JSONObject(errorBody);
+                                String message = jsonObject.getString("message");
+                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                errorMsg.setText(message);
+                                errorMsg.setVisibility(View.VISIBLE);
+                            } catch (Exception e) {
+                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(@NonNull Call<DeleteCategoryResponseDTO> call, @NonNull Throwable t) {
-                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                        }
-                    });
+                    @Override
+                    public void onFailure(@NonNull Call<DeleteCategoryResponseDTO> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
         });
 
     }
 
     private void fetchCategories() {
-        categoryService.findAllActive(JwtUtil.getAuthorizationValue(context))
-                .enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<List<Category>> call,
-                                           @NonNull Response<List<Category>> response) {
-                        if (!isAdded()) return;
-                        if (response.isSuccessful() && response.body() != null) {
-                            categoriesAdapter.clear();
-                            categoriesAdapter.addAll(response.body());
-                        }
+        categoryService.findAllActive(JwtUtil.getAuthorizationValue(requireContext()))
+            .enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<List<Category>> call,
+                                       @NonNull Response<List<Category>> response) {
+                    if (!isAdded()) return;
+                    if (response.isSuccessful() && response.body() != null) {
+                        categoriesAdapter.clear();
+                        categoriesAdapter.addAll(response.body());
                     }
+                }
 
-                    @Override
-                    public void onFailure(@NonNull Call<List<Category>> call,
-                                          @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                    }
-                });
+                @Override
+                public void onFailure(@NonNull Call<List<Category>> call,
+                                      @NonNull Throwable t) {
+                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                }
+            });
     }
 }
 

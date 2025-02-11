@@ -100,6 +100,9 @@
             app:destination="@id/nav_categories"
             app:popUpTo="@id/nav_categories"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/navigate_to_reject_category_dialog"
+            app:destination="@id/nav_reject_category" />
     </fragment>
 
     <fragment

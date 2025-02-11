@@ -32,7 +32,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.category.CreateCategoryRequestDTO;
-import rs.ac.uns.eventplanner.team7.dto.category.DeleteCategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.UpdateCategoryRequestDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.model.enums.CategoryStatus;
@@ -131,8 +130,9 @@ public class CategoryManagementFragment extends Fragment {
             if (category.getStatus() == CategoryStatus.ACTIVE)
                 showDeleteConfirmationDialog();
             else {
-                RejectCategoryDialogFragment fragment = RejectCategoryDialogFragment.newInstance(category);
-                fragment.show(requireActivity().getSupportFragmentManager(), "RejectCategoryDialog");
+                Bundle args = new Bundle();
+                args.putParcelable("category", category);
+                Navigation.findNavController(requireView()).navigate(R.id.navigate_to_reject_category_dialog, args);
             }
 
         });

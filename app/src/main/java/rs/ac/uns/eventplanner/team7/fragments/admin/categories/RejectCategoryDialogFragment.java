@@ -11,6 +11,7 @@ import android.widget.AutoCompleteTextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.FragmentKt;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -29,6 +30,7 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.category.DeleteCategoryResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.category.RejectCategoryRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.product.GetProductResponseDTO;
 import rs.ac.uns.eventplanner.team7.fragments.MaterialDialogFragment;
 import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
@@ -44,11 +46,12 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
     public RejectCategoryDialogFragment() {
         this.categories = new ArrayList<>();
     }
-
-    public static RejectCategoryDialogFragment newInstance(Category category) {
-        RejectCategoryDialogFragment fragment = new RejectCategoryDialogFragment();
-        fragment.category = category;
-        return fragment;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            category = getArguments().getParcelable("category", Category.class);
+        }
     }
 
     @Override
@@ -96,8 +99,7 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
                         if (response.isSuccessful() && response.body() != null) {
                             Bundle args = new Bundle();
                             args.putString("snackbar_message", "Category rejected successfully!");
-                            Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_reject_category, args);
-                            dismiss();
+                            returnToBaseFragment(args);
                         } else {
                             try {
                                 // Show error message
@@ -115,7 +117,13 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
 
                     @Override
                     public void onFailure(@NonNull Call<DeleteCategoryResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        String message = t.getMessage();
+                        Bundle args = new Bundle();
+                        if (message != null) {
+                            Log.d("ERROR", message);
+                            args.putString("snackbar_message", message);
+                        }
+                        returnToBaseFragment(args);
                     }
                 });
         });
@@ -141,6 +149,11 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
                     Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                 }
             });
+    }
+
+    private void returnToBaseFragment(Bundle args) {
+        FragmentKt.findNavController(RejectCategoryDialogFragment.this)
+                .navigate(R.id.navigate_back_from_reject_category, args);
     }
 }
 

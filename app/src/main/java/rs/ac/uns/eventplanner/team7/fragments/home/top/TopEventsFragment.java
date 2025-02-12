@@ -69,7 +69,8 @@ public class TopEventsFragment extends Fragment implements CardClickListener {
     }
 
     private void setContent() {
-        service.findTopFive(userCity).enqueue(new Callback<>() {
+        final String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
+        service.findTopFive(bearerToken, userCity).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<DetailedEventDTO>> call,
                                    @NonNull Response<List<DetailedEventDTO>> response) {

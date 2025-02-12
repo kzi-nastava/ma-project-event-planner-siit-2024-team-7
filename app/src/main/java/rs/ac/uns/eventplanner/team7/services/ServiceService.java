@@ -1,5 +1,7 @@
 package rs.ac.uns.eventplanner.team7.services;
 
+import androidx.annotation.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -31,14 +33,16 @@ public interface ServiceService {
             "Content-Type: application/json"
     })
     @GET("services/top")
-    Call<List<DetailedItemDTO>> findTopFive(@Query("city") String city);
+    Call<List<DetailedItemDTO>> findTopFive(@Header("Authorization") @Nullable String token,
+                                            @Query("city") String city);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
     @GET("services/filter")
-    Call<Page<BasicItemDTO>> filter(@QueryMap Map<String, String> filters);
+    Call<Page<BasicItemDTO>> filter(@Header("Authorization") @Nullable String token,
+                                    @QueryMap Map<String, String> filters);
 
     @Headers({
             "User-Agent: Mobile-Android",

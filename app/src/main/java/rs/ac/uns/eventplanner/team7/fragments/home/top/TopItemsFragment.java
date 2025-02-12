@@ -68,24 +68,25 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
                 this, true);
         topItemsView.setAdapter(viewAdapter);
 
-        handleServiceResponse(productService.findTopFive(userCity));
-        handleServiceResponse(serviceService.findTopFive(userCity));
+        String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
+        handleServiceResponse(productService.findTopFive(bearerToken, userCity));
+        handleServiceResponse(serviceService.findTopFive(bearerToken, userCity));
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.items_swipe_refresh);
         refreshLayout.setOnRefreshListener(() -> {
             refreshLayout.setRefreshing(false);
             messageView.setVisibility(View.VISIBLE);
             messageView.setText(R.string.fetching_data);
-            handleServiceResponse(productService.findTopFive(userCity));
-            handleServiceResponse(serviceService.findTopFive(userCity));
+            handleServiceResponse(productService.findTopFive(bearerToken, userCity));
+            handleServiceResponse(serviceService.findTopFive(bearerToken, userCity));
         });
     }
 
     @Override
     public void onCardClicked(BasicCard entity) {
-        final String token = JwtUtil.getAuthorizationValue(requireContext());
+        final String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
         if (((DetailedItemDTO)entity).getType().equals("services")) {
-            serviceService.getService(token, entity.getId()).enqueue(new Callback<>() {
+            serviceService.getService(bearerToken, entity.getId()).enqueue(new Callback<>() {
                 @Override
                 public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
                                        @NonNull Response<GetServiceResponseDTO> response) {
@@ -126,7 +127,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
             });
         }
         else {
-            productService.getProduct(token, entity.getId()).enqueue(new Callback<>() {
+            productService.getProduct(bearerToken, entity.getId()).enqueue(new Callback<>() {
                 @Override
                 public void onResponse(@NonNull Call<GetProductResponseDTO> call,
                                        @NonNull Response<GetProductResponseDTO> response) {

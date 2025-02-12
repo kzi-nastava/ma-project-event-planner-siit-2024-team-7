@@ -37,7 +37,6 @@ import rs.ac.uns.eventplanner.team7.dto.Page;
 import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.dto.product.GetProductResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
-import rs.ac.uns.eventplanner.team7.fragments.products.ProductDetailsFragment;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.model.interfaces.SearchActionsListener;
@@ -239,13 +238,14 @@ public class AllItemsFragment extends Fragment
     private void setContent(boolean isUpdate) {
         isLoading = true;
         messageView.setText(R.string.fetching_data);
+        String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
         Map<String, String> combinedFilters = combineFiltersAndSort();
         switch (filtersFragment.getShownItemType().toLowerCase()) {
             case "products":
-                handleServiceResponse(productService.filter(combinedFilters), isUpdate);
+                handleServiceResponse(productService.filter(bearerToken, combinedFilters), isUpdate);
                 break;
             case "services":
-                handleServiceResponse(serviceService.filter(combinedFilters), isUpdate);
+                handleServiceResponse(serviceService.filter(bearerToken, combinedFilters), isUpdate);
                 break;
         }
     }

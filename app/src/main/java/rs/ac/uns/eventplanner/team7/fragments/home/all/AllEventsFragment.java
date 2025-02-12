@@ -124,10 +124,11 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
     }
 
     private void setContent(boolean isUpdate) {
+        final String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
         isLoading = true;
         messageView.setText(R.string.fetching_data);
         Map<String, String> combinedFilters = combineFiltersAndSort();
-        service.filter(combinedFilters).enqueue(new Callback<>() {
+        service.filter(bearerToken, combinedFilters).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Page<BasicEventDTO>> call,
                                    @NonNull Response<Page<BasicEventDTO>> response) {

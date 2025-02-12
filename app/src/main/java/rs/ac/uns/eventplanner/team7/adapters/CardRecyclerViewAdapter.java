@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.model.interfaces.DetailedCard;
@@ -170,6 +172,9 @@ public class CardRecyclerViewAdapter<T extends BasicCard>
                         .placeholder(R.drawable.image_placeholder)
                         .error(R.drawable.image_placeholder)
                         .into(imageView);
+            }
+            if (entity instanceof BasicItemDTO && !((BasicItemDTO) entity).isCurrent()) {
+                cardView.setBackgroundColor(Color.parseColor("#D3D3D3"));
             }
             if (entity instanceof DetailedCard && descriptionView != null) {
                 DetailedCard detailedCard = (DetailedCard) entity;

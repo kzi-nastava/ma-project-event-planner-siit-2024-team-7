@@ -241,4 +241,5 @@
     <string name="favourite_services">Favourite Services</string>
     <string name="your_future_activities">Your future activities:</string>
     <string name="placeholder_phone">+381612345678</string>
+    <string name="this_is_an_old_version_you_cannot_update_it">This is an old version, you cannot update it!</string>
 </resources>

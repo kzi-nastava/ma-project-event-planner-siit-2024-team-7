@@ -31,6 +31,7 @@ public class GetProductResponseDTO implements Parcelable {
     protected boolean visible;
     protected boolean available;
     protected boolean favourite;
+    protected boolean current;
 
     protected GetProductResponseDTO(Parcel in) {
         if (in.readByte() == 0) {
@@ -48,6 +49,7 @@ public class GetProductResponseDTO implements Parcelable {
         visible = in.readByte() != 0;
         available = in.readByte() != 0;
         favourite = in.readByte() != 0;
+        current = in.readByte() != 0;
     }
 
     public static final Creator<GetProductResponseDTO> CREATOR = new Creator<>() {
@@ -85,5 +87,6 @@ public class GetProductResponseDTO implements Parcelable {
         dest.writeByte((byte) (visible ? 1 : 0));
         dest.writeByte((byte) (available ? 1 : 0));
         dest.writeByte((byte) (favourite ? 1 : 0));
+        dest.writeByte((byte) (current ? 1 : 0));
     }
 }

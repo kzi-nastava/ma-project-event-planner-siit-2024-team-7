@@ -191,6 +191,10 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
             view.findViewById(R.id.categories_dropdown_layout).setEnabled(false);
             view.findViewById(R.id.cant_find_category_text).setVisibility(View.GONE);
             suggestCategoryBtn.setVisibility(View.GONE);
+            if (!serviceDTO.isCurrent()) {
+                view.findViewById(R.id.save_service_button).setVisibility(View.GONE);
+                view.findViewById(R.id.old_version_msg).setVisibility(View.VISIBLE);
+            }
             setServiceFields();
         }
 

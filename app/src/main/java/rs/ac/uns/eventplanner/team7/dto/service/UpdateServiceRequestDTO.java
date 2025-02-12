@@ -23,4 +23,5 @@ public class UpdateServiceRequestDTO {
     private int cancellationDeadlineInDays;
     private Set<EventType> appliesTo;
     private boolean available;
+    private boolean automatedReservationConformation;
 }

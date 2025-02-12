@@ -84,7 +84,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
     private TextInputEditText nameInput, descriptionInput, priceInput, discountInput, specificsInput,
             reservationInput, cancellationInput, minDurationInput, maxDurationInput;
     private AutoCompleteTextView categoryDropdown, eventTypesDropdown;
-    private MaterialCheckBox visibleCheckBox, availableCheckBox;
+    private MaterialCheckBox visibleCheckBox, availableCheckBox, automatedConformationCheckBox;
     private MaterialButton selectImagesBtn, addWorkDayBtn, suggestCategoryBtn;
     private RecyclerView imagesView, workDaysView, selectedEventTypesView;
 
@@ -120,6 +120,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         eventTypesDropdown = view.findViewById(R.id.event_type_dropdown);
         visibleCheckBox = view.findViewById(R.id.service_visible);
         availableCheckBox = view.findViewById(R.id.service_available);
+        automatedConformationCheckBox = view.findViewById(R.id.automated_conformation);
         selectImagesBtn = view.findViewById(R.id.button_select_images);
         addWorkDayBtn = view.findViewById(R.id.btn_open_work_day_dialog);
         suggestCategoryBtn = view.findViewById(R.id.button_suggest_category);
@@ -283,6 +284,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
 
         dto.setVisible(visibleCheckBox.isChecked());
         dto.setAvailable(availableCheckBox.isChecked());
+        dto.setAutomatedReservationConformation(automatedConformationCheckBox.isChecked());
 
         return dto;
     }
@@ -327,6 +329,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         dto.setAppliesTo(new HashSet<>(selectedEventTypes));
         dto.setVisible(visibleCheckBox.isChecked());
         dto.setAvailable(availableCheckBox.isChecked());
+        dto.setAutomatedReservationConformation(automatedConformationCheckBox.isChecked());
 
         if (dto.getCategory().getStatus() == CategoryStatus.PENDING)
             dto.setRecommended(true);
@@ -415,7 +418,8 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         imageListAdapter.notifyDataSetChanged();
 
         visibleCheckBox.setChecked(serviceDTO.isVisible());
-
+        availableCheckBox.setChecked(serviceDTO.isAvailable());
+        automatedConformationCheckBox.setChecked(serviceDTO.isAutomatedReservationConformation());
         selectedEventTypesAdapter.addAll(serviceDTO.getAppliesTo());
     }
 

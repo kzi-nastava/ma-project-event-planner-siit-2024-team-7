@@ -232,13 +232,13 @@
                 android:layout_marginStart="20dp"
                 android:enabled="false"
                 />
-            <!--            <com.google.android.material.checkbox.MaterialCheckBox-->
-            <!--                android:id="@+id/automated_conformation"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:text="Automated conformation"-->
-            <!--                android:layout_marginStart="20dp"-->
-            <!--                />-->
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/automated_conformation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Automated conformation"
+                android:layout_marginStart="20dp"
+                />
 
         </LinearLayout>
 

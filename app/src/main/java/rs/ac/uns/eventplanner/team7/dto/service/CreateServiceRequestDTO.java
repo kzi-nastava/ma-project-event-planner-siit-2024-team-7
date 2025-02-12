@@ -26,4 +26,5 @@ public class CreateServiceRequestDTO {
     private Set<EventType> appliesTo;
     private boolean available;
     private boolean recommended;
+    private boolean automatedReservationConformation;
 }

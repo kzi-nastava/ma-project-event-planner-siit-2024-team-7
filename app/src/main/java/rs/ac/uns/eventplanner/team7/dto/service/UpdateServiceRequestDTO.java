@@ -12,7 +12,7 @@ import rs.ac.uns.eventplanner.team7.model.EventType;
 public class UpdateServiceRequestDTO {
     private String name;
     private String description;
-    private Set<String> images;
+//    private Set<String> images;
     private boolean visible;
     private PricingRequestDTO pricing;
     private String specifics;

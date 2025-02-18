@@ -13,7 +13,7 @@ import rs.ac.uns.eventplanner.team7.model.EventType;
 public class CreateServiceRequestDTO {
     private String name;
     private String description;
-    private Set<String> images;
+//    private Set<String> images;
     private boolean visible;
     private PricingRequestDTO pricing;
     private Category category;

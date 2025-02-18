@@ -34,6 +34,10 @@ import com.google.android.material.textview.MaterialTextView;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,6 +45,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,8 +56,10 @@ import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.adapters.ImageListAdapter;
 import rs.ac.uns.eventplanner.team7.dto.pricing.PricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.CreateServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.UpdateServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.model.Category;
 import rs.ac.uns.eventplanner.team7.model.EventType;
@@ -59,6 +68,7 @@ import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
+import rs.ac.uns.eventplanner.team7.services.ImagesService;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
@@ -71,13 +81,15 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
     private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
     private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
+    private final ImagesService imagesService = ClientUtils.injectService(ImagesService.class);
 
     private CardRecyclerViewAdapter<WorkDayDTO> workDayAdapter;
     private CardRecyclerViewAdapter<EventType> selectedEventTypesAdapter;
     private ImageListAdapter imageListAdapter;
 
     private final List<WorkDayDTO> workDays;
-    private final List<String> images;
+    private final List<String> imageNames;
+    private final List<MultipartBody.Part> images;
     private final List<EventType> selectedEventTypes;
     private List<Category> categories;
 
@@ -90,6 +102,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
 
     public ServiceManagementFragment() {
         this.workDays = new ArrayList<>();
+        this.imageNames = new ArrayList<>();
         this.images = new ArrayList<>();
         this.selectedEventTypes = new ArrayList<>();
         this.categories = new ArrayList<>();
@@ -145,12 +158,14 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
             if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                 Uri imageUri = result.getData().getData();
                 String imageName = getImageName(imageUri);
+                File imageFile = getFileFromUri(imageUri);
                 if (imageName != null) {
-                    imageListAdapter.addImage(imageName);
+                    MultipartBody.Part imagePart = prepareFilePart(imageFile);
+                    imageListAdapter.addImage(imageName, imagePart);
                 }
             }
         });
-        imageListAdapter = new ImageListAdapter(getContext(), images);
+        imageListAdapter = new ImageListAdapter(getContext(), imageNames, images);
         imagesView.setAdapter(imageListAdapter);
 
         selectImagesBtn.setOnClickListener(v -> {
@@ -257,6 +272,29 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         return null;
     }
 
+    public File getFileFromUri(Uri uri) {
+        File file = new File(requireContext().getCacheDir(), getImageName(uri)); // Temporary file
+
+        try (InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+             OutputStream outputStream = new FileOutputStream(file)) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = Objects.requireNonNull(inputStream).read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return file;
+        } catch (Exception e) {
+            Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+        }
+        return null;
+    }
+
+    private MultipartBody.Part prepareFilePart(File file) {
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+        return MultipartBody.Part.createFormData("images", file.getName(), requestBody);
+    }
+
+
     private UpdateServiceRequestDTO updateRequestDTO(View view) {
         UpdateServiceRequestDTO dto = new UpdateServiceRequestDTO();
         PricingRequestDTO pricingDTO = new PricingRequestDTO();
@@ -278,7 +316,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         pricingDTO.setActiveFrom(LocalDate.now().toString());
         dto.setPricing(pricingDTO);
 
-        dto.setImages(new HashSet<>(images));
+//        dto.setImages(new HashSet<>(images));
         dto.setWorkDaysDTOs(new HashSet<>(workDays));
         dto.setAppliesTo(new HashSet<>(selectedEventTypes));
 
@@ -324,7 +362,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
             throw new IllegalArgumentException("Category not valid!");
         }
 
-        dto.setImages(new HashSet<>(images));
+//        dto.setImages(new HashSet<>(images));
         dto.setWorkDaysDTOs(new HashSet<>(workDays));
         dto.setAppliesTo(new HashSet<>(selectedEventTypes));
         dto.setVisible(visibleCheckBox.isChecked());
@@ -413,8 +451,9 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         minDurationInput.setText(String.valueOf(serviceDTO.getMinDurationInMinutes()));
         maxDurationInput.setText(String.valueOf(serviceDTO.getMaxDurationInMinutes()));
 
+        imageNames.clear();
+        imageNames.addAll(serviceDTO.getImages());
         images.clear();
-        images.addAll(serviceDTO.getImages());
         imageListAdapter.notifyDataSetChanged();
 
         visibleCheckBox.setChecked(serviceDTO.isVisible());
@@ -506,6 +545,10 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
             public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
                 if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
+                    if (serviceDTO == null)
+                        uploadImages(((CreateServiceResponseDTO)response.body()).getId(), new ArrayList<>());
+                    else
+                        uploadImages(((UpdateServiceResponseDTO)response.body()).getId(), new ArrayList<>(serviceDTO.getImages()));
                     returnToBaseFragment(responseMessage);
                 } else {
                     try {
@@ -527,6 +570,36 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
                 Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
             }
         });
+    }
+
+    private void uploadImages(Integer serviceId, List<String> imageUrls) {
+        imagesService.uploadImagesForService(JwtUtil.getAuthorizationValue(requireContext()), serviceId, images, imageUrls)
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<String>> call,
+                                           @NonNull Response<List<String>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Log.d("SUCCESS", "Images uploaded successfully!");
+                        } else {
+                            try {
+                                // Show error message
+                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                                JSONObject jsonObject = new JSONObject(errorBody);
+                                String message = jsonObject.getString("message");
+                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                errorMsg.setText(message);
+                                errorMsg.setVisibility(View.VISIBLE);
+                            } catch (Exception e) {
+                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
     }
 
     private void handleEventTypeSelection(EventType selectedEventType) {

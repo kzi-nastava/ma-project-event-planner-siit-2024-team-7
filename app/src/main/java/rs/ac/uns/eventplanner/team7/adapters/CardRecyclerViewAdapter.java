@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import java.util.Collection;
 import java.util.List;
 
+import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
@@ -167,8 +168,9 @@ public class CardRecyclerViewAdapter<T extends BasicCard>
             titleView.setText(entity.getTitle());
             subtitleView.setText(entity.getSubtitle());
             if (entity instanceof WithImage && imageView != null) {
+                String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + ((WithImage) entity).getCoverImage();
                 Picasso.get()
-                        .load(((WithImage) entity).getCoverImage())
+                        .load(backendUrl)
                         .placeholder(R.drawable.image_placeholder)
                         .error(R.drawable.image_placeholder)
                         .into(imageView);

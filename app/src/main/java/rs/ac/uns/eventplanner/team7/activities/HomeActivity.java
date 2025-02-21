@@ -32,6 +32,7 @@ import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -40,6 +41,7 @@ public class HomeActivity extends AppCompatActivity {
     private final Set<Integer> topLevelDestinations = new HashSet<>();
     private NavController navController;
     private AppBarConfiguration appBarConfig;
+    private WebSocketService webSocketService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,9 @@ public class HomeActivity extends AppCompatActivity {
         setupNavigation();
 
         if (getIntent().getExtras() != null) handleInvitationAccepting();
+
+        webSocketService = new WebSocketService();
+        webSocketService.connect(JwtUtil.getToken(this));
     }
 
     @Override
@@ -77,6 +82,7 @@ public class HomeActivity extends AppCompatActivity {
         int itemId = item.getItemId();
         if (itemId == R.id.nav_login_logout) {
             JwtUtil.setDefaultValues(this);
+            webSocketService.disconnect();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -88,6 +94,12 @@ public class HomeActivity extends AppCompatActivity {
             return true;
         }
         return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        webSocketService.disconnect();
     }
 
     private void setupNavigation() {

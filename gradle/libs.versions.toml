@@ -17,6 +17,7 @@ materialCalendarview = "2.0.0"
 navigationFragment = "2.8.5"
 picasso = "2.8"
 retrofit = "2.3.0"
+stompprotocolandroid = "17.11.0"
 threetenabp = "1.4.8"
 swiperefreshlayout = "1.1.0"
 
@@ -43,6 +44,7 @@ navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-kt
 navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragment" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+stompprotocolandroid = { module = "com.github.forresthopkinsa:StompProtocolAndroid", version.ref = "stompprotocolandroid" }
 threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 

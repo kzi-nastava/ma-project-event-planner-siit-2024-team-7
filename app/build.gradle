@@ -62,6 +62,8 @@ dependencies {
     implementation libs.swiperefreshlayout
     implementation libs.threetenabp
     implementation libs.stompprotocolandroid
+    implementation libs.rxjava
+    implementation libs.rxandroid
     runtimeOnly libs.jjwt.impl
     runtimeOnly libs.jjwt.jackson
     testImplementation libs.junit

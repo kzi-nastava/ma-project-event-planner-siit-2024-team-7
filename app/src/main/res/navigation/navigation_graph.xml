@@ -54,6 +54,34 @@
     </fragment>
 
     <fragment
+        android:id="@+id/nav_event"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.events.EventList"
+        android:label="My Events"
+        tools:layout="@layout/fragment_event_list">
+        <action
+            android:id="@+id/navigate_to_update_event"
+            app:destination="@id/nav_update_event" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_update_event"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.events.UpdateEvent"
+        android:label="@string/my_events"
+        tools:layout="@layout/fragment_update_event">
+        <action
+            android:id="@+id/navigate_to_budget_management"
+            app:destination="@id/nav_budget_management"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_budget_management"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.budgets.BudgetManagement"
+        android:label="Event Budget"
+        tools:layout="@layout/fragment_budget_management">
+
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_event_types"
         android:name="rs.ac.uns.eventplanner.team7.fragments.admin.event_types.AllEventTypesFragment"
         android:label="@string/event_types"

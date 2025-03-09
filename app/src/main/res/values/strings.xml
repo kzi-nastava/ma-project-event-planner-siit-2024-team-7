@@ -156,6 +156,7 @@
     <string name="unable_to_contact_server">Unable to contact the server. Try again later.</string>
     <string name="no_services_to_show">No services to show</string>
     <string name="d_services_found">%d services found</string>
+    <string name="d_events_found">%d events found</string>
     <string name="event_types">Event Types</string>
     <string name="service_creation">SERVICE CREATION</string>
     <string name="service_update">SERVICE UPDATE</string>

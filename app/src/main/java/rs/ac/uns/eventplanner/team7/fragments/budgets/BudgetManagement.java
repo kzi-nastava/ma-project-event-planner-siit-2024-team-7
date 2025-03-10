@@ -1,27 +1,68 @@
 package rs.ac.uns.eventplanner.team7.fragments.budgets;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 
+import com.google.android.material.textview.MaterialTextView;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
+import rs.ac.uns.eventplanner.team7.dto.budget.CategoryBudgetResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.budget.EventBudgetResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
+import rs.ac.uns.eventplanner.team7.dto.product.GetProductResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
+import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
+import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
+import rs.ac.uns.eventplanner.team7.services.BudgetService;
+import rs.ac.uns.eventplanner.team7.services.ProductService;
+import rs.ac.uns.eventplanner.team7.services.ServiceService;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-public class BudgetManagement extends Fragment {
+public class BudgetManagement extends Fragment implements CardClickListener {
+
+    private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
+    private final ProductService productService = ClientUtils.injectService(ProductService.class);
+    private final BudgetService budgetService = ClientUtils.injectService(BudgetService.class);
 
     private EventBudgetResponseDTO eventBudgetDTO;
-    private TextView titleTextView;
+    private CategoryBudgetResponseDTO categoryBudgetDTO;
+    private ArrayAdapter<CategoryBudgetResponseDTO> categoryBudgetAdapter;
+    private CardRecyclerViewAdapter<BasicItemDTO> reservedServicesAdapter, purchasedProductsAdapter;
+    private final List<BasicItemDTO> services = new ArrayList<>();
+    private final List<BasicItemDTO> products = new ArrayList<>();
 
-    public BudgetManagement() {
-        // Required empty public constructor
-    }
+    private MaterialTextView totalBudgetView, totalSpentView, noBudgetData;
+    private RecyclerView reservedServicesView, purchasedProductsView;
+    private AutoCompleteTextView categoryBudgetDropdown;
+    private LinearLayout purchasedReservedItems;
+
+    public BudgetManagement() {}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,13 +76,161 @@ public class BudgetManagement extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_budget_management, container, false);
-        titleTextView = view.findViewById(R.id.budget_title);
+        totalBudgetView = view.findViewById(R.id.total_budget_text_view);
+        totalSpentView = view.findViewById(R.id.total_spent_text_view);
+        noBudgetData = view.findViewById(R.id.no_budget_data);
+        reservedServicesView = view.findViewById(R.id.recycler_view_reserved_services);
+        purchasedProductsView = view.findViewById(R.id.recycler_view_purchased_products);
+        purchasedReservedItems = view.findViewById(R.id.purchased_reserved_item_layout);
+        categoryBudgetDropdown = view.findViewById(R.id.category_budgets_dropdown);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        titleTextView.setText(eventBudgetDTO.getEventBudgetId().toString());
+        totalBudgetView.setText("TOTAL BUDGET: " + eventBudgetDTO.getTotalBudget() + " $");
+        totalSpentView.setText("TOTAL SPENT: " + eventBudgetDTO.getTotalSpent() + " $");
+        noBudgetData.setVisibility(View.VISIBLE);
+        noBudgetData.setText("No category was selected!");
+        purchasedReservedItems.setVisibility(View.GONE);
+
+        categoryBudgetAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                new ArrayList<>(eventBudgetDTO.getCategoryBudgets())
+        );
+        categoryBudgetDropdown.setAdapter(categoryBudgetAdapter);
+        categoryBudgetDropdown.setOnItemClickListener((parent, v, position, id) -> {
+            categoryBudgetDTO = (CategoryBudgetResponseDTO) parent.getItemAtPosition(position);
+            reservedServicesAdapter.clear();
+            reservedServicesAdapter.addAll(categoryBudgetDTO.getItems().stream().filter(i -> Objects.equals(i.getType(), "services")).toList());
+            purchasedProductsAdapter.clear();
+            purchasedProductsAdapter.addAll(categoryBudgetDTO.getItems().stream().filter(i -> Objects.equals(i.getType(), "products")).toList());
+
+            if (services.isEmpty() && products.isEmpty()) {
+                noBudgetData.setVisibility(View.VISIBLE);
+                noBudgetData.setText("No item was purchased/reserved for this event!");
+                purchasedReservedItems.setVisibility(View.GONE);
+            }
+            else {
+                noBudgetData.setVisibility(View.GONE);
+                purchasedReservedItems.setVisibility(View.VISIBLE);
+            }
+        });
+
+        Drawable drawable = AppCompatResources.getDrawable(requireContext(), R.drawable.baseline_more_horiz_24);
+        reservedServicesAdapter = new CardRecyclerViewAdapter<>(requireContext(), services, this, drawable);
+        reservedServicesView.setAdapter(reservedServicesAdapter);
+        purchasedProductsAdapter = new CardRecyclerViewAdapter<>(requireContext(), products, this, drawable);
+        purchasedProductsView.setAdapter(purchasedProductsAdapter);
+    }
+
+    private void refreshContent() {
+        budgetService.getEventBudget(JwtUtil.getAuthorizationValue(requireContext()), eventBudgetDTO.getEventBudgetId())
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<EventBudgetResponseDTO> call,
+                                           @NonNull Response<EventBudgetResponseDTO> response) {
+                        if (!isAdded()) return;
+                        if (response.isSuccessful() && response.body() != null) {
+                            eventBudgetDTO = response.body();
+                            categoryBudgetDTO = null;
+                            categoryBudgetDropdown.setText("", false);
+                            categoryBudgetAdapter.clear();
+                            categoryBudgetAdapter.addAll(eventBudgetDTO.getCategoryBudgets());
+                            reservedServicesAdapter.clear();
+                            purchasedProductsAdapter.clear();
+                            return;
+                        }
+                        try {
+                            // Show error message
+                            if (response.errorBody() == null) return;
+                            String errorBody = response.errorBody().string();
+                            JSONObject jsonObject = new JSONObject(errorBody);
+                            jsonObject.getString("message");
+                        } catch (Exception e) {
+                            String message = e.getMessage();
+                            if (message == null) return;
+                            Log.d("ERROR", message);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<EventBudgetResponseDTO> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
+    }
+
+    @Override
+    public void onCardClicked(BasicCard entity) {
+        final String token = JwtUtil.getAuthorizationValue(requireContext());
+        if (((BasicItemDTO)entity).getType().equals("services")) {
+            serviceService.getService(token, entity.getId()).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
+                                       @NonNull Response<GetServiceResponseDTO> response) {
+                    if (!isAdded()) return;
+                    if (response.isSuccessful() && response.body() != null) {
+                        Bundle args = new Bundle();
+                        args.putParcelable("serviceDTO", response.body());
+                        categoryBudgetDropdown.setText("", false);
+                        View view = getView();
+                        if (view == null) return;
+                        Navigation.findNavController(view).navigate(R.id.navigate_to_service_details_from_budget, args);
+                        return;
+                    }
+                    try {
+                        // Show error message
+                        if (response.errorBody() == null) return;
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        jsonObject.getString("message");
+                    } catch (Exception e) {
+                        String message = e.getMessage();
+                        if (message == null) return;
+                        Log.d("ERROR", message);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
+                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                }
+            });
+        } else {
+            productService.getProduct(token, entity.getId()).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(@NonNull Call<GetProductResponseDTO> call,
+                                       @NonNull Response<GetProductResponseDTO> response) {
+                    if (!isAdded()) return;
+                    if (response.isSuccessful() && response.body() != null) {
+                        Bundle args = new Bundle();
+                        args.putParcelable("productDTO", response.body());
+                        categoryBudgetDropdown.setText("", false);
+                        View view = getView();
+                        if (view == null) return;
+                        Navigation.findNavController(view).navigate(R.id.navigate_to_product_details_from_budget, args);
+                        return;
+                    }
+                    try {
+                        if (response.errorBody() == null) return;
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        jsonObject.getString("message");
+                    } catch (Exception e) {
+                        String message = e.getMessage();
+                        if (message == null) return;
+                        Log.d("ERROR", message);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<GetProductResponseDTO> call, @NonNull Throwable t) {
+                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                }
+            });
+        }
     }
 }

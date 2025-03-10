@@ -78,7 +78,12 @@
         android:name="rs.ac.uns.eventplanner.team7.fragments.budgets.BudgetManagement"
         android:label="Event Budget"
         tools:layout="@layout/fragment_budget_management">
-
+        <action
+            android:id="@+id/navigate_to_service_details_from_budget"
+            app:destination="@id/nav_service_details" />
+        <action
+            android:id="@+id/navigate_to_product_details_from_budget"
+            app:destination="@id/nav_product_details" />
     </fragment>
 
     <fragment

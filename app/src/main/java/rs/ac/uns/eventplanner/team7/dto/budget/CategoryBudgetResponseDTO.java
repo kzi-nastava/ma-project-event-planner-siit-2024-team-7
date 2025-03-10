@@ -69,4 +69,10 @@ public class CategoryBudgetResponseDTO implements Parcelable {
         dest.writeDouble(budget);
         dest.writeDouble(spent);
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return category.getName();
+    }
 }

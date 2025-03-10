@@ -14,6 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.services.AuthService;
+import rs.ac.uns.eventplanner.team7.services.BudgetService;
 import rs.ac.uns.eventplanner.team7.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.services.EventService;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
@@ -36,6 +37,7 @@ public final class ClientUtils {
             .build();
     private static final Map<Class<?>, Object> serviceImplementations = new HashMap<>() {{
         put(AuthService.class, retrofit.create(AuthService.class));
+        put(BudgetService.class, retrofit.create(BudgetService.class));
         put(CategoryService.class, retrofit.create(CategoryService.class));
         put(EventService.class, retrofit.create(EventService.class));
         put(EventTypeService.class, retrofit.create(EventTypeService.class));

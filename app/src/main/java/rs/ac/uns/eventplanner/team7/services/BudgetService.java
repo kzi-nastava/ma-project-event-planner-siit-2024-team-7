@@ -3,6 +3,7 @@ package rs.ac.uns.eventplanner.team7.services;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -54,13 +55,13 @@ public interface BudgetService {
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
-    @POST("budget/{id}")
+    @GET("budget/{id}")
     Call<EventBudgetResponseDTO> getEventBudget(@Header("Authorization") String token, @Path("id") Integer id);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
-    @POST("budget/{id}/category_budget")
+    @GET("budget/{id}/category_budget")
     Call<CategoryBudgetResponseDTO> getCategoryBudget(@Header("Authorization") String token, @Path("id") Integer id, @Query("categoryName") String categoryName);
 }

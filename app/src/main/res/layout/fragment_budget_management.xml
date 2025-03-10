@@ -22,20 +22,22 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/total_budget_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
+            android:layout_marginStart="10dp"
             android:text="TOTAL BUDGET: "
             android:textSize="12sp"
             />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/total_spent_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
+            android:layout_marginStart="10dp"
             android:text="TOTAL SPENT: "
             android:textSize="12sp"
             />
@@ -137,6 +139,56 @@
                 tools:listitem="@layout/horizontal_button_card"/>
 
             <include layout="@layout/divider_thin"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/category_budget_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:endIconMode="clear_text"
+                android:hint="BUDGET: "
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/category_budget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_budget_btn"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                app:icon="@drawable/ic_save"
+                app:iconPadding="6dp"
+                android:text="Save Budget"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/category_spent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="10dp"
+                android:text="SPENT: "
+                android:textSize="16sp"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/remove_category_budget_btn"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                app:icon="@drawable/ic_delete"
+                app:iconPadding="6dp"
+                android:backgroundTint="@color/red_delete"
+                android:text="Remove Category"/>
 
         </LinearLayout>
 

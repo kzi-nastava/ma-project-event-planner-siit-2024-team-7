@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 
 import org.json.JSONObject;
@@ -57,10 +61,12 @@ public class BudgetManagement extends Fragment implements CardClickListener {
     private final List<BasicItemDTO> services = new ArrayList<>();
     private final List<BasicItemDTO> products = new ArrayList<>();
 
-    private MaterialTextView totalBudgetView, totalSpentView, noBudgetData;
+    private MaterialTextView totalBudgetView, totalSpentView, noBudgetData, categorySpent;
+    private TextInputEditText categoryBudget;
     private RecyclerView reservedServicesView, purchasedProductsView;
     private AutoCompleteTextView categoryBudgetDropdown;
     private LinearLayout purchasedReservedItems;
+    private MaterialButton addCategoryBtn, saveBudgetBtn, removeCategoryBudgetBtn;
 
     public BudgetManagement() {}
 
@@ -79,10 +85,15 @@ public class BudgetManagement extends Fragment implements CardClickListener {
         totalBudgetView = view.findViewById(R.id.total_budget_text_view);
         totalSpentView = view.findViewById(R.id.total_spent_text_view);
         noBudgetData = view.findViewById(R.id.no_budget_data);
+        categorySpent = view.findViewById(R.id.category_spent);
+        categoryBudget = view.findViewById(R.id.category_budget);
         reservedServicesView = view.findViewById(R.id.recycler_view_reserved_services);
         purchasedProductsView = view.findViewById(R.id.recycler_view_purchased_products);
         purchasedReservedItems = view.findViewById(R.id.purchased_reserved_item_layout);
         categoryBudgetDropdown = view.findViewById(R.id.category_budgets_dropdown);
+        addCategoryBtn = view.findViewById(R.id.add_category_budget_btn);
+        saveBudgetBtn = view.findViewById(R.id.save_budget_btn);
+        removeCategoryBudgetBtn = view.findViewById(R.id.remove_category_budget_btn);
         return view;
     }
 
@@ -94,6 +105,7 @@ public class BudgetManagement extends Fragment implements CardClickListener {
         noBudgetData.setVisibility(View.VISIBLE);
         noBudgetData.setText("No category was selected!");
         purchasedReservedItems.setVisibility(View.GONE);
+        saveBudgetBtn.setVisibility(View.GONE);
 
         categoryBudgetAdapter = new ArrayAdapter<>(
                 requireContext(),
@@ -103,10 +115,26 @@ public class BudgetManagement extends Fragment implements CardClickListener {
         categoryBudgetDropdown.setAdapter(categoryBudgetAdapter);
         categoryBudgetDropdown.setOnItemClickListener((parent, v, position, id) -> {
             categoryBudgetDTO = (CategoryBudgetResponseDTO) parent.getItemAtPosition(position);
+
             reservedServicesAdapter.clear();
             reservedServicesAdapter.addAll(categoryBudgetDTO.getItems().stream().filter(i -> Objects.equals(i.getType(), "services")).toList());
             purchasedProductsAdapter.clear();
             purchasedProductsAdapter.addAll(categoryBudgetDTO.getItems().stream().filter(i -> Objects.equals(i.getType(), "products")).toList());
+
+            categoryBudget.setText(String.valueOf(categoryBudgetDTO.getBudget()));
+            categorySpent.setText("SPENT: " + categoryBudgetDTO.getSpent() + " $");
+            categoryBudget.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    saveBudgetBtn.setVisibility(s.toString().trim().isEmpty() ? View.GONE : View.VISIBLE);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
 
             if (services.isEmpty() && products.isEmpty()) {
                 noBudgetData.setVisibility(View.VISIBLE);
@@ -124,6 +152,19 @@ public class BudgetManagement extends Fragment implements CardClickListener {
         reservedServicesView.setAdapter(reservedServicesAdapter);
         purchasedProductsAdapter = new CardRecyclerViewAdapter<>(requireContext(), products, this, drawable);
         purchasedProductsView.setAdapter(purchasedProductsAdapter);
+
+        addCategoryBtn.setOnClickListener(v -> {
+
+        });
+
+        saveBudgetBtn.setOnClickListener(v -> {
+
+        });
+
+        removeCategoryBudgetBtn.setOnClickListener(v -> {
+
+        });
+
     }
 
     private void refreshContent() {
@@ -141,6 +182,11 @@ public class BudgetManagement extends Fragment implements CardClickListener {
                             categoryBudgetAdapter.addAll(eventBudgetDTO.getCategoryBudgets());
                             reservedServicesAdapter.clear();
                             purchasedProductsAdapter.clear();
+
+                            noBudgetData.setVisibility(View.VISIBLE);
+                            noBudgetData.setText("No category was selected!");
+                            purchasedReservedItems.setVisibility(View.GONE);
+                            saveBudgetBtn.setVisibility(View.GONE);
                             return;
                         }
                         try {

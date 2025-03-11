@@ -84,7 +84,16 @@
         <action
             android:id="@+id/navigate_to_product_details_from_budget"
             app:destination="@id/nav_product_details" />
+        <action
+            android:id="@+id/navigate_to_add_category_budget_dialog"
+            app:destination="@id/nav_add_category_budget" />
     </fragment>
+
+    <dialog
+        android:id="@+id/nav_add_category_budget"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.budgets.AddCategoryBudgetDialog"
+        android:label="Add Category Budget"
+        tools:layout="@layout/dialog_add_category_budget"/>
 
     <fragment
         android:id="@+id/nav_event_types"

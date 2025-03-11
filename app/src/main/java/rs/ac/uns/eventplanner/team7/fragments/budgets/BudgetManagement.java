@@ -5,7 +5,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,9 +20,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -37,6 +43,7 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.dto.budget.CategoryBudgetResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.budget.EventBudgetResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.budget.UpdateCategoryBudgetRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.dto.product.GetProductResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
@@ -139,7 +146,7 @@ public class BudgetManagement extends Fragment implements CardClickListener {
             if (services.isEmpty() && products.isEmpty()) {
                 noBudgetData.setVisibility(View.VISIBLE);
                 noBudgetData.setText("No item was purchased/reserved for this event!");
-                purchasedReservedItems.setVisibility(View.GONE);
+                purchasedReservedItems.setVisibility(View.VISIBLE);
             }
             else {
                 noBudgetData.setVisibility(View.GONE);
@@ -154,17 +161,41 @@ public class BudgetManagement extends Fragment implements CardClickListener {
         purchasedProductsView.setAdapter(purchasedProductsAdapter);
 
         addCategoryBtn.setOnClickListener(v -> {
-
+            Bundle args = new Bundle();
+            args.putParcelable("eventBudgetDTO", eventBudgetDTO);
+            Navigation.findNavController(v).navigate(R.id.navigate_to_add_category_budget_dialog, args);
         });
 
         saveBudgetBtn.setOnClickListener(v -> {
-
+            if (categoryBudget.getText() == null || categoryBudget.getText().toString().isEmpty()) {
+                Log.d("ERROR", "Budget must be provided!");
+                Snackbar.make(view, "Budget must be provided!", BaseTransientBottomBar.LENGTH_SHORT).show();
+                return;
+            }
+            if (eventBudgetDTO == null || categoryBudgetDTO == null) {
+                Log.d("ERROR", "Budget is null!");
+                Snackbar.make(view, "Budget is null!", BaseTransientBottomBar.LENGTH_SHORT).show();
+                return;
+            }
+            UpdateCategoryBudgetRequestDTO dto = new UpdateCategoryBudgetRequestDTO(Double.parseDouble(categoryBudget.getText().toString()));
+            updateBudget(dto);
         });
 
         removeCategoryBudgetBtn.setOnClickListener(v -> {
-
+            if (!services.isEmpty() || !products.isEmpty()) {
+                Log.d("ERROR", "Can't delete budget if items are already added!");
+                Snackbar.make(view, "Can't delete budget if items are already added!", BaseTransientBottomBar.LENGTH_SHORT).show();
+                return;
+            }
+            if (eventBudgetDTO == null || categoryBudgetDTO == null) {
+                Log.d("ERROR", "Budget is null!");
+                Snackbar.make(view, "Budget is null!", BaseTransientBottomBar.LENGTH_SHORT).show();
+                return;
+            }
+            showDeleteConfirmationDialog();
         });
 
+        getParentFragmentManager().setFragmentResultListener("addCategoryBudgetDismissed", this, (requestKey, result) -> refreshContent());
     }
 
     private void refreshContent() {
@@ -278,5 +309,85 @@ public class BudgetManagement extends Fragment implements CardClickListener {
                 }
             });
         }
+    }
+
+    private void showDeleteConfirmationDialog() {
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Confirm Deletion")
+                .setMessage("Are you sure you want to delete this category budget?")
+                .setPositiveButton("Delete", (d, which) -> deleteCategoryBudget())
+                .setNegativeButton("Cancel", (d, which) -> d.dismiss())
+                .create();
+
+        dialog.setOnShowListener(dialogInterface -> {
+            Button deleteButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            if (deleteButton != null) {
+                deleteButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark));
+            }
+        });
+        dialog.show();
+    }
+
+    private void deleteCategoryBudget() {
+        budgetService.removeCategoryBudget(JwtUtil.getAuthorizationValue(requireContext()), eventBudgetDTO.getEventBudgetId(), categoryBudgetDTO.getCategoryBudgetId())
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<EventBudgetResponseDTO> call,
+                                           @NonNull Response<EventBudgetResponseDTO> response) {
+                        if (!isAdded()) return;
+                        if (response.isSuccessful() && response.body() != null) {
+                            refreshContent();
+                        } else {
+                            try {
+                                // Show error message
+                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                                JSONObject jsonObject = new JSONObject(errorBody);
+                                String message = jsonObject.getString("message");
+                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                errorMsg.setText(message);
+                                errorMsg.setVisibility(View.VISIBLE);
+                            } catch (Exception e) {
+                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<EventBudgetResponseDTO> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
+    }
+
+    private void updateBudget(UpdateCategoryBudgetRequestDTO dto) {
+        budgetService.updateCategoryBudget(JwtUtil.getAuthorizationValue(requireContext()),
+                eventBudgetDTO.getEventBudgetId(), categoryBudgetDTO.getCategoryBudgetId(), dto)
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<CategoryBudgetResponseDTO> call,
+                                           @NonNull Response<CategoryBudgetResponseDTO> response) {
+                        if (!isAdded()) return;
+                        if (response.isSuccessful() && response.body() != null) {
+                            refreshContent();
+                        } else {
+                            try {
+                                // Show error message
+                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                                JSONObject jsonObject = new JSONObject(errorBody);
+                                String message = jsonObject.getString("message");
+                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                errorMsg.setText(message);
+                                errorMsg.setVisibility(View.VISIBLE);
+                            } catch (Exception e) {
+                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<CategoryBudgetResponseDTO> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
     }
 }

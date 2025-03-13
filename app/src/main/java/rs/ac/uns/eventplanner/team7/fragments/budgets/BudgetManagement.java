@@ -107,12 +107,6 @@ public class BudgetManagement extends Fragment implements CardClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        totalBudgetView.setText("TOTAL BUDGET: " + eventBudgetDTO.getTotalBudget() + " $");
-        totalSpentView.setText("TOTAL SPENT: " + eventBudgetDTO.getTotalSpent() + " $");
-        noBudgetData.setVisibility(View.VISIBLE);
-        noBudgetData.setText("No category was selected!");
-        purchasedReservedItems.setVisibility(View.GONE);
-        saveBudgetBtn.setVisibility(View.GONE);
 
         categoryBudgetAdapter = new ArrayAdapter<>(
                 requireContext(),
@@ -195,6 +189,8 @@ public class BudgetManagement extends Fragment implements CardClickListener {
             showDeleteConfirmationDialog();
         });
 
+        refreshContent();
+
         getParentFragmentManager().setFragmentResultListener("addCategoryBudgetDismissed", this, (requestKey, result) -> refreshContent());
     }
 
@@ -214,6 +210,8 @@ public class BudgetManagement extends Fragment implements CardClickListener {
                             reservedServicesAdapter.clear();
                             purchasedProductsAdapter.clear();
 
+                            totalBudgetView.setText("TOTAL BUDGET: " + eventBudgetDTO.getTotalBudget() + " $");
+                            totalSpentView.setText("TOTAL SPENT: " + eventBudgetDTO.getTotalSpent() + " $");
                             noBudgetData.setVisibility(View.VISIBLE);
                             noBudgetData.setText("No category was selected!");
                             purchasedReservedItems.setVisibility(View.GONE);

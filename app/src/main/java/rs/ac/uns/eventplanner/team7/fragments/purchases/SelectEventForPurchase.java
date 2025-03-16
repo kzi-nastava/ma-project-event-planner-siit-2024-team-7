@@ -1,21 +1,29 @@
 package rs.ac.uns.eventplanner.team7.fragments.purchases;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,19 +34,22 @@ import rs.ac.uns.eventplanner.team7.dto.Page;
 import rs.ac.uns.eventplanner.team7.dto.Sort;
 import rs.ac.uns.eventplanner.team7.dto.event.BasicEventDTO;
 import rs.ac.uns.eventplanner.team7.dto.product.GetProductResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.purchase.ProductPurchaseRequestDTO;
+import rs.ac.uns.eventplanner.team7.dto.purchase.ProductPurchaseResponseDTO;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.model.interfaces.SearchActionsListener;
 import rs.ac.uns.eventplanner.team7.services.EventService;
+import rs.ac.uns.eventplanner.team7.services.PurchaseService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class SelectEventForPurchase extends Fragment implements SearchActionsListener, CardClickListener {
     private final EventService eventService = ClientUtils.injectService(EventService.class);
+    private final PurchaseService purchaseService = ClientUtils.injectService(PurchaseService.class);
 
     private final Page<BasicEventDTO> page;
     private RecyclerView eventsView;
-    private MaterialTextView messageView;
     private CardRecyclerViewAdapter<BasicEventDTO> viewAdapter;
     private boolean isLoading;
     private SearchView searchView;
@@ -46,7 +57,7 @@ public class SelectEventForPurchase extends Fragment implements SearchActionsLis
     private String eventQuery;
     private GetProductResponseDTO productDTO;
 
-    private MaterialTextView purchaseWelcome;
+    private MaterialTextView purchaseWelcome, messageView;
     private MaterialButton resetSearch;
 
     public SelectEventForPurchase() {
@@ -87,7 +98,23 @@ public class SelectEventForPurchase extends Fragment implements SearchActionsLis
 
     @Override
     public void onCardClicked(BasicCard entity) {
+        SpannableStringBuilder message = new SpannableStringBuilder();
+        message.append("You are about to purchase ");
+        int startProduct = message.length();
+        message.append(productDTO.getName());
+        message.setSpan(new StyleSpan(Typeface.BOLD), startProduct, message.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        message.append(" for your ");
+        int startEntity = message.length();
+        message.append(entity.getTitle());
+        message.setSpan(new StyleSpan(Typeface.BOLD), startEntity, message.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        message.append(" event.");
 
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Confirm Purchase")
+                .setMessage(message)
+                .setPositiveButton("Purchase", (dialogInterface, which) -> purchase(entity.getId()))
+                .setNegativeButton("Cancel", (dialogInterface, which) -> dialogInterface.dismiss())
+                .show();
     }
 
     @Override
@@ -109,6 +136,38 @@ public class SelectEventForPurchase extends Fragment implements SearchActionsLis
 
     @Override
     public void onFiltersReset() {}
+
+    private void purchase(Integer eventId) {
+        purchaseService.create(JwtUtil.getAuthorizationValue(requireContext()), new ProductPurchaseRequestDTO(eventId, productDTO.getId()))
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ProductPurchaseResponseDTO> call,
+                                           @NonNull Response<ProductPurchaseResponseDTO> response) {
+                        if (!isAdded()) return;
+                        if (response.isSuccessful() && response.body() != null) {
+                            productDTO.setPurchased(true);
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable("productDTO", productDTO);
+                            Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_purchase, bundle);
+                        } else {
+                            try {
+                                // Show error message
+                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                errorMsg.setText(errorBody);
+                                errorMsg.setVisibility(View.VISIBLE);
+                            } catch (Exception e) {
+                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ProductPurchaseResponseDTO> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
+    }
 
     private void setContent(boolean isUpdate, String name) {
         eventService.getOrganizerEvents(JwtUtil.getAuthorizationValue(requireContext()), JwtUtil.extractId(requireContext()), name).enqueue(new Callback<>() {

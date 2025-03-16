@@ -242,4 +242,6 @@
     <string name="favourite_services">Favourite Services</string>
     <string name="your_future_activities">Your future activities:</string>
     <string name="placeholder_phone">+381612345678</string>
+    <string name="buy_product">Buy Product</string>
+    <string name="already_purchased">Already Purchased</string>
 </resources>

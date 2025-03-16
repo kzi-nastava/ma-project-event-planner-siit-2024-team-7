@@ -41,7 +41,7 @@ public class ProductDetailsFragment extends Fragment {
     private GetProductResponseDTO productDTO;
 
     private ImageView favouriteStar;
-    private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView;
+    private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView, alreadyPurchased;
     private RecyclerView imagesView;
     private ImageAdapter imageAdapter;
 
@@ -78,6 +78,7 @@ public class ProductDetailsFragment extends Fragment {
         noImagesView = view.findViewById(R.id.product_details_no_images);
 
         buyButton = view.findViewById(R.id.buy_button);
+        alreadyPurchased = view.findViewById(R.id.product_already_purchased);
         viewProviderButton = view.findViewById(R.id.view_provider_button);
         chatWithProviderButton = view.findViewById(R.id.chat_w_provider_button);
 
@@ -117,13 +118,23 @@ public class ProductDetailsFragment extends Fragment {
                     });
         });
 
-        if (!productDTO.isAvailable())
-            buyButton.setEnabled(false);
+        if (!Objects.equals(JwtUtil.getRole(requireContext()), UserRole.EVENT_ORG.toString()) || productDTO.isPurchased() || !productDTO.isAvailable())
+            buyButton.setVisibility(View.GONE);
+        if (!Objects.equals(JwtUtil.getRole(requireContext()), UserRole.EVENT_ORG.toString()) || !productDTO.isPurchased() || !productDTO.isAvailable())
+            alreadyPurchased.setVisibility(View.GONE);
 
         if (Objects.equals(JwtUtil.getRole(requireContext()), UserRole.SPP.toString())) {
             viewProviderButton.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);
         }
+
+        buyButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("productDTO", productDTO);
+            View view1 = getView();
+            if (view1 == null) return;
+            Navigation.findNavController(view1).navigate(R.id.navigate_to_select_event, bundle);
+        });
 
         viewProviderButton.setOnClickListener(v -> {
             Bundle args = new Bundle();

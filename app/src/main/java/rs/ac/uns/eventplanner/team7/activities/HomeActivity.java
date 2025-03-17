@@ -49,6 +49,8 @@ public class HomeActivity extends AppCompatActivity {
             setContentView(R.layout.activity_home_admin);
         } else if (role == UserRole.GUEST) {
             setContentView(R.layout.activity_home_base);
+        } else if (role == UserRole.SPP) {
+            setContentView(R.layout.activity_home_spp);
         } else {
             setContentView(R.layout.activity_home);
         }
@@ -109,6 +111,17 @@ public class HomeActivity extends AppCompatActivity {
             appBarConfigBuilder.setOpenableLayout(drawerLayout);
 
             NavigationView navigationDrawerView = findViewById(R.id.navigation_view);
+            NavigationUI.setupWithNavController(navigationDrawerView, navController);
+            navController.addOnDestinationChangedListener((controller, navDestination, bundle) -> {
+                if (!topLevelDestinations.contains(navDestination.getId())) {
+                    drawerLayout.closeDrawers();
+                }
+            });
+        } else if (role == UserRole.SPP) {
+            DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout_spp);
+            appBarConfigBuilder.setOpenableLayout(drawerLayout);
+
+            NavigationView navigationDrawerView = findViewById(R.id.navigation_view_spp);
             NavigationUI.setupWithNavController(navigationDrawerView, navController);
             navController.addOnDestinationChangedListener((controller, navDestination, bundle) -> {
                 if (!topLevelDestinations.contains(navDestination.getId())) {

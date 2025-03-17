@@ -244,4 +244,6 @@
     <string name="placeholder_phone">+381612345678</string>
     <string name="buy_product">Buy Product</string>
     <string name="already_purchased">Already Purchased</string>
+    <string name="price_list_menu_item">Price List</string>
+    <string name="menu_options">Menu Options</string>
 </resources>

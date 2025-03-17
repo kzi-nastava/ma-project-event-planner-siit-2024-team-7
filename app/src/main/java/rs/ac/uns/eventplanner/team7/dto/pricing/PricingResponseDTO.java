@@ -15,7 +15,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PricingResponseDTO implements Parcelable {
+    private Integer itemId;
     private String itemName;
+    private String itemType;
     private Integer pricingId;
     private double price;
     private double discount;
@@ -23,7 +25,13 @@ public class PricingResponseDTO implements Parcelable {
     private boolean deleted;
 
     protected PricingResponseDTO(Parcel in) {
+        if (in.readByte() == 0) {
+            itemId = null;
+        } else {
+            itemId = in.readInt();
+        }
         itemName = in.readString();
+        itemType = in.readString();
         if (in.readByte() == 0) {
             pricingId = null;
         } else {
@@ -54,7 +62,14 @@ public class PricingResponseDTO implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        if (itemId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(itemId);
+        }
         dest.writeString(itemName);
+        dest.writeString(itemType);
         if (pricingId == null) {
             dest.writeByte((byte) 0);
         } else {

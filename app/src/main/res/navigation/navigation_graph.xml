@@ -220,4 +220,10 @@
             app:destination="@id/nav_spp_details" />
     </fragment>
 
+    <fragment
+        android:id="@+id/nav_price_list"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.price_list.PriceListFragment"
+        android:label="@string/price_list_menu_item"
+        tools:layout="@layout/fragment_price_list"/>
+
 </navigation>

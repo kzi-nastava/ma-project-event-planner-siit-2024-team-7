@@ -43,7 +43,9 @@
             android:id="@+id/service_pricings_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
+            android:nestedScrollingEnabled="true"
+            android:overScrollMode="always"
+            android:scrollbars="vertical"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/update_service_pricing_btn"
@@ -70,7 +72,9 @@
             android:id="@+id/product_pricings_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
+            android:nestedScrollingEnabled="true"
+            android:overScrollMode="always"
+            android:scrollbars="vertical"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/update_product_pricing_btn"

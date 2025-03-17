@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +20,19 @@ import rs.ac.uns.eventplanner.team7.dto.pricing.PricingResponseDTO;
 public class PricingAdapter extends RecyclerView.Adapter<PricingAdapter.ViewHolder> {
     private final Context context;
     private final Object mutex = new Object();
-    private List<PricingResponseDTO> pricings;
+    private final List<PricingResponseDTO> pricings;
 
-    public PricingAdapter(Context context, List<PricingResponseDTO> pricings) {
+    private final OnItemSelectedListener onItemSelectedListener;
+    private Integer selectedItemId = null;
+
+    public interface OnItemSelectedListener {
+        void onItemSelected(Integer itemId, String type);
+    }
+
+    public PricingAdapter(Context context, List<PricingResponseDTO> pricings, OnItemSelectedListener listener) {
         this.context = context;
         this.pricings = pricings;
+        this.onItemSelectedListener = listener;
     }
 
     public void addAll(@NonNull List<PricingResponseDTO> newPricings) {
@@ -63,6 +72,18 @@ public class PricingAdapter extends RecyclerView.Adapter<PricingAdapter.ViewHold
 
         holder.name.setTypeface(holder.name.getTypeface(), Typeface.BOLD);
         holder.discountedPrice.setTypeface(holder.discountedPrice.getTypeface(), Typeface.BOLD);
+
+        if (selectedItemId != null && selectedItemId.equals(pricing.getItemId())) {
+            holder.itemView.setBackgroundColor(Color.LTGRAY);
+        } else {
+            holder.itemView.setBackgroundColor(Color.WHITE);
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            selectedItemId = pricing.getItemId();
+            notifyDataSetChanged();
+            onItemSelectedListener.onItemSelected(selectedItemId, pricing.getItemType());
+        });
 
     }
 

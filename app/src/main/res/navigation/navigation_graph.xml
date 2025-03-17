@@ -224,6 +224,20 @@
         android:id="@+id/nav_price_list"
         android:name="rs.ac.uns.eventplanner.team7.fragments.price_list.PriceListFragment"
         android:label="@string/price_list_menu_item"
-        tools:layout="@layout/fragment_price_list"/>
+        tools:layout="@layout/fragment_price_list">
+        <action
+            android:id="@+id/navigate_to_update_service"
+            app:destination="@id/nav_service_management"/>
+        <action
+            android:id="@+id/navigate_to_update_product"
+            app:destination="@id/nav_product_management"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_product_management"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.products.ProductManagementFragment"
+        android:label="@string/my_products"
+        tools:layout="@layout/fragment_product_management"/>
+
 
 </navigation>

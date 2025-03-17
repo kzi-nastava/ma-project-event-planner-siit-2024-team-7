@@ -6,9 +6,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,27 +28,27 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.adapters.PricingAdapter;
 import rs.ac.uns.eventplanner.team7.dto.pricing.PricingResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.product.GetProductResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.services.PricingService;
+import rs.ac.uns.eventplanner.team7.services.ProductService;
+import rs.ac.uns.eventplanner.team7.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 import rs.ac.uns.eventplanner.team7.utils.RecyclerViewBorderDecoration;
 
-public class PriceListFragment extends Fragment {
+public class PriceListFragment extends Fragment implements PricingAdapter.OnItemSelectedListener {
     private final PricingService pricingService = ClientUtils.injectService(PricingService.class);
+    private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
+    private final ProductService productService = ClientUtils.injectService(ProductService.class);
 
     private RecyclerView servicesView, productsView;
     private MaterialButton exportPdfBtn, updateServiceBtn, updateProductBtn;
     private MaterialTextView noDataText;
-
-    private List<PricingResponseDTO> servicePricings;
-    private List<PricingResponseDTO> productPricings;
-
     private PricingAdapter serviceAdapter, productAdapter;
+    private Integer selectedServiceId = null, selectedProductId = null;
 
-    public PriceListFragment() {
-        servicePricings = new ArrayList<>();
-        productPricings = new ArrayList<>();
-    }
+    public PriceListFragment() {}
 
 
     @Override
@@ -61,12 +64,12 @@ public class PriceListFragment extends Fragment {
 
         servicesView.addItemDecoration(new RecyclerViewBorderDecoration(requireContext(), Color.BLACK, 5));
         servicesView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        serviceAdapter = new PricingAdapter(requireContext(), servicePricings);
+        serviceAdapter = new PricingAdapter(requireContext(), new ArrayList<>(), this);
         servicesView.setAdapter(serviceAdapter);
 
         productsView.setLayoutManager(new LinearLayoutManager(requireContext()));
         productsView.addItemDecoration(new RecyclerViewBorderDecoration(requireContext(), Color.BLACK, 5));
-        productAdapter = new PricingAdapter(requireContext(), productPricings);
+        productAdapter = new PricingAdapter(requireContext(), new ArrayList<>(), this);
         productsView.setAdapter(productAdapter);
 
         return view;
@@ -76,6 +79,16 @@ public class PriceListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setContent();
+
+        updateServiceBtn.setOnClickListener(v -> {
+            if (selectedServiceId == null) return;
+            navigateToService(selectedServiceId);
+        });
+
+        updateProductBtn.setOnClickListener(v -> {
+            if (selectedProductId == null) return;
+            navigateToProduct(selectedProductId);
+        });
     }
 
     private void setContent() {
@@ -85,13 +98,13 @@ public class PriceListFragment extends Fragment {
                     public void onResponse(@NonNull Call<List<PricingResponseDTO>> call,
                                            @NonNull Response<List<PricingResponseDTO>> response) {
                         if (!isAdded()) return;
-                        serviceAdapter.clear();
-                        productAdapter.clear();
                         if (response.isSuccessful() && response.body() != null) {
-                            servicePricings = response.body().stream().filter(p -> "services".equals(p.getItemType())).toList();
-                            productPricings = response.body().stream().filter(p -> "products".equals(p.getItemType())).toList();
+                            List<PricingResponseDTO> servicePricings = response.body().stream().filter(p -> "services".equals(p.getItemType())).toList();
+                            List<PricingResponseDTO> productPricings = response.body().stream().filter(p -> "products".equals(p.getItemType())).toList();
 
+                            serviceAdapter.clear();
                             serviceAdapter.addAll(servicePricings);
+                            productAdapter.clear();
                             productAdapter.addAll(productPricings);
                         }
                         else {
@@ -103,8 +116,68 @@ public class PriceListFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<List<PricingResponseDTO>> call, @NonNull Throwable t) {
-
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                     }
                 });
+    }
+
+    private void selectService(int itemId) {
+        selectedServiceId = itemId;
+        updateServiceBtn.setVisibility(View.VISIBLE);
+        updateProductBtn.setVisibility(View.GONE);
+    }
+
+    private void selectProduct(int itemId) {
+        selectedProductId = itemId;
+        updateProductBtn.setVisibility(View.VISIBLE);
+        updateServiceBtn.setVisibility(View.GONE);
+    }
+
+    private void navigateToService(Integer id) {
+        serviceService.getService(JwtUtil.getAuthorizationValue(getContext()), id).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
+                                   @NonNull Response<GetServiceResponseDTO> response) {
+                if (!isAdded()) return;
+                if (response.isSuccessful() && response.body() != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("serviceDTO", response.body());
+                    Navigation.findNavController(requireView())
+                            .navigate(R.id.navigate_to_update_service, bundle);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
+    }
+
+    private void navigateToProduct(Integer id) {
+        productService.getProduct(JwtUtil.getAuthorizationValue(getContext()), id).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<GetProductResponseDTO> call,
+                                   @NonNull Response<GetProductResponseDTO> response) {
+                if (!isAdded()) return;
+                if (response.isSuccessful() && response.body() != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("productDTO", response.body());
+                    Navigation.findNavController(requireView())
+                            .navigate(R.id.navigate_to_update_product, bundle);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GetProductResponseDTO> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
+    }
+
+    @Override
+    public void onItemSelected(Integer itemId, String type) {
+        if (type.equals("services")) selectService(itemId);
+        else selectProduct(itemId);
     }
 }

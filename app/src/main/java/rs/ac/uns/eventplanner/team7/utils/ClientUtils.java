@@ -19,12 +19,14 @@ import rs.ac.uns.eventplanner.team7.services.EventService;
 import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.services.ImagesService;
 import rs.ac.uns.eventplanner.team7.services.InvitationService;
+import rs.ac.uns.eventplanner.team7.services.NotificationService;
 import rs.ac.uns.eventplanner.team7.services.ProductService;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.services.UserService;
 
 public final class ClientUtils {
     private static final String API_PATH = "http://" + BuildConfig.IP_ADDR +":8080/api/";
+    public static final String WEBSOCKET_URL = API_PATH + "websocket/websocket";
 
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
@@ -45,6 +47,7 @@ public final class ClientUtils {
         put(ServiceService.class, retrofit.create(ServiceService.class));
         put(UserService.class, retrofit.create(UserService.class));
         put(ImagesService.class, retrofit.create(ImagesService.class));
+        put(NotificationService.class, retrofit.create(NotificationService.class));
     }};
 
     public static <T> T injectService(Class<T> type) {

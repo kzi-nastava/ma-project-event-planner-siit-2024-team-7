@@ -242,4 +242,7 @@
     <string name="your_future_activities">Your future activities:</string>
     <string name="placeholder_phone">+381612345678</string>
     <string name="this_is_an_old_version_you_cannot_update_it">This is an old version, you cannot update it!</string>
+    <string name="notification_title">Notification title</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="no_notifications_yet">No notifications yet</string>
 </resources>

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,10 +39,23 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     @NonNull
     private Intent getIntentForNextActivity() {
-        Intent defaultIntent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         Uri data = getIntent().getData();
-        if (data == null || data.getPath() == null) return defaultIntent;
+        if (data != null && data.getPath() != null)
+            intent = handleRedirection(data, intent);
 
+        if (!JwtUtil.getRole(this).equals("GUEST") && isTokenExpired()) {
+            // bundle can contain values if handling invitation redirection
+            Bundle params = intent.getExtras() != null ? intent.getExtras().deepCopy() : new Bundle();
+            params.putBoolean("sessionExpired", true);
+            intent = new Intent(this, LoginActivity.class).putExtras(params);
+            JwtUtil.setDefaultValues(this);
+        }
+        return intent;
+    }
+
+    @NonNull
+    private Intent handleRedirection(Uri data, Intent defaultIntent) {
         String path = data.getPath().substring(1); // skips leading '/'
         switch (path) {
             case "quick_registration":
@@ -63,6 +77,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         Bundle params = new Bundle();
         params.putString("email", email);
         params.putString("token", token);
+        JwtUtil.setDefaultValues(this);
         return new Intent(this, RegistrationActivity.class).putExtras(params);
     }
 
@@ -86,5 +101,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         } catch (NumberFormatException e) {
             return targetIntent;
         }
+    }
+
+    private boolean isTokenExpired() {
+        Date expirationDate = JwtUtil.extractExpirationDate(this);
+        return expirationDate == null || expirationDate.before(new Date());
     }
 }

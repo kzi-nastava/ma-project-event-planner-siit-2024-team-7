@@ -46,7 +46,6 @@ public class RegistrationActivity extends AppCompatActivity {
         setupLoginNavigation();
         MaterialButton regButton = findViewById(R.id.register_button);
         regButton.setOnClickListener(v -> registerOnClick());
-        JwtUtil.setDefaultValues(this);
         checkRedirection();
     }
 

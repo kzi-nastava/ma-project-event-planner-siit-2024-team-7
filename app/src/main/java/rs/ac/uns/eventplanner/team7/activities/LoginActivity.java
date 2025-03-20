@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         usernameLayout.setError(null);
         passwordLayout.setError(null);
         clearFocus();
-        checkRedirection();
+        checkExtras();
     }
 
     private void setupNavigation() {
@@ -125,12 +125,17 @@ public class LoginActivity extends AppCompatActivity {
         passwordInput.clearFocus();
     }
 
-    /// Redirection can occur when accepting invitations
-    private void checkRedirection() {
+    private void checkExtras() {
         Bundle data = getIntent().getExtras();
         if (data == null) return;
+
         String email = data.getString("email");
-        TextInputEditText emailInput = findViewById(R.id.usernameInput);
-        emailInput.setText(email);
+        if (email != null) {
+            TextInputEditText emailInput = findViewById(R.id.usernameInput);
+            emailInput.setText(email);
+        }
+
+        if (!data.getBoolean("sessionExpired", false)) return;
+        Toast.makeText(this, getString(R.string.session_expired_message), Toast.LENGTH_LONG).show();
     }
 }

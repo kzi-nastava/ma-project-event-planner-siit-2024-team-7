@@ -1,14 +1,19 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -32,6 +37,8 @@ import rs.ac.uns.eventplanner.team7.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.NotificationUtils;
+import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -40,6 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     private final Set<Integer> topLevelDestinations = new HashSet<>();
     private NavController navController;
     private AppBarConfiguration appBarConfig;
+    private WebSocketService webSocketService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +68,17 @@ public class HomeActivity extends AppCompatActivity {
         setupNavigation();
 
         if (getIntent().getExtras() != null) handleInvitationAccepting();
+
+        webSocketService = new WebSocketService(this);
+        webSocketService.connect(JwtUtil.getToken(this));
+
+        NotificationUtils.createNotificationChannel(this);
+        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {});
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED)
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
     }
 
     @Override
@@ -79,6 +98,7 @@ public class HomeActivity extends AppCompatActivity {
         int itemId = item.getItemId();
         if (itemId == R.id.nav_login_logout) {
             JwtUtil.setDefaultValues(this);
+            webSocketService.disconnect();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -90,6 +110,12 @@ public class HomeActivity extends AppCompatActivity {
             return true;
         }
         return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        webSocketService.disconnect();
     }
 
     private void setupNavigation() {

@@ -21,6 +21,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.HashSet;
@@ -38,6 +39,7 @@ import rs.ac.uns.eventplanner.team7.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 import rs.ac.uns.eventplanner.team7.utils.NotificationUtils;
+import rs.ac.uns.eventplanner.team7.utils.TokenInterceptor;
 import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 
 public class HomeActivity extends AppCompatActivity {
@@ -67,20 +69,10 @@ public class HomeActivity extends AppCompatActivity {
 
         if (getIntent().getExtras() != null) handleInvitationAccepting();
 
-        if (role != UserRole.GUEST) setupNotifications();
-    }
-
-    private void setupNotifications() {
-        webSocketService = new WebSocketService(this);
-        webSocketService.connect(JwtUtil.getToken(this));
-
-        NotificationUtils.createNotificationChannel(this);
-        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {});
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED)
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        if (role != UserRole.GUEST) {
+            setupNotifications();
+            TokenInterceptor.register(JwtUtil.extractExpirationDate(this), this::handleExpiredToken);
+        }
     }
 
     @Override
@@ -99,15 +91,10 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.nav_login_logout) {
-            JwtUtil.setDefaultValues(this);
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            handleLogout();
             return true;
         } else if (itemId == R.id.nav_register) {
-            startActivity(new Intent(this, RegistrationActivity.class));
-            finish();
+            handleRegister();
             return true;
         }
         return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
@@ -117,6 +104,45 @@ public class HomeActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (webSocketService != null) webSocketService.disconnect();
+        TokenInterceptor.unregister();
+    }
+
+    private void setupNotifications() {
+        webSocketService = new WebSocketService(this);
+        webSocketService.connect(JwtUtil.getToken(this));
+
+        NotificationUtils.createNotificationChannel(this);
+        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {});
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED)
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+    }
+
+    private void handleExpiredToken() {
+        runOnUiThread(() -> new MaterialAlertDialogBuilder(HomeActivity.this)
+                .setTitle(getString(R.string.session_expired))
+                .setMessage(getString(R.string.session_expired_message))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.proceed), (d, w) -> handleLogout())
+                .show());
+    }
+
+    private void handleLogout() {
+        JwtUtil.setDefaultValues(this);
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void handleRegister() {
+        JwtUtil.setDefaultValues(this);
+        Intent intent = new Intent(this, RegistrationActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void setupNavigation() {

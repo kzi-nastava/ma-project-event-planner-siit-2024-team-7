@@ -1,6 +1,9 @@
 package rs.ac.uns.eventplanner.team7.fragments.price_list;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,18 +13,25 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,6 +45,7 @@ import rs.ac.uns.eventplanner.team7.services.ProductService;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.NotificationUtils;
 import rs.ac.uns.eventplanner.team7.utils.RecyclerViewBorderDecoration;
 
 public class PriceListFragment extends Fragment implements PricingAdapter.OnItemSelectedListener {
@@ -88,6 +99,26 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
         updateProductBtn.setOnClickListener(v -> {
             if (selectedProductId == null) return;
             navigateToProduct(selectedProductId);
+        });
+
+        exportPdfBtn.setOnClickListener(v -> {
+            pricingService.exportPriceListPdf(JwtUtil.getAuthorizationValue(requireContext()))
+                    .enqueue(new Callback<>() {
+                        @Override
+                        public void onResponse(@NonNull Call<ResponseBody> call,
+                                               @NonNull Response<ResponseBody> response) {
+                            if (response.isSuccessful()) {
+                                savePDF(response.body());
+                            } else {
+                                Toast.makeText(requireContext(), "Error downloading PDF", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        }
+                    });
         });
     }
 
@@ -179,5 +210,38 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
     public void onItemSelected(Integer itemId, String type) {
         if (type.equals("services")) selectService(itemId);
         else selectProduct(itemId);
+    }
+
+    private void savePDF(ResponseBody data) {
+        if (data == null) return;
+        ContentResolver resolver = requireContext().getContentResolver();
+        ContentValues values = new ContentValues();
+
+        values.put(MediaStore.Downloads.DISPLAY_NAME, "price_list.pdf");
+        values.put(MediaStore.Downloads.MIME_TYPE, "application/pdf");
+        values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+        Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+        if (uri == null) {
+            Toast.makeText(requireContext(), "Failed to download PDF", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try (InputStream inputStream = data.byteStream();
+             OutputStream outputStream = resolver.openOutputStream(uri)) {
+
+            if (outputStream == null) return;
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            outputStream.flush();
+
+            NotificationUtils.showNotificationWithPDF(requireContext(), "Price List PDF", "PDF downloaded successfully: price_list.pdf", uri);
+            Toast.makeText(requireContext(), "PDF downloaded successfully!", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(requireContext(), "Failed to download PDF", Toast.LENGTH_SHORT).show();
+        }
     }
 }

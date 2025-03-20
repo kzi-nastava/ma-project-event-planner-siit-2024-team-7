@@ -2,6 +2,7 @@ package rs.ac.uns.eventplanner.team7.services;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -16,4 +17,11 @@ public interface PricingService {
     })
     @GET("items/pricing/all")
     Call<List<PricingResponseDTO>> getAllPricing(@Header("Authorization") String token);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("items/pricing/pdf")
+    Call<ResponseBody> exportPriceListPdf(@Header("Authorization") String token);
 }

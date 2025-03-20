@@ -79,6 +79,13 @@ public class HomeActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED)
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
+            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     @Override

@@ -21,7 +21,8 @@ import ua.naiksoftware.stomp.dto.StompHeader;
 
 public class WebSocketService {
 
-    private static final String TAG = "WebSocketService";
+    private static final String tag = "WebSocketService";
+    private static final String webSocketUrl = ClientUtils.API_PATH + "websocket/websocket";
     private final StompClient stompClient;
     private CompositeDisposable compositeDisposable;
     private final Context context;
@@ -29,7 +30,7 @@ public class WebSocketService {
 
     public WebSocketService(Context context) {
         this.context = context;
-        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, ClientUtils.WEBSOCKET_URL);
+        stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, webSocketUrl);
         resetSubscriptions();
     }
 
@@ -44,13 +45,13 @@ public class WebSocketService {
                 .subscribe(lifecycleEvent -> {
             switch (lifecycleEvent.getType()) {
                 case OPENED:
-                    Log.d(TAG, "WebSocket Connection Opened");
+                    Log.d(tag, "WebSocket Connection Opened");
                     break;
                 case ERROR:
-                    Log.e(TAG, "WebSocket Error", lifecycleEvent.getException());
+                    Log.e(tag, "WebSocket Error", lifecycleEvent.getException());
                     break;
                 case CLOSED:
-                    Log.d(TAG, "WebSocket Connection Closed");
+                    Log.d(tag, "WebSocket Connection Closed");
                     break;
             }
         });
@@ -60,11 +61,11 @@ public class WebSocketService {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(stompMessage -> {
-                    Log.d(TAG, "New notification: " + stompMessage.getPayload());
+                    Log.d(tag, "New notification: " + stompMessage.getPayload());
                     PersonalNotificationDTO dto = gson.fromJson(stompMessage.getPayload(), PersonalNotificationDTO.class);
                     NotificationUtils.showNotification(context, dto.getTitle(), dto.getMessage());
                 }, throwable -> {
-                    Log.e(TAG, "Error in WebSocket: ", throwable);
+                    Log.e(tag, "Error in WebSocket: ", throwable);
                 });
         compositeDisposable.add(dispTopic);
 

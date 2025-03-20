@@ -69,6 +69,10 @@ public class HomeActivity extends AppCompatActivity {
 
         if (getIntent().getExtras() != null) handleInvitationAccepting();
 
+        if (role != UserRole.GUEST) setupNotifications();
+    }
+
+    private void setupNotifications() {
         webSocketService = new WebSocketService(this);
         webSocketService.connect(JwtUtil.getToken(this));
 
@@ -105,7 +109,6 @@ public class HomeActivity extends AppCompatActivity {
         int itemId = item.getItemId();
         if (itemId == R.id.nav_login_logout) {
             JwtUtil.setDefaultValues(this);
-            webSocketService.disconnect();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -122,7 +125,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        webSocketService.disconnect();
+        if (webSocketService != null) webSocketService.disconnect();
     }
 
     private void setupNavigation() {

@@ -243,6 +243,7 @@
     <string name="placeholder_phone">+381612345678</string>
     <string name="notification_title">Notification title</string>
     <string name="timestamp">Timestamp</string>
+    <string name="short_message">Short message</string>
     <string name="no_notifications_yet">No notifications yet</string>
     <string name="session_expired">Session Expired</string>
     <string name="session_expired_message">Your session has expired. You must log in again</string>

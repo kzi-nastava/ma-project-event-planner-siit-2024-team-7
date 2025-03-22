@@ -21,5 +21,7 @@ public class InvitationAcceptanceDTO {
         email = params.getString("email");
         eventId = params.getInt("eventId");
         token = params.getString("token");
+        if (email == null || eventId == null || token == null)
+            throw new IllegalStateException("Not all arguments are passed");
     }
 }

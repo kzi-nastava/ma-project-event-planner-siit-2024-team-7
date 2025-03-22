@@ -41,6 +41,10 @@ public class Page<T> {
     }
 
     public Map<String, String> toQueryMap() {
+        return pageable.toQueryMapWithSort();
+    }
+
+    public Map<String, String> toQueryMapWithoutSort() {
         return pageable.toQueryMap();
     }
 

@@ -26,10 +26,15 @@ public class Pageable {
         return new Pageable(0, 10, Sort.getDefault());
     }
 
-    public Map<String, String> toQueryMap() {
+    public Map<String, String> toQueryMapWithSort() {
         return Map.of("page", String.valueOf(pageNumber),
                 "size", String.valueOf(pageSize),
                 "sort", String.format("%s,%s", sort.getBy(), sort.getDirection()));
+    }
+
+    public Map<String, String> toQueryMap() {
+        return Map.of("page", String.valueOf(pageNumber),
+                "size", String.valueOf(pageSize));
     }
 
     public void resetToDefault() {

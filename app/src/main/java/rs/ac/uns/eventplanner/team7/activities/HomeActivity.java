@@ -193,8 +193,13 @@ public class HomeActivity extends AppCompatActivity {
 
     private void handleInvitationAccepting() {
         String bearerToken = JwtUtil.getAuthorizationValue(this);
-        Bundle params = Objects.requireNonNull(getIntent().getExtras());
-        InvitationAcceptanceDTO dto = new InvitationAcceptanceDTO(params);
+        InvitationAcceptanceDTO dto;
+        try {
+            Bundle params = Objects.requireNonNull(getIntent().getExtras());
+            dto = new InvitationAcceptanceDTO(params);
+        } catch (IllegalStateException | NullPointerException e) {
+            return;
+        }
         invitationService.acceptInvitation(bearerToken, dto).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ResponseMessageDTO> call, @NonNull Response<ResponseMessageDTO> response) {

@@ -248,4 +248,12 @@
     <string name="session_expired">Session Expired</string>
     <string name="session_expired_message">Your session has expired. You must log in again</string>
     <string name="proceed">Proceed</string>
+    <string name="actions">Actions</string>
+    <string name="mark_this_as_read">Mark this as read</string>
+    <string name="already_read">Already read</string>
+    <string name="delete_this_notification">Delete this notification</string>
+    <string name="mark_all_as_read">Mark all as read</string>
+    <string name="delete_all_notifications">Delete all notifications</string>
+    <string name="disable_notifications">Mute notifications</string>
+    <string name="enable_notifications">Unmute notifications</string>
 </resources>

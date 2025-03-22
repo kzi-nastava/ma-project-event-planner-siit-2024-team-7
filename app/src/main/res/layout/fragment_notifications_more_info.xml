@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.notifications.NotificationsMoreActionsFragment"
+    android:padding="15dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="0dp"
+            android:text="@string/actions"
+            android:textSize="20sp"
+            />
+
+        <include layout="@layout/space_divider"/>
+
+        <include
+            android:id="@+id/more_info_close_button"
+            layout="@layout/view_close_button"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/mute_notifications_button"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?attr/materialIconButtonStyle"
+        app:icon="@drawable/ic_notifications_off"
+        app:iconPadding="10dp"
+        android:textAlignment="textStart"
+        android:text="@string/disable_notifications"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/mark_as_read_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?attr/materialIconButtonStyle"
+        app:icon="@drawable/ic_check"
+        app:iconPadding="10dp"
+        app:iconTint="@color/teal_600"
+        android:text="@string/mark_this_as_read"
+        android:textAlignment="textStart"
+        android:textColor="@color/teal_600"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/delete_notification_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?attr/materialIconButtonStyle"
+        app:iconPadding="10dp"
+        app:icon="@drawable/ic_delete"
+        app:iconTint="@color/red_delete"
+        android:text="@string/delete_this_notification"
+        android:textAlignment="textStart"
+        android:textColor="@color/red_delete"
+        />
+
+</LinearLayout>

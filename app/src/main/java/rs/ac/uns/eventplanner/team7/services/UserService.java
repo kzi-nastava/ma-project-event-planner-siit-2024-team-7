@@ -19,6 +19,7 @@ import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderRequestDTO;
 import rs.ac.uns.eventplanner.team7.dto.user.UpdateProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.dto.user.UserPreferencesDTO;
 
 public interface UserService {
     @Headers({
@@ -86,4 +87,18 @@ public interface UserService {
     })
     @GET("users/providers/by_item/{itemId}")
     Call<GetProviderResponseDTO> getProviderByItemId(@Header("Authorization") String token, @Path("itemId") Integer itemId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("users/{id}/preferences")
+    Call<UserPreferencesDTO> getPreferences(@Header("Authorization") String token, @Path("id") Integer id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @PUT("users/{id}/preferences")
+    Call<UserPreferencesDTO> updatePreferences(@Header("Authorization") String token, @Path("id") Integer id, @Body UserPreferencesDTO preferences);
 }

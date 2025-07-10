@@ -1,39 +1,36 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
-@SuppressLint("CustomSplashScreen")
-public class SplashScreenActivity extends AppCompatActivity {
+public class RoutingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screen);
+
+        splashScreen.setKeepOnScreenCondition(() -> true);
 
         // initial values are missing on first ever application start
         if (JwtUtil.getRole(this) == null) JwtUtil.setDefaultValues(this);
 
         Intent intent = getIntentForNextActivity();
         final int SPLASH_TIME_OUT = 500;
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                startActivity(intent);
-                finish();
-            }
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            startActivity(intent);
+            finish();
         }, SPLASH_TIME_OUT);
     }
 

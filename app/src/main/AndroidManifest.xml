@@ -30,8 +30,9 @@
             android:screenOrientation="nosensor">
         </activity>
         <activity
-            android:name=".activities.SplashScreenActivity"
+            android:name=".activities.RoutingActivity"
             android:exported="true"
+            android:theme="@style/AppTheme.Starting"
             android:screenOrientation="nosensor">
 
             <intent-filter>

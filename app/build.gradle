@@ -47,6 +47,7 @@ dependencies {
     implementation libs.appcompat
     implementation libs.constraintlayout
     implementation libs.converter.gson
+    implementation libs.core.splashscreen
     implementation libs.jjwt.api
     implementation libs.lombok
     implementation libs.lifecycle.livedata.ktx

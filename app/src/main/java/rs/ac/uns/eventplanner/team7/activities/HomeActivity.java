@@ -1,21 +1,24 @@
 package rs.ac.uns.eventplanner.team7.activities;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
+import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -48,7 +51,6 @@ public class HomeActivity extends AppCompatActivity {
     private UserRole role;
     private final Set<Integer> topLevelDestinations = new HashSet<>();
     private NavController navController;
-    private AppBarConfiguration appBarConfig;
     private WebSocketService webSocketService;
 
     @Override
@@ -62,22 +64,11 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             setContentView(R.layout.activity_home);
         }
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         setupNavigation();
-
-        if (getIntent().getExtras() != null) handleInvitationAccepting();
-
-        if (role != UserRole.GUEST) {
-            setupNotifications();
-            TokenInterceptor.register(JwtUtil.extractExpirationDate(this), this::handleExpiredToken);
-        }
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        return NavigationUI.navigateUp(navController, appBarConfig) || super.onSupportNavigateUp();
+        if (role == UserRole.GUEST) return;
+        setupNotifications();
+        TokenInterceptor.register(JwtUtil.extractExpirationDate(this), this::handleExpiredToken);
+        if (getIntent().getExtras() != null) handleIntentParams(getIntent().getExtras());
     }
 
     @Override
@@ -96,28 +87,61 @@ public class HomeActivity extends AppCompatActivity {
         } else if (itemId == R.id.nav_register) {
             handleRegister();
             return true;
+        } else if (itemId == R.id.nav_notifications) {
+            handleNotificationsNavigation();
+            return true;
         }
         return NavigationUI.onNavDestinationSelected(item, navController) || super.onOptionsItemSelected(item);
     }
 
     @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 102) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (role != UserRole.GUEST) {
+                    webSocketService = new WebSocketService(this);
+                }
+            } else {
+                Toast.makeText(this, R.string.notification_permission_denied, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (webSocketService != null) webSocketService.disconnect();
+        if (webSocketService != null) {
+            webSocketService.disconnect();
+            getSystemService(NotificationManager.class).cancelAll();
+        }
         TokenInterceptor.unregister();
     }
 
-    private void setupNotifications() {
-        webSocketService = new WebSocketService(this);
-        webSocketService.connect(JwtUtil.getToken(this));
+    // Occurs when tapping the notification while the app is running
+    @Override
+    protected void onNewIntent(@NonNull Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.getExtras() != null) handleIntentParams(intent.getExtras());
+    }
 
+    private void setupNotifications() {
         NotificationUtils.createNotificationChannel(this);
-        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {});
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED)
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    102
+            );
+        } else {
+            webSocketService = new WebSocketService(this);
+            webSocketService.connect(JwtUtil.getAuthorizationValue(this));
+        }
     }
 
     private void handleExpiredToken() {
@@ -149,14 +173,17 @@ public class HomeActivity extends AppCompatActivity {
         NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         navController = Objects.requireNonNull(navHost).getNavController();
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         topLevelDestinations.add(R.id.nav_home);
+        AppBarConfiguration appBarConfig;
         if (role == UserRole.GUEST) {
             appBarConfig = new AppBarConfiguration.Builder(topLevelDestinations).build();
-            NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig);
+            NavigationUI.setupWithNavController(toolbar, navController, appBarConfig);
             return;
         }
-        setupBottomNavbar();
-        topLevelDestinations.addAll(Set.of(R.id.nav_chats, R.id.nav_account));
+        setupBottomNavbar(findViewById(R.id.bottom_navigation_view));
         final var appBarConfigBuilder = new AppBarConfiguration.Builder(topLevelDestinations);
 
         if (role == UserRole.ADMIN) {
@@ -165,20 +192,19 @@ public class HomeActivity extends AppCompatActivity {
 
             NavigationView navigationDrawerView = findViewById(R.id.navigation_view);
             NavigationUI.setupWithNavController(navigationDrawerView, navController);
-            navController.addOnDestinationChangedListener((controller, navDestination, bundle) -> {
-                if (!topLevelDestinations.contains(navDestination.getId())) {
-                    drawerLayout.closeDrawers();
-                }
+            navController.addOnDestinationChangedListener(
+                    (c, destination, bundle) -> {
+                        if (!topLevelDestinations.contains(destination.getId()))
+                            drawerLayout.closeDrawers();
             });
         }
 
         appBarConfig = appBarConfigBuilder.build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig);
+        NavigationUI.setupWithNavController(toolbar, navController, appBarConfig);
     }
 
-    private void setupBottomNavbar() {
-        // Guest users don't have bottom navbar!
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+    private void setupBottomNavbar(BottomNavigationView bottomNavigationView) {
+        topLevelDestinations.addAll(Set.of(R.id.nav_chats, R.id.nav_account));
         if (role == UserRole.EVENT_ORG) {
             bottomNavigationView.inflateMenu(R.menu.event_organizer_menu);
             topLevelDestinations.add(R.id.nav_event);
@@ -189,6 +215,25 @@ public class HomeActivity extends AppCompatActivity {
             bottomNavigationView.inflateMenu(R.menu.basic_menu);
         }
         NavigationUI.setupWithNavController(bottomNavigationView, navController);
+        navController.addOnDestinationChangedListener((c, destination, b)
+                -> bottomNavigationView.setVisibility(
+                        topLevelDestinations.contains(destination.getId()) ? View.VISIBLE : View.GONE));
+    }
+
+    private void handleIntentParams(Bundle extras) {
+        if ("notifications".equals(extras.getString("navigate_to"))) {
+            handleNotificationsNavigation();
+        } else handleInvitationAccepting();
+    }
+
+    private void handleNotificationsNavigation() {
+        NavDestination current = navController.getCurrentDestination();
+        if (current != null && current.getId() != R.id.nav_notifications) {
+            NavOptions navOptions = new NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .build();
+            navController.navigate(R.id.nav_notifications, null, navOptions);
+        }
     }
 
     private void handleInvitationAccepting() {

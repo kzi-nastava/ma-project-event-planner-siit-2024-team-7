@@ -256,4 +256,6 @@
     <string name="delete_all_notifications">Delete all notifications</string>
     <string name="disable_notifications">Mute notifications</string>
     <string name="enable_notifications">Unmute notifications</string>
+    <string name="mark_as_read">Mark as read</string>
+    <string name="notification_permission_denied">Notification permission denied</string>
 </resources>

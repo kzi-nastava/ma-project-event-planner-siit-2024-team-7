@@ -63,7 +63,7 @@ public class WebSocketService {
                 .subscribe(stompMessage -> {
                     Log.d(tag, "New notification: " + stompMessage.getPayload());
                     PersonalNotificationDTO dto = gson.fromJson(stompMessage.getPayload(), PersonalNotificationDTO.class);
-                    NotificationUtils.showNotification(context, dto.getTitle(), dto.getMessage());
+                    NotificationUtils.showNotification(context, dto.getId(), dto.getTitle(), dto.getMessage());
                 }, throwable -> {
                     Log.e(tag, "Error in WebSocket: ", throwable);
                 });

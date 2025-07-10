@@ -50,7 +50,7 @@ public class NotificationsMoreActionsFragment extends BottomSheetDialogFragment 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_notifications_more_info, container, false);
+        View view = inflater.inflate(R.layout.fragment_notifications_more_actions, container, false);
 
         markAsReadButton = view.findViewById(R.id.mark_as_read_button);
         deleteButton = view.findViewById(R.id.delete_notification_button);

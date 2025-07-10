@@ -1,6 +1,6 @@
 package rs.ac.uns.eventplanner.team7.services;
 
-import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.DELETE;
@@ -10,6 +10,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
+import rs.ac.uns.eventplanner.team7.dto.Page;
 import rs.ac.uns.eventplanner.team7.dto.notification.PersonalNotificationDTO;
 
 public interface NotificationService {
@@ -47,5 +48,6 @@ public interface NotificationService {
             "Content-Type: application/json"
     })
     @GET("notifications")
-    Call<List<PersonalNotificationDTO>> getNotifications(@Header("Authorization") String token);
+    Call<Page<PersonalNotificationDTO>> getNotifications(@Header("Authorization") String token,
+                                                         @QueryMap Map<String, String> pageableParams);
 }

@@ -14,6 +14,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.activities.HomeActivity;
+import rs.ac.uns.eventplanner.team7.dto.notification.PersonalNotificationDTO;
 
 public class NotificationUtils {
     public static final String CHANNEL_ID = "notification_channel";
@@ -30,17 +31,17 @@ public class NotificationUtils {
         }
     }
 
-    public static void showNotification(Context context, Integer id, String title, String message) {
+    public static void showNotification(Context context, PersonalNotificationDTO notification) {
         var builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentTitle(title)
+                .setContentTitle(notification.getTitle())
                 .setContentIntent(openNotificationsIntent(context))
                 .addAction(new NotificationCompat.Action(
                         null,
                         context.getString(R.string.mark_as_read),
-                        getMarkAsReadPendingIntent(context, id)))
+                        getMarkAsReadPendingIntent(context, notification.getId())))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(notification.getMessage()))
                 .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
@@ -48,7 +49,7 @@ public class NotificationUtils {
                 != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        notificationManager.notify(id, builder.build());
+        notificationManager.notify(notification.getId(), builder.build());
     }
 
     private static PendingIntent openNotificationsIntent(Context context) {

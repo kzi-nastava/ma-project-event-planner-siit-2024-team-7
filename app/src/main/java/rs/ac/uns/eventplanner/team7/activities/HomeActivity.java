@@ -138,7 +138,9 @@ public class HomeActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.POST_NOTIFICATIONS},
                     102
             );
-        } else {
+            return;
+        }
+        if (webSocketService == null) {
             webSocketService = new WebSocketService(this);
             webSocketService.connect(JwtUtil.getAuthorizationValue(this));
         }

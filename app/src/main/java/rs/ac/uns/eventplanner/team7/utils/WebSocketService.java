@@ -7,13 +7,13 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.dto.notification.PersonalNotificationDTO;
 import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompClient;
@@ -22,7 +22,8 @@ import ua.naiksoftware.stomp.dto.StompHeader;
 public class WebSocketService {
 
     private static final String tag = "WebSocketService";
-    private static final String webSocketUrl = ClientUtils.API_PATH + "websocket/websocket";
+    private static final String webSocketUrl =
+            String.format("ws://%s:8080/api/websocket/websocket", BuildConfig.IP_ADDR);
     private final StompClient stompClient;
     private CompositeDisposable compositeDisposable;
     private final Context context;
@@ -34,8 +35,8 @@ public class WebSocketService {
         resetSubscriptions();
     }
 
-    public void connect(String token) {
-        List<StompHeader> headers = Collections.singletonList(new StompHeader("Authorization", "Bearer " + token));
+    public void connect(String bearerToken) {
+        List<StompHeader> headers = List.of(new StompHeader("Authorization", bearerToken));
         stompClient.withClientHeartbeat(1000).withServerHeartbeat(1000);
         resetSubscriptions();
 
@@ -46,6 +47,15 @@ public class WebSocketService {
             switch (lifecycleEvent.getType()) {
                 case OPENED:
                     Log.d(tag, "WebSocket Connection Opened");
+                    Disposable dispTopic = stompClient.topic("/user/queue/notifications")
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(stompMessage -> {
+                                Log.d(tag, "New notification: " + stompMessage.getPayload());
+                                var dto = gson.fromJson(stompMessage.getPayload(), PersonalNotificationDTO.class);
+                                NotificationUtils.showNotification(context, dto);
+                            }, throwable -> Log.e(tag, "Error in WebSocket: ", throwable));
+                    compositeDisposable.add(dispTopic);
                     break;
                 case ERROR:
                     Log.e(tag, "WebSocket Error", lifecycleEvent.getException());
@@ -56,18 +66,6 @@ public class WebSocketService {
             }
         });
         compositeDisposable.add(dispLifecycle);
-
-        Disposable dispTopic = stompClient.topic("/user/queue/notifications")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(stompMessage -> {
-                    Log.d(tag, "New notification: " + stompMessage.getPayload());
-                    PersonalNotificationDTO dto = gson.fromJson(stompMessage.getPayload(), PersonalNotificationDTO.class);
-                    NotificationUtils.showNotification(context, dto.getId(), dto.getTitle(), dto.getMessage());
-                }, throwable -> {
-                    Log.e(tag, "Error in WebSocket: ", throwable);
-                });
-        compositeDisposable.add(dispTopic);
 
         stompClient.connect(headers);
 

@@ -14,7 +14,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
-import rs.ac.uns.eventplanner.team7.dto.notification.PersonalNotificationDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.notification.PersonalNotificationDTO;
 import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompClient;
 import ua.naiksoftware.stomp.dto.StompHeader;

@@ -6,7 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import rs.ac.uns.eventplanner.team7.model.interfaces.Shakeable;
+import rs.ac.uns.eventplanner.team7.data.interfaces.Shakeable;
 
 public final class ShakeDetector implements SensorEventListener {
     private static final float SHAKE_THRESHOLD = 12.0f;

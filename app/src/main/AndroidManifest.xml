@@ -20,17 +20,17 @@
         tools:ignore="DiscouragedApi">
         <receiver android:name=".utils.NotificationActionReceiver" />
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".ui.activities.LoginActivity"
             android:exported="false"
             android:screenOrientation="nosensor">
         </activity>
         <activity
-            android:name=".activities.RegistrationActivity"
+            android:name=".ui.activities.RegistrationActivity"
             android:exported="false"
             android:screenOrientation="nosensor">
         </activity>
         <activity
-            android:name=".activities.RoutingActivity"
+            android:name=".ui.activities.RoutingActivity"
             android:exported="true"
             android:theme="@style/AppTheme.Starting"
             android:screenOrientation="nosensor">
@@ -53,7 +53,7 @@
 
         </activity>
         <activity
-            android:name=".activities.HomeActivity"
+            android:name=".ui.activities.HomeActivity"
             android:label="Home"
             android:exported="false"
             android:screenOrientation="nosensor">

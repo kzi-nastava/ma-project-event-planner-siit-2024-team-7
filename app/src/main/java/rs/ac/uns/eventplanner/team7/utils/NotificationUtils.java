@@ -13,8 +13,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.activities.HomeActivity;
-import rs.ac.uns.eventplanner.team7.dto.notification.PersonalNotificationDTO;
+import rs.ac.uns.eventplanner.team7.ui.activities.HomeActivity;
+import rs.ac.uns.eventplanner.team7.data.dto.notification.PersonalNotificationDTO;
 
 public class NotificationUtils {
     public static final String CHANNEL_ID = "notification_channel";

@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.home.HomeFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.home.HomeFragment"
         android:label="@string/home"
         tools:layout="@layout/fragment_home">
         <action
@@ -24,25 +24,25 @@
 
     <fragment
         android:id="@+id/nav_chats"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.chats.ChatsFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.chats.ChatsFragment"
         android:label="@string/toolbar_chats"
         tools:layout="@layout/fragment_chats"/>
 
     <fragment
         android:id="@+id/nav_notifications"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.notifications.NotificationsFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.notifications.NotificationsFragment"
         android:label="@string/toolbar_notifications"
         tools:layout="@layout/fragment_notifications"/>
 
     <fragment
         android:id="@+id/nav_account"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.user.UserProfileFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.user.UserProfileFragment"
         android:label="@string/account"
         tools:layout="@layout/fragment_user_profile" />
 
     <fragment
         android:id="@+id/nav_service"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.services.SPPServicesBaseFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.services.SPPServicesBaseFragment"
         android:label="@string/my_services"
         tools:layout="@layout/fragment_spp_services_base">
         <action
@@ -55,7 +55,7 @@
 
     <fragment
         android:id="@+id/nav_event_types"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.event_types.AllEventTypesFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.event_types.AllEventTypesFragment"
         android:label="@string/event_types"
         tools:layout="@layout/fragment_all_event_types">
         <action
@@ -69,7 +69,7 @@
 
     <fragment
         android:id="@+id/nav_categories"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.categories.AllCategoriesFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.categories.AllCategoriesFragment"
         android:label="@string/categories"
         tools:layout="@layout/fragment_all_categories">
         <action
@@ -80,7 +80,7 @@
 
     <fragment
         android:id="@+id/nav_service_management"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.services.ServiceManagementFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.services.ServiceManagementFragment"
         android:label="@string/my_services"
         tools:layout="@layout/fragment_service_management">
         <action
@@ -92,7 +92,7 @@
 
     <fragment
         android:id="@+id/nav_category_management"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.categories.CategoryManagementFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.categories.CategoryManagementFragment"
         android:label="@string/categories"
         tools:layout="@layout/fragment_category_management" >
         <action
@@ -107,7 +107,7 @@
 
     <fragment
         android:id="@+id/nav_event_type_create"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.event_types.CreateEventTypeFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.event_types.CreateEventTypeFragment"
         android:label="@string/event_types"
         tools:layout="@layout/fragment_create_event_type" >
         <action
@@ -119,7 +119,7 @@
 
     <fragment
         android:id="@+id/nav_event_type_update"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.event_types.UpdateEventTypeFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.event_types.UpdateEventTypeFragment"
         android:label="@string/event_types"
         tools:layout="@layout/fragment_update_event_type" >
         <action
@@ -131,7 +131,7 @@
 
     <dialog
         android:id="@+id/nav_reject_category"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.admin.categories.RejectCategoryDialogFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.categories.RejectCategoryDialogFragment"
         tools:layout="@layout/dialog_reject_category" >
         <action
             android:id="@+id/navigate_back_from_reject_category"
@@ -142,12 +142,12 @@
 
     <fragment
         android:id="@+id/nav_spp_details"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.user.SPPDetailsFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.user.SPPDetailsFragment"
         android:label="User Details"/>
 
     <fragment
         android:id="@+id/nav_product_details"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.products.ProductDetailsFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.products.ProductDetailsFragment"
         android:label="Product Details"
         tools:layout="@layout/fragment_product_details">
         <action
@@ -157,7 +157,7 @@
 
     <fragment
         android:id="@+id/nav_service_details"
-        android:name="rs.ac.uns.eventplanner.team7.fragments.services.ServiceDetailsFragment"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.services.ServiceDetailsFragment"
         android:label="Service Details"
         tools:layout="@layout/fragment_service_details" >
         <action

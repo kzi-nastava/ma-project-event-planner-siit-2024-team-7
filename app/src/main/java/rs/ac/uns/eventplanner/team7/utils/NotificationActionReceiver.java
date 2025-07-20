@@ -11,7 +11,7 @@ import androidx.core.app.NotificationManagerCompat;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rs.ac.uns.eventplanner.team7.services.NotificationService;
+import rs.ac.uns.eventplanner.team7.data.services.NotificationService;
 
 public class NotificationActionReceiver extends BroadcastReceiver {
 

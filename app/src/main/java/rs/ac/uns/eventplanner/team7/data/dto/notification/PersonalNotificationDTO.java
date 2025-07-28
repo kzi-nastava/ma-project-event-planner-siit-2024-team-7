@@ -1,5 +1,9 @@
 package rs.ac.uns.eventplanner.team7.data.dto.notification;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +23,9 @@ public class PersonalNotificationDTO implements BasicCard {
 
     @Override
     public String getSubtitle() {
-        return timestamp;
+        int currentYear = LocalDateTime.now().getYear();
+        LocalDateTime parsedTimestamp = LocalDateTime.parse(timestamp);
+        String pattern = String.format("EEEE, MMMM dd %s 'at' HH:mm", parsedTimestamp.getYear() == currentYear ? "" : "yyyy");
+        return parsedTimestamp.format(DateTimeFormatter.ofPattern(pattern).withLocale(Locale.US));
     }
 }

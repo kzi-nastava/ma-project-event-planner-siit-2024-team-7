@@ -2,14 +2,14 @@ package rs.ac.uns.eventplanner.team7.data.dto.event;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.util.Locale;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.data.model.Event;
 import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.data.interfaces.WithImage;
+import rs.ac.uns.eventplanner.team7.data.model.Event;
 
 @Getter
 @Setter
@@ -35,7 +35,9 @@ public class BasicEventDTO implements BasicCard, WithImage {
 
     @Override
     public String getSubtitle() {
-        return date.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
+        int currentYear = LocalDateTime.now().getYear();
+        String pattern = String.format("EEEE, MMMM dd %s 'at' HH:mm", date.getYear() == currentYear ? "" : "yyyy");
+        return date.format(DateTimeFormatter.ofPattern(pattern).withLocale(Locale.US));
     }
 }
 

@@ -73,7 +73,7 @@ public class NotificationsMoreActionsFragment extends BottomSheetDialogFragment 
             markAsReadButton.setText(getString(R.string.already_read));
         } else {
             markAsReadButton.setOnClickListener(v -> {
-                listener.OnMarkAsReadClicked(notification.getId());
+                if (!notification.isRead()) listener.OnMarkAsReadClicked(notification.getId());
                 dismiss();
             });
         }

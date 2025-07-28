@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.ui.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,13 +103,18 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         }
 
         public void bindData(PersonalNotificationDTO notification) {
-            if (notification.isRead()) {
-                unreadIcon.setVisibility(View.GONE);
-            }
+            boolean read = notification.isRead();
+            unreadIcon.setVisibility(read ? View.GONE : View.VISIBLE);
 
             titleTextView.setText(notification.getTitle());
             String timeDifference = getTimeDifference(notification.getTimestamp());
             timeStampTextView.setText(timeDifference);
+
+            int style = read ? Typeface.NORMAL : Typeface.BOLD;
+            Typeface tf = Typeface.create("sans-serif-medium", style);
+            titleTextView.setTypeface(tf);
+            timeStampTextView.setTypeface(tf);
+
             shortMessageTextView.setText(notification.getMessage());
         }
 

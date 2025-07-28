@@ -30,6 +30,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_notifications_unread"
                 android:layout_gravity="center"
+                android:padding="4dp"
                 tools:ignore="ContentDescription" />
 
             <com.google.android.material.textview.MaterialTextView

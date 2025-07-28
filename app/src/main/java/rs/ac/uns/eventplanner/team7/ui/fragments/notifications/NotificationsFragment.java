@@ -1,6 +1,13 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.notifications;
 
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -26,14 +34,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.ui.adapters.NotificationAdapter;
 import rs.ac.uns.eventplanner.team7.data.dto.Page;
 import rs.ac.uns.eventplanner.team7.data.dto.notification.PersonalNotificationDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UserPreferencesDTO;
 import rs.ac.uns.eventplanner.team7.data.services.NotificationService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
+import rs.ac.uns.eventplanner.team7.ui.adapters.NotificationAdapter;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 
 public class NotificationsFragment extends Fragment implements
         NotificationsMoreActionsFragment.ActionClickListener {
@@ -46,6 +55,19 @@ public class NotificationsFragment extends Fragment implements
     private final Page<PersonalNotificationDTO> page = Page.getDefault();
     private boolean hasShownFragment, notificationsEnabled = true, isLoading;
     private String bearerToken;
+
+    private final Handler timeHandler = new Handler(Looper.getMainLooper());
+    private final Runnable timeUpdater = new Runnable() {
+        // For updating how long ago was the notification
+        @Override
+        public void run() {
+            if (adapter != null) {
+                int count = adapter.getItemCount();
+                adapter.notifyItemRangeChanged(0, count);
+            }
+            timeHandler.postDelayed(this, 60_000);
+        }
+    };
 
     public NotificationsFragment() {}
 
@@ -62,6 +84,8 @@ public class NotificationsFragment extends Fragment implements
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        requireContext().getSystemService(NotificationManager.class).cancelAll();
+
         bearerToken = JwtUtil.getAuthorizationValue(requireContext());
 
         adapter = new NotificationAdapter(
@@ -75,7 +99,6 @@ public class NotificationsFragment extends Fragment implements
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.notification_swipe_refresh);
         refreshLayout.setOnRefreshListener(() -> {
             refreshLayout.setRefreshing(false);
-            page.resetToDefault();
             setContent(false);
         });
 
@@ -83,6 +106,25 @@ public class NotificationsFragment extends Fragment implements
         moreActionsButton.setOnClickListener(v -> onMoreActionsClicked(null));
 
         setupContentScrollListener();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        timeHandler.post(timeUpdater);
+        LocalBroadcastManager.getInstance(requireContext())
+                .registerReceiver(
+                        newNotificationReceiver,
+                        new IntentFilter(WebSocketService.ACTION_NEW_NOTIFICATION)
+                );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timeHandler.removeCallbacks(timeUpdater);
+        LocalBroadcastManager.getInstance(requireContext())
+                .unregisterReceiver(newNotificationReceiver);
     }
 
     @Override
@@ -117,6 +159,14 @@ public class NotificationsFragment extends Fragment implements
         if (notificationId == null) handleServiceCall(notificationService.deleteAll(bearerToken));
         else handleServiceCall(notificationService.deleteOne(bearerToken, notificationId));
     }
+
+    private final BroadcastReceiver newNotificationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            context.getSystemService(NotificationManager.class).cancelAll();
+            setContent(false);
+        }
+    };
 
     private void setupContentScrollListener() {
         notificationsView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -154,6 +204,7 @@ public class NotificationsFragment extends Fragment implements
 
     private void setContent(boolean isUpdate) {
         isLoading = true;
+        if (!isUpdate) page.resetToDefault();
         notificationService.getNotifications(bearerToken, page.toQueryMapWithoutSort())
                 .enqueue(new Callback<>() {
             @Override
@@ -189,7 +240,7 @@ public class NotificationsFragment extends Fragment implements
 
     private void onCardClicked(PersonalNotificationDTO notification) {
         new MaterialAlertDialogBuilder(requireContext())
-            .setTitle(notification.getTitle())
+            .setTitle(String.format("%s\n%s", notification.getTitle(), notification.getSubtitle()))
             .setMessage(notification.getMessage())
             .setOnDismissListener(dialog -> {
                 if (!notification.isRead()) {

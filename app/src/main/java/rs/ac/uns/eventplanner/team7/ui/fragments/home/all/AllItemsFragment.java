@@ -61,6 +61,7 @@ public class AllItemsFragment extends Fragment
     private CardRecyclerViewAdapter<BasicItemDTO> viewAdapter;
     private ShakeDetector shakeDetector;
     private boolean isLoading, hasShownFragment;
+    private String bearerToken;
 
     public AllItemsFragment() {
         page = Page.getDefault();
@@ -92,6 +93,8 @@ public class AllItemsFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        bearerToken = JwtUtil.getAuthorizationValue(requireContext());
+        
         latestFilters.put("city", JwtUtil.getCity(requireContext()));
         setContent(false);
 
@@ -152,9 +155,8 @@ public class AllItemsFragment extends Fragment
 
     @Override
     public void onCardClicked(BasicCard entity) {
-        final String token = JwtUtil.getAuthorizationValue(requireContext());
         if (((BasicItemDTO)entity).getType().equals("services")) {
-            serviceService.getService(token, entity.getId()).enqueue(new Callback<>() {
+            serviceService.getService(bearerToken, entity.getId()).enqueue(new Callback<>() {
                 @Override
                 public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
                                        @NonNull Response<GetServiceResponseDTO> response) {
@@ -191,7 +193,7 @@ public class AllItemsFragment extends Fragment
                 }
             });
         } else {
-            productService.getProduct(token, entity.getId()).enqueue(new Callback<>() {
+            productService.getProduct(bearerToken, entity.getId()).enqueue(new Callback<>() {
                 @Override
                 public void onResponse(@NonNull Call<GetProductResponseDTO> call,
                                        @NonNull Response<GetProductResponseDTO> response) {
@@ -237,8 +239,8 @@ public class AllItemsFragment extends Fragment
 
     private void setContent(boolean isUpdate) {
         isLoading = true;
+        if (!isUpdate) page.resetToDefault();
         messageView.setText(R.string.fetching_data);
-        String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
         Map<String, String> combinedFilters = combineFiltersAndSort();
         switch (filtersFragment.getShownItemType().toLowerCase()) {
             case "products":

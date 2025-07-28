@@ -27,13 +27,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.ui.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.data.dto.Page;
 import rs.ac.uns.eventplanner.team7.data.dto.event.BasicEventDTO;
 import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.data.interfaces.SearchActionsListener;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
+import rs.ac.uns.eventplanner.team7.ui.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
@@ -47,6 +47,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
     private RecyclerView allEventsView;
     private CardRecyclerViewAdapter<BasicEventDTO> viewAdapter;
     private boolean isLoading, hasShownFragment;
+    private String bearerToken;
 
     public AllEventsFragment() {
         page = Page.getDefault();
@@ -73,6 +74,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        bearerToken = JwtUtil.getAuthorizationValue(requireContext());
         latestFilters.put("city", JwtUtil.getCity(requireContext()));
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.events_swipe_refresh);
@@ -124,8 +126,8 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
     }
 
     private void setContent(boolean isUpdate) {
-        final String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
         isLoading = true;
+        if (!isUpdate) page.resetToDefault();
         messageView.setText(R.string.fetching_data);
         Map<String, String> combinedFilters = combineFiltersAndSort();
         service.filter(bearerToken, combinedFilters).enqueue(new Callback<>() {

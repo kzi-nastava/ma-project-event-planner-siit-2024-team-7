@@ -2,7 +2,10 @@ package rs.ac.uns.eventplanner.team7.utils;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,6 +23,8 @@ import ua.naiksoftware.stomp.StompClient;
 import ua.naiksoftware.stomp.dto.StompHeader;
 
 public class WebSocketService {
+    public static final String ACTION_NEW_NOTIFICATION =
+            "rs.ac.uns.eventplanner.team7.NEW_NOTIFICATION";
 
     private static final String tag = "WebSocketService";
     private static final String webSocketUrl =
@@ -54,6 +59,8 @@ public class WebSocketService {
                                 Log.d(tag, "New notification: " + stompMessage.getPayload());
                                 var dto = gson.fromJson(stompMessage.getPayload(), PersonalNotificationDTO.class);
                                 NotificationUtils.showNotification(context, dto);
+                                Intent broadcast = new Intent(ACTION_NEW_NOTIFICATION);
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(broadcast);
                             }, throwable -> Log.e(tag, "Error in WebSocket: ", throwable));
                     compositeDisposable.add(dispTopic);
                     break;

@@ -14,6 +14,7 @@ import retrofit2.http.QueryMap;
 import rs.ac.uns.eventplanner.team7.data.dto.Page;
 import rs.ac.uns.eventplanner.team7.data.dto.event.BasicEventDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.DetailedEventDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.event.FutureReservableEventsDTO;
 
 public interface EventService {
 
@@ -39,4 +40,15 @@ public interface EventService {
     })
     @GET("events/all_cities")
     Call<List<String>> findAllCities();
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("events/can_reserve_service")
+    Call<FutureReservableEventsDTO> getOrganizerFutureReservableEvents(
+            @Header("Authorization") String token,
+            @Query("serviceId") Integer serviceId,
+            @Query("organizerEmail") String organizerEmail
+    );
 }

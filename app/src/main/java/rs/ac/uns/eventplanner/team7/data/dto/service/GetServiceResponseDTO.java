@@ -22,7 +22,7 @@ public class GetServiceResponseDTO extends GetProductResponseDTO implements Parc
     private int maxDurationInMinutes;
     private int reservationDeadlineInDays;
     private int cancellationDeadlineInDays;
-    private boolean reserved;
+    private boolean reserved; // TODO remove
 
     protected GetServiceResponseDTO(Parcel in) {
         super(in);

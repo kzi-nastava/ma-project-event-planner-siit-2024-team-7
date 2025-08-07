@@ -50,7 +50,6 @@ public class ReservationDateStepFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireParentFragment()).get(ReservationViewModel.class);
-        // TODO ako se promeni datum next se disabluje i ne pise nikakva greska
         TextInputEditText dateInput = view.findViewById(R.id.reservation_date);
 
         viewModel.getSelectedDate().observe(getViewLifecycleOwner(), date -> {

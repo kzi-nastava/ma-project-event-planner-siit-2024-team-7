@@ -69,6 +69,10 @@ public class JwtUtil {
         return extractClaim(context, "exp", Date.class);
     }
 
+    public static String extractEmail(Context context) {
+        return extractClaim(context, "sub", String.class);
+    }
+
     public static <T> T extractClaim(Context context, String claimName, Class<T> type) {
         try {
             String token = getToken(context);

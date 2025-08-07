@@ -49,7 +49,6 @@ public class ReservationEventStepFragment extends Fragment {
                 viewModel.getOrganizerEvents().getEvents())
         );
 
-        // TODO ako se reselectuje iz dropdowna next se disabluje
         eventsDropdown.setOnItemClickListener(
                 (parent, v, position, id) -> {
                     var event = (GetEventResponseDTO) parent.getItemAtPosition(position);

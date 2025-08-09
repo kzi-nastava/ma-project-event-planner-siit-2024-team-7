@@ -41,7 +41,7 @@ import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.data.interfaces.SearchActionsListener;
 import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class SPPServicesFragment extends Fragment implements SearchActionsListener, CardClickListener {
     private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
@@ -136,7 +136,7 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
 
     @Override
     public void onCardClicked(BasicCard entity) {
-        serviceService.getService(JwtUtil.getAuthorizationValue(getContext()), entity.getId()).enqueue(new Callback<>() {
+        serviceService.getService(AuthUtil.getAuthorizationValue(getContext()), entity.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
                                    @NonNull Response<GetServiceResponseDTO> response) {
@@ -172,7 +172,7 @@ public class SPPServicesFragment extends Fragment implements SearchActionsListen
     private void setContent(boolean isUpdate) {
         isLoading = true;
         Map<String, String> combinedFilters = combineFiltersAndSort();
-        serviceService.findServicesByProvider(JwtUtil.getAuthorizationValue(requireContext()), combinedFilters).enqueue(new Callback<Page<BasicItemDTO>>() {
+        serviceService.findServicesByProvider(AuthUtil.getAuthorizationValue(requireContext()), combinedFilters).enqueue(new Callback<Page<BasicItemDTO>>() {
             @Override
             public void onResponse(@NonNull Call<Page<BasicItemDTO>> call,
                                    @NonNull Response<Page<BasicItemDTO>> response) {

@@ -7,6 +7,12 @@ def getIpAddress() {
     return properties.getProperty('ip_addr')
 }
 
+def getJwtSecret() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties.getProperty('jwt_secret')
+}
+
 android {
     namespace 'rs.ac.uns.eventplanner.team7'
     compileSdk 34
@@ -19,6 +25,7 @@ android {
         versionName "1.0"
         android.buildFeatures.buildConfig true
         buildConfigField "String", "IP_ADDR", "\"" + getIpAddress()+"\""
+        buildConfigField "String", "JWT_SECRET", "\"" + getJwtSecret()+"\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

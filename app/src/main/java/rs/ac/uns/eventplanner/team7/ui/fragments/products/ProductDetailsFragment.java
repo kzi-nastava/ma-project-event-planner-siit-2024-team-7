@@ -34,7 +34,7 @@ import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class ProductDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
@@ -96,8 +96,8 @@ public class ProductDetailsFragment extends Fragment {
             else
                 favouriteStar.setImageResource(R.drawable.ic_star);
 
-            userService.markItemAsFavourite(JwtUtil.getAuthorizationValue(requireContext()),
-                            JwtUtil.extractId(requireContext()),
+            userService.markItemAsFavourite(AuthUtil.getAuthorizationValue(requireContext()),
+                            AuthUtil.extractId(requireContext()),
                             new FavouriteItemRequestDTO(productDTO.getId(), productDTO.isFavourite()))
                     .enqueue(new Callback<>() {
                         @Override
@@ -120,7 +120,7 @@ public class ProductDetailsFragment extends Fragment {
         if (!productDTO.isAvailable())
             buyButton.setEnabled(false);
 
-        if (Objects.equals(JwtUtil.getRole(requireContext()), UserRole.SPP.toString())) {
+        if (AuthUtil.extractRole(requireContext()) == UserRole.SPP) {
             viewProviderButton.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);
         }

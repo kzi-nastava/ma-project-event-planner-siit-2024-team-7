@@ -2,15 +2,12 @@ package rs.ac.uns.eventplanner.team7.data.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 
 @AllArgsConstructor
 @Getter
 public class LoginResponseDTO {
     private String token;
-    private Integer id; // helps when trying to retrieve id for My Account
-    private UserRole role; // helps dynamically change UI
-    private String city;
-
+    private boolean activationLinkExpired;
+    private String suspensionEnd; // UTC timestmap
 
 }

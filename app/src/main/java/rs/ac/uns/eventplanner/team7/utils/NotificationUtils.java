@@ -65,7 +65,7 @@ public class NotificationUtils {
         Intent markAsReadIntent = new Intent(context, NotificationActionReceiver.class);
         markAsReadIntent.setAction("MARK_AS_READ");
         markAsReadIntent.putExtra("NOTIFICATION_ID", id);
-        markAsReadIntent.putExtra("TOKEN", JwtUtil.getAuthorizationValue(context));
+        markAsReadIntent.putExtra("TOKEN", AuthUtil.getAuthorizationValue(context));
 
         return PendingIntent.getBroadcast(context, id, markAsReadIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);

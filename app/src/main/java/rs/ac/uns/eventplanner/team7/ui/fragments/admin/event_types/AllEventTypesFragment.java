@@ -29,7 +29,7 @@ import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 
 public class AllEventTypesFragment extends Fragment implements CardClickListener {
@@ -81,7 +81,7 @@ public class AllEventTypesFragment extends Fragment implements CardClickListener
 
     private void fetchData() {
         loadingMsg.setVisibility(View.VISIBLE);
-        eventTypeService.getAll(JwtUtil.getAuthorizationValue(requireContext())).enqueue(new Callback<>() {
+        eventTypeService.getAll(AuthUtil.getAuthorizationValue(requireContext())).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<EventType>> call, @NonNull Response<List<EventType>> response) {
                 if (!isAdded()) return;

@@ -10,9 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
+import java.time.Instant;
 import java.util.Date;
 
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class RoutingActivity extends AppCompatActivity {
 
@@ -22,9 +24,6 @@ public class RoutingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         splashScreen.setKeepOnScreenCondition(() -> true);
-
-        // initial values are missing on first ever application start
-        if (JwtUtil.getRole(this) == null) JwtUtil.setDefaultValues(this);
 
         Intent intent = getIntentForNextActivity();
         final int SPLASH_TIME_OUT = 500;
@@ -41,12 +40,18 @@ public class RoutingActivity extends AppCompatActivity {
         if (data != null && data.getPath() != null)
             intent = handleRedirection(data, intent);
 
-        if (!JwtUtil.getRole(this).equals("GUEST") && isTokenExpired()) {
+        Instant suspensionEnd = AuthUtil.getSuspensionEnd(this);
+        if (suspensionEnd != null) {
+            if (suspensionEnd.isBefore(Instant.now())) AuthUtil.clearPreferences(this);
+            return intent;
+        }
+
+        if (AuthUtil.extractRole(this) != UserRole.GUEST && isTokenExpired()) {
             // bundle can contain values if handling invitation redirection
             Bundle params = intent.getExtras() != null ? intent.getExtras().deepCopy() : new Bundle();
             params.putBoolean("sessionExpired", true);
             intent = new Intent(this, LoginActivity.class).putExtras(params);
-            JwtUtil.setDefaultValues(this);
+            AuthUtil.clearPreferences(this);
         }
         return intent;
     }
@@ -74,7 +79,7 @@ public class RoutingActivity extends AppCompatActivity {
         Bundle params = new Bundle();
         params.putString("email", email);
         params.putString("token", token);
-        JwtUtil.setDefaultValues(this);
+        AuthUtil.clearPreferences(this);
         return new Intent(this, RegistrationActivity.class).putExtras(params);
     }
 
@@ -87,7 +92,7 @@ public class RoutingActivity extends AppCompatActivity {
 
         try {
             // if not logged in go to login first
-            if (JwtUtil.getRole(this).equals("GUEST")) {
+            if (AuthUtil.extractRole(this) == UserRole.GUEST) {
                 targetIntent = new Intent(this, LoginActivity.class);
             }
             Bundle params = new Bundle();
@@ -101,7 +106,7 @@ public class RoutingActivity extends AppCompatActivity {
     }
 
     private boolean isTokenExpired() {
-        Date expirationDate = JwtUtil.extractExpirationDate(this);
+        Date expirationDate = AuthUtil.extractExpirationDate(this);
         return expirationDate == null || expirationDate.before(new Date());
     }
 }

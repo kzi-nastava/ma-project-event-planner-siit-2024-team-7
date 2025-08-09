@@ -38,7 +38,7 @@ import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.DateConverter;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class EventFiltersFragment extends BottomSheetDialogFragment {
     private final EventService eventService = ClientUtils.injectService(EventService.class);
@@ -94,7 +94,7 @@ public class EventFiltersFragment extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String userCity = JwtUtil.getCity(requireContext());
+        String userCity = AuthUtil.extractCity(requireContext());
         filters.putIfAbsent("city", userCity);
 
         setDropdownAdapters();

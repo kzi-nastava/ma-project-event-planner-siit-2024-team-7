@@ -35,7 +35,7 @@ import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.data.services.ProductService;
 import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class TopItemsFragment extends Fragment implements CardClickListener {
     private MaterialTextView messageView;
@@ -54,7 +54,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top_items, container, false);
-        userCity = JwtUtil.getCity(requireContext());
+        userCity = AuthUtil.extractCity(requireContext());
         messageView = view.findViewById(R.id.top_items_message_view);
         return view;
     }
@@ -68,7 +68,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
                 this, true);
         topItemsView.setAdapter(viewAdapter);
 
-        String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
+        String bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         handleServiceResponse(productService.findTopFive(bearerToken, userCity));
         handleServiceResponse(serviceService.findTopFive(bearerToken, userCity));
 
@@ -84,7 +84,7 @@ public class TopItemsFragment extends Fragment implements CardClickListener {
 
     @Override
     public void onCardClicked(BasicCard entity) {
-        final String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
+        final String bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         if (((DetailedItemDTO)entity).getType().equals("services")) {
             serviceService.getService(bearerToken, entity.getId()).enqueue(new Callback<>() {
                 @Override

@@ -30,7 +30,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.event_type.UpdateEventTypeResponseD
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class UpdateEventTypeFragment extends Fragment {
 
@@ -83,7 +83,7 @@ public class UpdateEventTypeFragment extends Fragment {
     }
 
     private void fillFields(View view) {
-        Call<EventType> call = eventTypeService.get(JwtUtil.getAuthorizationValue(requireContext()), eventTypeId);
+        Call<EventType> call = eventTypeService.get(AuthUtil.getAuthorizationValue(requireContext()), eventTypeId);
         call.enqueue(updateCallBack(view));
     }
 
@@ -142,7 +142,7 @@ public class UpdateEventTypeFragment extends Fragment {
             requestDTO.getRecommendedCategories().add(category);
         }
 
-        Call<UpdateEventTypeResponseDTO> call = eventTypeService.update(JwtUtil.getAuthorizationValue(requireContext()), eventTypeId, requestDTO);
+        Call<UpdateEventTypeResponseDTO> call = eventTypeService.update(AuthUtil.getAuthorizationValue(requireContext()), eventTypeId, requestDTO);
         call.enqueue(updateCallback());
     }
 
@@ -188,7 +188,7 @@ public class UpdateEventTypeFragment extends Fragment {
     }
 
     private void delete() {
-        Call<Void> call = eventTypeService.delete(JwtUtil.getAuthorizationValue(requireContext()), eventTypeId);
+        Call<Void> call = eventTypeService.delete(AuthUtil.getAuthorizationValue(requireContext()), eventTypeId);
 
         MaterialAlertDialogBuilder builder = createMaterialDialog(
                 R.string.event_type_deactivation,

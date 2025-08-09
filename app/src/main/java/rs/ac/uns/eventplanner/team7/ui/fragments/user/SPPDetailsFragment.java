@@ -24,7 +24,7 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class SPPDetailsFragment extends Fragment {
 
@@ -64,7 +64,7 @@ public class SPPDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        userService.getProviderByItemId(JwtUtil.getAuthorizationValue(requireContext()), itemId)
+        userService.getProviderByItemId(AuthUtil.getAuthorizationValue(requireContext()), itemId)
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<GetProviderResponseDTO> call,

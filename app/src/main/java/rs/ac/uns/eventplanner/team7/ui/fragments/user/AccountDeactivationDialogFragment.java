@@ -25,7 +25,7 @@ import rs.ac.uns.eventplanner.team7.ui.fragments.MaterialDialogFragment;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class AccountDeactivationDialogFragment extends MaterialDialogFragment {
 
@@ -67,13 +67,13 @@ public class AccountDeactivationDialogFragment extends MaterialDialogFragment {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 if (role == UserRole.EVENT_ORG) {
                     userService.deactivateOrganizer(
-                            JwtUtil.getAuthorizationValue(requireContext()),
-                            JwtUtil.extractId(requireContext())
+                            AuthUtil.getAuthorizationValue(requireContext()),
+                            AuthUtil.extractId(requireContext())
                     ).enqueue(createDeactivationCallback(msg));
                 } else if (role == UserRole.SPP) {
                     userService.deactivateProvider(
-                            JwtUtil.getAuthorizationValue(requireContext()),
-                            JwtUtil.extractId(requireContext())
+                            AuthUtil.getAuthorizationValue(requireContext()),
+                            AuthUtil.extractId(requireContext())
                     ).enqueue(createDeactivationCallback(msg));
                 }
             });

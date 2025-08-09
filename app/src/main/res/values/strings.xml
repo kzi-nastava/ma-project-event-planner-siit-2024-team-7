@@ -292,4 +292,7 @@
     <string name="selected_date_overview">Selected date: %s</string>
     <string name="selected_available_timeslot_overview">Selected available slot: %s</string>
     <string name="selected_timeslot_overview">Selected timeslot: %s</string>
+    <string name="account_suspended">Your account’s been suspended due to inappropriate activity. It will unlock in approximately</string>
+    <string name="you_can_still_browse_the_app">You can still browse the app if you</string>
+    <string name="sign_out">Sign out</string>
 </resources>

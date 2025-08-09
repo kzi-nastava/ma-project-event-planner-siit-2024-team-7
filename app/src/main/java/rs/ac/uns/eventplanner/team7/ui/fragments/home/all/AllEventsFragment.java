@@ -35,7 +35,7 @@ import rs.ac.uns.eventplanner.team7.data.interfaces.SearchActionsListener;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class AllEventsFragment extends Fragment implements SearchActionsListener, CardClickListener {
     private final EventService service = ClientUtils.injectService(EventService.class);
@@ -74,8 +74,8 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bearerToken = JwtUtil.getAuthorizationValue(requireContext());
-        latestFilters.put("city", JwtUtil.getCity(requireContext()));
+        bearerToken = AuthUtil.getAuthorizationValue(requireContext());
+        latestFilters.put("city", AuthUtil.extractCity(requireContext()));
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.events_swipe_refresh);
         refreshLayout.setOnRefreshListener(() -> {

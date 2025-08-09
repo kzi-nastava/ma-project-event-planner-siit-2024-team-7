@@ -44,7 +44,7 @@ import rs.ac.uns.eventplanner.team7.data.interfaces.Shakeable;
 import rs.ac.uns.eventplanner.team7.data.services.ProductService;
 import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ShakeDetector;
 
 public class AllItemsFragment extends Fragment
@@ -93,9 +93,9 @@ public class AllItemsFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bearerToken = JwtUtil.getAuthorizationValue(requireContext());
+        bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         
-        latestFilters.put("city", JwtUtil.getCity(requireContext()));
+        latestFilters.put("city", AuthUtil.extractCity(requireContext()));
         setContent(false);
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.items_swipe_refresh);

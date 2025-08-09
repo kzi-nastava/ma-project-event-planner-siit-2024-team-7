@@ -38,7 +38,7 @@ import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class ServiceDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
@@ -99,7 +99,7 @@ public class ServiceDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        UserRole role = UserRole.valueOf(JwtUtil.getRole(requireContext()));
+        UserRole role = AuthUtil.extractRole(requireContext());
         viewProviderButton.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putInt("itemId", service.getId());
@@ -124,8 +124,8 @@ public class ServiceDetailsFragment extends Fragment {
     }
 
     private void initButtonsForOrganizer(@NonNull View view) {
-        String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
-        String organizerEmail = JwtUtil.extractEmail(requireContext());
+        String bearerToken = AuthUtil.getAuthorizationValue(requireContext());
+        String organizerEmail = AuthUtil.extractEmail(requireContext());
 
         getValidEvents(bearerToken, organizerEmail);
         reserveButton.setOnClickListener(v -> {
@@ -146,7 +146,7 @@ public class ServiceDetailsFragment extends Fragment {
             favouriteStar.setImageResource(R.drawable.ic_star);
 
         userService.markItemAsFavourite(bearerToken,
-                                        JwtUtil.extractId(requireContext()),
+                                        AuthUtil.extractId(requireContext()),
                                         new FavouriteItemRequestDTO(service.getId(), service.isFavourite()))
                 .enqueue(new Callback<>() {
                     @Override

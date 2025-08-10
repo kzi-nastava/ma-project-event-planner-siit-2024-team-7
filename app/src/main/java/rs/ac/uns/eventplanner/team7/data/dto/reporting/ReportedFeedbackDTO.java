@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReportedRatingDTO {
+public class ReportedFeedbackDTO {
     private Integer id;
-    private Integer value;
+    private String comment;
+    private Integer rating;
 }

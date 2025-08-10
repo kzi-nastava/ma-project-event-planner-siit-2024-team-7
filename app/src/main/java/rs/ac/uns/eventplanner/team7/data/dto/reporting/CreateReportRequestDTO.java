@@ -13,8 +13,7 @@ public class CreateReportRequestDTO {
 
     private String reporterEmail;
     private String reportedEmail;
-    private Integer reportedCommentId;
-    private Integer reportedRatingId;
+    private Integer reportedFeedbackId;
     private String reason;
 
 }

@@ -296,4 +296,23 @@
     <string name="you_can_still_browse_the_app">You can still browse the app if you</string>
     <string name="sign_out">Sign out</string>
     <string name="successfully_reserved_service">Successfully reserved service!</string>
+    <string name="reports">Reports</string>
+    <string name="all_reports">All reports</string>
+    <string name="all_undecided_reports">All undecided reports</string>
+    <string name="no_reports">No reports.</string>
+    <string name="no_undecided_reports">No undecided reports.</string>
+    <string name="reported_user">Reported user:\n%s</string>
+    <string name="resolved_for_user">Resolved for user:\n%s</string>
+    <string name="submitted_by_user">Submitted by user: %s</string>
+    <string name="reported_feedback">Reported feedback:</string>
+    <string name="reported_rating">Rated: %d / 5</string>
+    <string name="ignore">Ignore</string>
+    <string name="suspend">Suspend User</string>
+    <string name="delete_feedback">Delete Feedback</string>
+    <string name="delete_feedback_and_suspend">Delete Feedback and Suspend User</string>
+    <string name="report_resolved">Report resolved. Affected reports: %d</string>
+    <string name="view_undecided">View undecided</string>
+    <string name="view_all">View all</string>
+    <string name="report_actions">What will you do with this report?</string>
+    <string name="decide">Decide</string>
 </resources>

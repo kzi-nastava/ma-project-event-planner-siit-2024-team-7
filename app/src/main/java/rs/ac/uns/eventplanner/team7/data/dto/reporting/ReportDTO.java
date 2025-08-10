@@ -14,7 +14,6 @@ public class ReportDTO {
     private String reason;
     private String reportDate;
     private String reportedUserEmail;
-    private ReportedCommentDTO reportedComment;
-    private ReportedRatingDTO reportedRating;
+    private ReportedFeedbackDTO reportedFeedback;
     private boolean decided;
 }

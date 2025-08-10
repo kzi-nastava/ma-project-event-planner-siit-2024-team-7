@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ public final class ClientUtils {
     static {
         final Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
+                .registerTypeAdapter(Instant.class, new InstantConverter())
                 .create();
 
         final OkHttpClient client = new OkHttpClient.Builder()

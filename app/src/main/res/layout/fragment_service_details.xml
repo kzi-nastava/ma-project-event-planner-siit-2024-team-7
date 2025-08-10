@@ -1,370 +1,391 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragments.services.ServiceDetailsFragment"
-    android:orientation="vertical">
-
+    >
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="center"
-        android:layout_gravity="center">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/service_details_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"/>
-
-        <ImageView
-            android:id="@+id/favourite_star"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="36dp"
-            android:contentDescription="Favourite star"
-            android:visibility="gone"
-            android:src="@drawable/ic_star" />
-    </LinearLayout>
-
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:layout_gravity="center">
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/service_details_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Service Description:"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp"
-                android:textColor="@color/black" />
+                android:textSize="24sp"/>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/service_details_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/black"
-                android:layout_marginBottom="12dp"
-                android:layout_marginStart="8dp"/>
-
-            <include layout="@layout/divider_thin"/>
-
-            <com.google.android.material.textview.MaterialTextView
+            <ImageView
+                android:id="@+id/favourite_star"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Specifics:"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp"
-                android:textColor="@color/black" />
+                android:layout_marginStart="36dp"
+                android:contentDescription="Favourite star"
+                android:visibility="gone"
+                android:src="@drawable/ic_star" />
+        </LinearLayout>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/service_details_specifics"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/black"
-                android:layout_marginBottom="12dp"
-                android:layout_marginStart="8dp"/>
 
-            <include layout="@layout/divider_thin"/>
-
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp">
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Price:"
+                    android:text="Service Description:"
                     android:textStyle="bold"
                     android:textSize="16sp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp"
                     android:textColor="@color/black" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/service_details_price"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/service_details_description"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
                     android:textColor="@color/black"
-                    android:layout_marginStart="4dp"/>
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="8dp"/>
+
+                <include layout="@layout/divider_thin"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Discount:"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="40dp"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/service_details_discount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="@color/black"
-                    android:layout_marginStart="4dp"/>
-            </LinearLayout>
-
-            <include layout="@layout/divider_thin"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Minimum duration:"
+                    android:text="Specifics:"
                     android:textStyle="bold"
                     android:textSize="16sp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp"
                     android:textColor="@color/black" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/service_details_min_duration"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/service_details_specifics"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
                     android:textColor="@color/black"
-                    android:layout_marginStart="4dp"/>
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="8dp"/>
 
-            </LinearLayout>
+                <include layout="@layout/divider_thin"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Price:"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/black" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/service_details_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="4dp"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Discount:"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginStart="40dp"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/service_details_discount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="4dp"/>
+                </LinearLayout>
+
+                <include layout="@layout/divider_thin"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Minimum duration:"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/black" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/service_details_min_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="4dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Maximum duration:"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/service_details_max_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="4dp"/>
+
+                </LinearLayout>
+
+                <include layout="@layout/divider_thin"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reservation deadline:"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/black" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/service_details_reservation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="4dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cancellation deadline:"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/service_details_cancellation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="4dp"/>
+
+                </LinearLayout>
+
+                <include layout="@layout/divider_thin"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Maximum duration:"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/service_details_max_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="@color/black"
-                    android:layout_marginStart="4dp"/>
-
-            </LinearLayout>
-
-            <include layout="@layout/divider_thin"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reservation deadline:"
+                    android:text="Category:"
                     android:textStyle="bold"
                     android:textSize="16sp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp"
                     android:textColor="@color/black" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/service_details_reservation"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/service_details_category"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
                     android:textColor="@color/black"
-                    android:layout_marginStart="4dp"/>
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="8dp"/>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp">
+                <include layout="@layout/divider_thin"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cancellation deadline:"
-                    android:textColor="@color/black"
+                    android:text="Event types:"
+                    android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textStyle="bold"/>
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/black" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/service_details_cancellation"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/service_details_event_types"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
                     android:textColor="@color/black"
-                    android:layout_marginStart="4dp"/>
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="8dp"/>
+
+                <include layout="@layout/divider_thin"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Availability:"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/black" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/service_details_availability"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="8dp"/>
+
+                <include layout="@layout/divider_thin"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Images:"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/black" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/service_details_no_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:text="Currently no images!"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="8dp"
+                    android:visibility="gone"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/service_details_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20dp"
+                    android:clipToPadding="false"
+                    android:clipChildren="false"
+                    android:overScrollMode="never"
+                    tools:listitem="@layout/image_view"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <include layout="@layout/divider_thin"/>
+
 
             </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-            <include layout="@layout/divider_thin"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:layout_gravity="center">
 
-            <com.google.android.material.textview.MaterialTextView
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/view_provider_button"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:text="View Provider"
+                app:icon="@drawable/ic_info"
+                app:iconPadding="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/chat_w_provider_button"
+                style="?attr/materialIconButtonFilledTonalStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Category:"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp"
-                android:textColor="@color/black" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/service_details_category"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/black"
-                android:layout_marginBottom="12dp"
-                android:layout_marginStart="8dp"/>
-
-            <include layout="@layout/divider_thin"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Event types:"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp"
-                android:textColor="@color/black" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/service_details_event_types"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/black"
-                android:layout_marginBottom="12dp"
-                android:layout_marginStart="8dp"/>
-
-            <include layout="@layout/divider_thin"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Availability:"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp"
-                android:textColor="@color/black" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/service_details_availability"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/black"
-                android:layout_marginBottom="12dp"
-                android:layout_marginStart="8dp"/>
-
-            <include layout="@layout/divider_thin"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Images:"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="10dp"
-                android:textColor="@color/black" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/service_details_no_images"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:text="Currently no images!"
-                android:textColor="@color/black"
-                android:layout_marginBottom="12dp"
-                android:layout_marginStart="8dp"
-                android:visibility="gone"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/service_details_images"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="20dp"
-                android:clipToPadding="false"
-                android:clipChildren="false"
-                android:overScrollMode="never"
-                tools:listitem="@layout/image_view"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
-
-            <include layout="@layout/divider_thin"/>
-
+                android:text="Chat with Provider"
+                app:icon="@drawable/ic_add_comment"
+                app:iconPadding="8dp"
+                android:layout_marginStart="4dp"/>
 
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center"
-        android:layout_gravity="center">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/reserve_button"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_shopping_cart"
-            android:enabled="false"
-
-            app:iconPadding="8dp"
-            android:text="@string/reserve_a_service"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/view_provider_button"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:text="View Provider"
-            app:icon="@drawable/ic_info"
-            app:iconPadding="8dp" />
 
     </LinearLayout>
 
-</LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/reserve_button"
+        style="?attr/floatingActionButtonSecondaryStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="85dp"
+        android:layout_marginEnd="20dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_shopping_cart"
+        android:enabled="false"
+        android:tooltipText="@string/reserve_a_service"
+        />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

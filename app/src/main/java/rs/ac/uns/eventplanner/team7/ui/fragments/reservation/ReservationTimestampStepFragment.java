@@ -81,6 +81,7 @@ public class ReservationTimestampStepFragment extends Fragment {
         timeslotDropdown.setAdapter(availableTimeslotsAdapter);
 
         viewModel.getSelectedDate().observe(getViewLifecycleOwner(), date -> {
+            if (!viewModel.isServiceAvailable(date)) return;
             var dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             getTimeslotsForSelectedDate(dateFormat.format(new Date(date)));
         });

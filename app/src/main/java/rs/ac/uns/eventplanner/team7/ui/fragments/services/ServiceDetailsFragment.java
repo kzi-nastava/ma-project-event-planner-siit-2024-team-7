@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -52,7 +53,8 @@ public class ServiceDetailsFragment extends Fragment {
     private RecyclerView imagesView;
     private ImageAdapter imageAdapter;
 
-    private MaterialButton reserveButton, viewProviderButton;
+    private MaterialButton viewProviderButton, chatWithProviderButton;
+    private FloatingActionButton reserveButton;
 
     public ServiceDetailsFragment() {
         // Required empty public constructor
@@ -88,7 +90,7 @@ public class ServiceDetailsFragment extends Fragment {
         workDaysView = view.findViewById(R.id.service_details_availability);
         imagesView = view.findViewById(R.id.service_details_images);
         noImagesView = view.findViewById(R.id.service_details_no_images);
-
+        chatWithProviderButton = view.findViewById(R.id.chat_w_provider_button);
         reserveButton = view.findViewById(R.id.reserve_button);
         viewProviderButton = view.findViewById(R.id.view_provider_button);
 
@@ -107,6 +109,7 @@ public class ServiceDetailsFragment extends Fragment {
             if (view1 == null) return;
             Navigation.findNavController(view1).navigate(R.id.navigate_to_spp_details_from_service, args);
         });
+        // TODO hide chat button for invalid roles
         if (role != UserRole.EVENT_ORG) {
             if (service.isOwn()) viewProviderButton.setVisibility(View.GONE);
         } else {
@@ -118,7 +121,7 @@ public class ServiceDetailsFragment extends Fragment {
         if (getArguments() != null) {
             boolean reservation = getArguments().getBoolean("reservation");
             if (reservation) {
-                Snackbar.make(requireView(), "Succesfully reserved service!", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(requireView(), R.string.successfully_reserved_service, Snackbar.LENGTH_SHORT).show();
             }
         }
     }
@@ -135,10 +138,10 @@ public class ServiceDetailsFragment extends Fragment {
             Navigation.findNavController(view).navigate(R.id.navigate_to_service_reservation_from_service_details, args);
         });
 
-        favouriteStar.setOnClickListener(v -> handleMarkingAsFavorite(v, bearerToken));
+        favouriteStar.setOnClickListener(v -> handleMarkingAsFavorite(bearerToken));
     }
 
-    private void handleMarkingAsFavorite(@NonNull View view, String bearerToken) {
+    private void handleMarkingAsFavorite(String bearerToken) {
         service.setFavourite(!service.isFavourite());
         if (service.isFavourite())
             favouriteStar.setImageResource(R.drawable.ic_star_filled);

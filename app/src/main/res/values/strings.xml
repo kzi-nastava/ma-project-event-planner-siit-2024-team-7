@@ -137,7 +137,7 @@
     <string name="event_type_name">Event type name</string>
     <string name="event_type_description">Event type description</string>
     <string name="search_for_categories">Search categories…</string>
-    <string name="button">button</string>
+    <string name="button">Button</string>
     <string name="reset_results">Reset results</string>
     <string name="search_results">Search results:</string>
     <string name="selected_categories">Selected categories:</string>
@@ -295,4 +295,5 @@
     <string name="account_suspended">Your account’s been suspended due to inappropriate activity. It will unlock in approximately</string>
     <string name="you_can_still_browse_the_app">You can still browse the app if you</string>
     <string name="sign_out">Sign out</string>
+    <string name="successfully_reserved_service">Successfully reserved service!</string>
 </resources>

@@ -183,5 +183,10 @@
         android:name="rs.ac.uns.eventplanner.team7.ui.fragments.reporting.AccountSuspendedFragment"
         android:label="Account suspended"
         tools:layout="@layout/fragment_account_suspended" />
+    <fragment
+        android:id="@+id/nav_reports"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.reports.AllReportsFragment"
+        android:label="@string/reports"
+        tools:layout="@layout/fragment_all_reports" />
 
 </navigation>

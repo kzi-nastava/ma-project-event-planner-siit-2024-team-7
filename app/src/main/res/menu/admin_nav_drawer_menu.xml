@@ -15,4 +15,9 @@
         android:title="@string/reports"
         android:icon="@drawable/ic_feedback"/>
 
+    <item
+        android:id="@+id/nav_feedback"
+        android:title="@string/feedback"
+        android:icon="@drawable/ic_comment"/>
+
 </menu>

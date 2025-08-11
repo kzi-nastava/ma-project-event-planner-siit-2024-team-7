@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.fragments.admin.feedback.FeedbackDecisionDialogFragment"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="4dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/feedback_actions"
+            android:paddingStart="20dp"
+            android:textSize="20sp"
+            />
+
+        <include layout="@layout/space_divider"/>
+
+        <include android:id="@+id/feedback_decision_close_button" layout="@layout/view_close_button"/>
+
+    </LinearLayout>
+
+    <include layout="@layout/divider_thick"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <RadioGroup
+            android:id="@+id/feedback_decision_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="15dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            >
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/accept_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="@string/accept"
+                />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/reject_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/reject"
+                />
+
+        </RadioGroup>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <include layout="@layout/divider_thick"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/submit_decision_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:enabled="false"
+        android:text="@string/submit"/>
+
+</LinearLayout>

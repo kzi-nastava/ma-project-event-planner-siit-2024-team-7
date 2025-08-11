@@ -188,5 +188,10 @@
         android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.reports.AllReportsFragment"
         android:label="@string/reports"
         tools:layout="@layout/fragment_all_reports" />
+    <fragment
+        android:id="@+id/nav_feedback"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.feedback.AllFeedbackFragment"
+        android:label="@string/feedback"
+        tools:layout="@layout/fragment_all_feedback" />
 
 </navigation>

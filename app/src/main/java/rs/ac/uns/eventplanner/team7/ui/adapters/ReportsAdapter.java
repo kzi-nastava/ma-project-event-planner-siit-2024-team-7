@@ -17,7 +17,6 @@ import androidx.transition.TransitionSet;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.color.MaterialColors;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.time.LocalDateTime;
@@ -140,9 +139,7 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ViewHold
             if (!isDecided) {
                 rootView.setStrokeColor(ContextCompat.getColor(context, R.color.red_delete));
             } else {
-                // This shows an error in IDE, even though it builds and runs successfully
-                int outline = MaterialColors.getColor(rootView, com.google.android.material.R.attr.colorOutline);
-                rootView.setStrokeColor(outline);
+                rootView.setStrokeColor(ContextCompat.getColor(context, R.color.grey));
             }
         }
 

@@ -336,4 +336,13 @@
     <string name="decision_submitted">Decision submitted!</string>
     <string name="feedback">Feedback</string>
     <string name="feedback_actions">What will you do with this feedback?</string>
+    <string name="invite_people">Invite People</string>
+    <string name="email">Email</string>
+    <string name="blank_email">You can\'t enter a blank email</string>
+    <string name="email_already_added">Email already added</string>
+    <string name="event_capacity_reached">Event capacity reached</string>
+    <string name="people_to_be_invited">People to be invited:</string>
+    <string name="remove_email">Remove email</string>
+    <string name="invite_limit">Invite limit:</string>
+    <string name="delete_email_from_list">Delete email from list</string>
 </resources>

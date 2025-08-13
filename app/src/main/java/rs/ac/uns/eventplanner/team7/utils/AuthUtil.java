@@ -97,7 +97,7 @@ public class AuthUtil {
         return "Bearer " + getToken(context);
     }
 
-    private static String getToken(Context context) {
+    public static String getToken(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(TOKEN_KEY, null);
     }

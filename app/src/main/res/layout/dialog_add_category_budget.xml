@@ -63,16 +63,17 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cancel_btn"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
+            style="?attr/borderlessButtonStyle"
             android:layout_marginEnd="8dp"
             android:text="@string/cancel" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/submit_btn"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            app:backgroundTint="@color/blue_700"
+            style="?attr/borderlessButtonStyle"
             android:text="@string/submit" />
     </LinearLayout>
 

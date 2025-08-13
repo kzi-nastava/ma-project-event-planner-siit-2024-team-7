@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.budgets.BudgetManagement">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/event_budget_welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Event Budget"
+            android:textSize="24sp"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/total_budget_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:layout_marginStart="10dp"
+            android:text="TOTAL BUDGET: "
+            android:textSize="12sp"
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/total_spent_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:layout_marginStart="10dp"
+            android:text="TOTAL SPENT: "
+            android:textSize="12sp"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/category_budgets_dropdown_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:paddingHorizontal="20dp"
+            app:endIconMode="dropdown_menu">
+
+            <AutoCompleteTextView
+                android:id="@+id/category_budgets_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="18sp"
+                android:paddingEnd="5sp"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"
+                android:hint="@string/category" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/add_category_budget_btn"
+            style="?attr/materialIconButtonFilledTonalStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:icon="@drawable/ic_add"
+            app:iconPadding="6dp"
+            android:text="Add Category" />
+
+        <include layout="@layout/divider_thick"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/category_budget_welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Category Budget"
+            android:textSize="18sp"/>
+
+        <include layout="@layout/divider_thin"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/no_budget_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No category was selected!"
+            android:textSize="12sp"/>
+
+        <LinearLayout
+            android:id="@+id/purchased_reserved_item_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="SERVICES:"
+                android:textSize="18sp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_reserved_services"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:overScrollMode="always"
+                android:scrollbars="vertical"
+                android:layout_marginTop="16dp"
+                android:paddingBottom="8dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/horizontal_button_card"/>
+
+            <include layout="@layout/divider_thin"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="PRODUCTS:"
+                android:textSize="18sp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_purchased_products"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:overScrollMode="always"
+                android:scrollbars="vertical"
+                android:layout_marginTop="16dp"
+                android:paddingBottom="8dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/horizontal_button_card"/>
+
+            <include layout="@layout/divider_thin"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/category_budget_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:endIconMode="clear_text"
+                android:hint="BUDGET: "
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/category_budget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_budget_btn"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                app:icon="@drawable/ic_save"
+                app:iconPadding="6dp"
+                android:text="Save Budget"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/category_spent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:layout_marginStart="10dp"
+                android:text="SPENT: "
+                android:textSize="16sp"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/remove_category_budget_btn"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                app:icon="@drawable/ic_delete"
+                app:iconPadding="6dp"
+                android:backgroundTint="@color/red_delete"
+                android:text="Remove Category"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

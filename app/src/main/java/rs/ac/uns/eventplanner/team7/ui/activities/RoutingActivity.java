@@ -46,7 +46,7 @@ public class RoutingActivity extends AppCompatActivity {
             return intent;
         }
 
-        if (AuthUtil.extractRole(this) != UserRole.GUEST && isTokenExpired()) {
+        if (AuthUtil.getToken(this) != null && isTokenExpired()) {
             // bundle can contain values if handling invitation redirection
             Bundle params = intent.getExtras() != null ? intent.getExtras().deepCopy() : new Bundle();
             params.putBoolean("sessionExpired", true);

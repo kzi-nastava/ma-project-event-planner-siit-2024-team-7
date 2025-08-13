@@ -315,6 +315,16 @@
     <string name="view_all">View all</string>
     <string name="report_actions">What will you do with this report?</string>
     <string name="decide">Decide</string>
+    <string name="user_report">User Report</string>
+    <string name="user_report_description">Why are you reporting this person?</string>
+    <string name="enter_report_reason">Enter your reason*</string>
+    <string name="report_submitted">Your report has been recorded.</string>
+    <string name="block">Block</string>
+    <string name="report">Report</string>
+    <string name="open_chat">Open chat</string>
+    <string name="report_reason_required">Report reason is required</string>
+    <string name="report_reason_min_length">Reason must be at least 20 characters long.</string>
+    <string name="report_reason_max_length">Reason cannot exceed 500 characters.</string>
     <string name="all_feedback">All feedback</string>
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>

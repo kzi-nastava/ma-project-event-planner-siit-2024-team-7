@@ -16,4 +16,9 @@ public class CreateReportRequestDTO {
     private Integer reportedFeedbackId;
     private String reason;
 
+    public CreateReportRequestDTO(String reporterEmail, String reportedEmail, String reason) {
+        this.reporterEmail = reporterEmail;
+        this.reportedEmail = reportedEmail;
+        this.reason = reason;
+    }
 }

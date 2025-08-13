@@ -26,4 +26,10 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="AppTheme.MaterialDialogStyle" parent="ThemeOverlay.Material3.Dialog.Alert">
+        <item name="android:backgroundTint">?attr/colorSurfaceContainerHigh</item>
+        <item name="android:dialogCornerRadius">32dp</item>
+    </style>
+
 </resources>

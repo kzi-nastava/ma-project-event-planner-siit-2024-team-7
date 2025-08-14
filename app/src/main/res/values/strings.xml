@@ -248,4 +248,12 @@
     <string name="notification_title">Notification title</string>
     <string name="timestamp">Timestamp</string>
     <string name="no_notifications_yet">No notifications yet</string>
+    <string name="buy_product">Buy Product</string>
+    <string name="already_purchased">Already Purchased</string>
+    <string name="price_list_menu_item">Price List</string>
+    <string name="menu_options">Menu Options</string>
+    <string name="export_pdf">Export PDF</string>
+    <string name="update_service_pricing">Update Service Pricing</string>
+    <string name="update_product_pricing">Update Product Pricing</string>
+    <string name="no_pricings_to_show">No pricings to show.</string>
 </resources>

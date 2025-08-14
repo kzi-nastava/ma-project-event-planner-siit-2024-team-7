@@ -21,6 +21,7 @@ import rs.ac.uns.eventplanner.team7.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.services.ImagesService;
 import rs.ac.uns.eventplanner.team7.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.services.NotificationService;
+import rs.ac.uns.eventplanner.team7.services.PricingService;
 import rs.ac.uns.eventplanner.team7.services.ProductService;
 import rs.ac.uns.eventplanner.team7.services.PurchaseService;
 import rs.ac.uns.eventplanner.team7.services.ServiceService;
@@ -46,6 +47,7 @@ public final class ClientUtils {
         put(EventService.class, retrofit.create(EventService.class));
         put(EventTypeService.class, retrofit.create(EventTypeService.class));
         put(InvitationService.class, retrofit.create(InvitationService.class));
+        put(PricingService.class, retrofit.create(PricingService.class));
         put(ProductService.class, retrofit.create(ProductService.class));
         put(PurchaseService.class, retrofit.create(PurchaseService.class));
         put(ServiceService.class, retrofit.create(ServiceService.class));

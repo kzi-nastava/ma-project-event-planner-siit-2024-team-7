@@ -355,4 +355,8 @@
     <string name="remove_email">Remove email</string>
     <string name="invite_limit">Invite limit:</string>
     <string name="delete_email_from_list">Delete email from list</string>
+    <string name="invite">Invite</string>
+    <string name="event_creation">EVENT CREATION</string>
+    <string name="event_description">Event description</string>
+    <string name="visibility">Visibility</string>
 </resources>

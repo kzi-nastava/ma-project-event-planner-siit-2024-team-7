@@ -55,12 +55,28 @@
 
     <fragment
         android:id="@+id/nav_event"
-        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.EventList"
-        android:label="My Events"
-        tools:layout="@layout/fragment_event_list">
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.OrganizerEventsFragment"
+        android:label="@string/my_events"
+        tools:layout="@layout/fragment_organizer_events">
+        <action
+            android:id="@+id/navigate_to_event_creation"
+            app:destination="@id/nav_event_creation" />
         <action
             android:id="@+id/navigate_to_update_event"
             app:destination="@id/nav_update_event" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_creation"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.CreateEventFragment"
+        android:label="Create Event"
+        tools:layout="@layout/fragment_create_event" >
+        <action
+            android:id="@+id/navigate_back_from_event_creation"
+            app:destination="@id/nav_event"
+            app:popUpTo="@id/nav_event"
+            app:popUpToInclusive="true"/>
+
     </fragment>
 
     <fragment
@@ -247,7 +263,8 @@
         android:id="@+id/nav_feedback"
         android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.feedback.AllFeedbackFragment"
         android:label="@string/feedback"
-        tools:layout="@layout/fragment_all_feedback" />
+        tools:layout="@layout/fragment_all_feedback" >
+    </fragment>
 
     <fragment
         android:id="@+id/nav_price_list"

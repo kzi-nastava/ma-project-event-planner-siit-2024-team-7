@@ -22,6 +22,7 @@ public class GetServiceResponseDTO extends GetProductResponseDTO implements Parc
     private int maxDurationInMinutes;
     private int reservationDeadlineInDays;
     private int cancellationDeadlineInDays;
+    private boolean automatedReservationConformation;
 
     protected GetServiceResponseDTO(Parcel in) {
         super(in);
@@ -31,6 +32,7 @@ public class GetServiceResponseDTO extends GetProductResponseDTO implements Parc
         maxDurationInMinutes = in.readInt();
         reservationDeadlineInDays = in.readInt();
         cancellationDeadlineInDays = in.readInt();
+        automatedReservationConformation = in.readByte() != 0;
     }
 
     public static final Creator<GetServiceResponseDTO> CREATOR = new Creator<>() {
@@ -59,5 +61,6 @@ public class GetServiceResponseDTO extends GetProductResponseDTO implements Parc
         dest.writeInt(maxDurationInMinutes);
         dest.writeInt(reservationDeadlineInDays);
         dest.writeInt(cancellationDeadlineInDays);
+        dest.writeByte((byte) (automatedReservationConformation ? 1 : 0));
     }
 }

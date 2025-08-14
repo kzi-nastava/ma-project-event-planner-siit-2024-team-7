@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/item_index"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:text="#"
+        android:textSize="12sp"
+        android:gravity="center"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/item_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="NAME"
+        android:textSize="12sp"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/item_price"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="PRICE (€)"
+        android:textSize="12sp"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/item_discount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="DISCOUNT (%)"
+        android:textSize="12sp"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/item_discounted_price"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="DISCOUNTED PRICE ($)"
+        android:textSize="12sp"/>
+</LinearLayout>

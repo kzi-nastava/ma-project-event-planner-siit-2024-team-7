@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import rs.ac.uns.eventplanner.team7.data.dto.budget.EventBudgetResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.Activity;
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.Location;
@@ -36,6 +37,7 @@ public class GetEventResponseDTO implements Parcelable {
     private List<Activity> activities;
     private boolean isFav;
     private boolean isOwn;
+    private EventBudgetResponseDTO budget;
 
     protected GetEventResponseDTO(Parcel in) {
         if (in.readByte() == 0) {
@@ -55,6 +57,7 @@ public class GetEventResponseDTO implements Parcelable {
         activities = in.createTypedArrayList(Activity.CREATOR);
         isFav = in.readByte() != 0;
         isOwn = in.readByte() != 0;
+        budget = in.readParcelable(EventBudgetResponseDTO.class.getClassLoader(), EventBudgetResponseDTO.class);
     }
 
     public static final Creator<GetEventResponseDTO> CREATOR = new Creator<>() {
@@ -100,5 +103,6 @@ public class GetEventResponseDTO implements Parcelable {
         dest.writeTypedList(activities);
         dest.writeByte((byte) (isFav ? 1 : 0));
         dest.writeByte((byte) (isOwn ? 1 : 0));
+        dest.writeParcelable(budget, flags);
     }
 }

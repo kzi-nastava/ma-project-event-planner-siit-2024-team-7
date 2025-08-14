@@ -9,7 +9,7 @@
         android:id="@+id/nav_header_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/admin_options"
+        android:text="@string/menu_options"
         android:textSize="18sp"
         android:padding="16dp"
         android:layout_marginTop="8dp"/>

@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -61,10 +63,13 @@ public class HomeActivity extends AppCompatActivity {
             setContentView(R.layout.activity_home_admin);
         } else if (role == UserRole.GUEST) {
             setContentView(R.layout.activity_home_base);
+        } else if (role == UserRole.SPP) {
+            setContentView(R.layout.activity_home_spp);
         } else {
             setContentView(R.layout.activity_home);
         }
         setupNavigation();
+        checkStoragePermissions();
         if (role == UserRole.GUEST) return;
         setupNotifications();
         TokenInterceptor.register(AuthUtil.extractExpirationDate(this), this::handleExpiredToken);
@@ -127,6 +132,19 @@ public class HomeActivity extends AppCompatActivity {
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         if (intent.getExtras() != null) handleIntentParams(intent.getExtras());
+    }
+
+    private void checkStoragePermissions() {
+        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {});
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
+            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+
     }
 
     private void setupNotifications() {

@@ -156,6 +156,7 @@
     <string name="unable_to_contact_server">Unable to contact the server. Try again later.</string>
     <string name="no_services_to_show">No services to show</string>
     <string name="d_services_found">%d services found</string>
+    <string name="d_events_found">%d events found</string>
     <string name="event_types">Event Types</string>
     <string name="service_creation">SERVICE CREATION</string>
     <string name="service_update">SERVICE UPDATE</string>
@@ -241,6 +242,9 @@
     <string name="favourite_services">Favourite Services</string>
     <string name="your_future_activities">Your future activities:</string>
     <string name="placeholder_phone">+381612345678</string>
+    <string name="buy_product">Buy Product</string>
+    <string name="already_purchased">Already Purchased</string>
+    <string name="this_is_an_old_version_you_cannot_update_it">This is an old version, you cannot update it!</string>
     <string name="notification_title">Notification title</string>
     <string name="timestamp">Timestamp</string>
     <string name="short_message">Short message</string>
@@ -258,4 +262,10 @@
     <string name="enable_notifications">Unmute notifications</string>
     <string name="mark_as_read">Mark as read</string>
     <string name="notification_permission_denied">Notification permission denied</string>
+    <string name="price_list_menu_item">Price List</string>
+    <string name="menu_options">Menu Options</string>
+    <string name="export_pdf">Export PDF</string>
+    <string name="update_service_pricing">Update Service Pricing</string>
+    <string name="update_product_pricing">Update Product Pricing</string>
+    <string name="no_pricings_to_show">No pricings to show.</string>
 </resources>

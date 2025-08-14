@@ -26,7 +26,7 @@ public class Event implements Parcelable {
     private EventVisibility visibility;
     private EventType type;
     private List<Activity> activities;
-    // budget not here
+    private EventBudget budget;
 
     public Event() {}
 

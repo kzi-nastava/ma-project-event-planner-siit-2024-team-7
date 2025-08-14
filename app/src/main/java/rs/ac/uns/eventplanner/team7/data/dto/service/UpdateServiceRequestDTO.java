@@ -12,7 +12,7 @@ import rs.ac.uns.eventplanner.team7.data.model.EventType;
 public class UpdateServiceRequestDTO {
     private String name;
     private String description;
-    private Set<String> images;
+//    private Set<String> images;
     private boolean visible;
     private PricingRequestDTO pricing;
     private String specifics;
@@ -23,4 +23,5 @@ public class UpdateServiceRequestDTO {
     private int cancellationDeadlineInDays;
     private Set<EventType> appliesTo;
     private boolean available;
+    private boolean automatedReservationConformation;
 }

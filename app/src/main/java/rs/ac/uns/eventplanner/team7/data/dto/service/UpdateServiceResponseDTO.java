@@ -29,6 +29,7 @@ public class UpdateServiceResponseDTO {
     private int cancellationDeadlineInDays;
     private Set<EventType> appliesTo;
     private boolean available;
+    private boolean automatedReservationConformation;
     private ItemStatus status;
     private String createdAt;
 }

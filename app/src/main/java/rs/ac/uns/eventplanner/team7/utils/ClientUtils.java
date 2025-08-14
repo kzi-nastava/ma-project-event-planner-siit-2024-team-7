@@ -18,12 +18,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.data.dto.ErrorMessageDTO;
 import rs.ac.uns.eventplanner.team7.data.services.AuthService;
+import rs.ac.uns.eventplanner.team7.data.services.BudgetService;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
+import rs.ac.uns.eventplanner.team7.data.services.ImagesService;
 import rs.ac.uns.eventplanner.team7.data.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.data.services.NotificationService;
+import rs.ac.uns.eventplanner.team7.data.services.PricingService;
 import rs.ac.uns.eventplanner.team7.data.services.ProductService;
+import rs.ac.uns.eventplanner.team7.data.services.PurchaseService;
 import rs.ac.uns.eventplanner.team7.data.services.ReservationService;
 import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
@@ -55,13 +59,17 @@ public final class ClientUtils {
 
         serviceImplementations = new HashMap<>() {{
             put(AuthService.class, retrofit.create(AuthService.class));
+            put(BudgetService.class, retrofit.create(BudgetService.class));
             put(CategoryService.class, retrofit.create(CategoryService.class));
+            put(PricingService.class, retrofit.create(PricingService.class));
             put(EventService.class, retrofit.create(EventService.class));
             put(EventTypeService.class, retrofit.create(EventTypeService.class));
+            put(PurchaseService.class, retrofit.create(PurchaseService.class));
             put(InvitationService.class, retrofit.create(InvitationService.class));
             put(ProductService.class, retrofit.create(ProductService.class));
             put(ServiceService.class, retrofit.create(ServiceService.class));
             put(UserService.class, retrofit.create(UserService.class));
+            put(ImagesService.class, retrofit.create(ImagesService.class));
             put(NotificationService.class, retrofit.create(NotificationService.class));
             put(ReservationService.class, retrofit.create(ReservationService.class));
         }};

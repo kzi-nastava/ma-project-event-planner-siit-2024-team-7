@@ -24,4 +24,7 @@ public abstract class Item {
     protected Category category;
     protected Set<EventType> appliesTo;
     private boolean isAvailable;
+    private boolean isCurrent;
+    private Integer version;
+    private Integer parentId;
 }

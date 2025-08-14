@@ -32,6 +32,7 @@ public class CreateServiceResponseDTO {
     private Set<EventType> appliesTo;
     private boolean recommended;
     private boolean available;
+    private boolean automatedReservationConformation;
     private ItemStatus status;
     private String createdAt;
 }

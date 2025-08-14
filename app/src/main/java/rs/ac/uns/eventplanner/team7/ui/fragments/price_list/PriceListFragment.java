@@ -5,14 +5,6 @@ import android.content.ContentValues;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -20,6 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
@@ -43,8 +42,8 @@ import rs.ac.uns.eventplanner.team7.data.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.services.PricingService;
 import rs.ac.uns.eventplanner.team7.data.services.ProductService;
 import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 import rs.ac.uns.eventplanner.team7.utils.NotificationUtils;
 import rs.ac.uns.eventplanner.team7.utils.RecyclerViewBorderDecoration;
 
@@ -102,7 +101,7 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
         });
 
         exportPdfBtn.setOnClickListener(v -> {
-            pricingService.exportPriceListPdf(JwtUtil.getAuthorizationValue(requireContext()))
+            pricingService.exportPriceListPdf(AuthUtil.getAuthorizationValue(requireContext()))
                     .enqueue(new Callback<>() {
                         @Override
                         public void onResponse(@NonNull Call<ResponseBody> call,
@@ -123,7 +122,7 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
     }
 
     private void setContent() {
-        pricingService.getAllPricing(JwtUtil.getAuthorizationValue(requireContext()))
+        pricingService.getAllPricing(AuthUtil.getAuthorizationValue(requireContext()))
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<List<PricingResponseDTO>> call,
@@ -165,7 +164,7 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
     }
 
     private void navigateToService(Integer id) {
-        serviceService.getService(JwtUtil.getAuthorizationValue(getContext()), id).enqueue(new Callback<>() {
+        serviceService.getService(AuthUtil.getAuthorizationValue(getContext()), id).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<GetServiceResponseDTO> call,
                                    @NonNull Response<GetServiceResponseDTO> response) {
@@ -186,7 +185,7 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
     }
 
     private void navigateToProduct(Integer id) {
-        productService.getProduct(JwtUtil.getAuthorizationValue(getContext()), id).enqueue(new Callback<>() {
+        productService.getProduct(AuthUtil.getAuthorizationValue(getContext()), id).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<GetProductResponseDTO> call,
                                    @NonNull Response<GetProductResponseDTO> response) {

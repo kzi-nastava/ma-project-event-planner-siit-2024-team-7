@@ -2,13 +2,6 @@ package rs.ac.uns.eventplanner.team7.ui.fragments.purchases;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
@@ -17,6 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -29,7 +28,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.ui.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.data.dto.Page;
 import rs.ac.uns.eventplanner.team7.data.dto.Sort;
 import rs.ac.uns.eventplanner.team7.data.dto.event.BasicEventDTO;
@@ -41,8 +39,9 @@ import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.data.interfaces.SearchActionsListener;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.PurchaseService;
+import rs.ac.uns.eventplanner.team7.ui.adapters.CardRecyclerViewAdapter;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class SelectEventForPurchase extends Fragment implements SearchActionsListener, CardClickListener {
     private final EventService eventService = ClientUtils.injectService(EventService.class);
@@ -138,7 +137,7 @@ public class SelectEventForPurchase extends Fragment implements SearchActionsLis
     public void onFiltersReset() {}
 
     private void purchase(Integer eventId) {
-        purchaseService.create(JwtUtil.getAuthorizationValue(requireContext()), new ProductPurchaseRequestDTO(eventId, productDTO.getId()))
+        purchaseService.create(AuthUtil.getAuthorizationValue(requireContext()), new ProductPurchaseRequestDTO(eventId, productDTO.getId()))
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<ProductPurchaseResponseDTO> call,
@@ -170,7 +169,7 @@ public class SelectEventForPurchase extends Fragment implements SearchActionsLis
     }
 
     private void setContent(boolean isUpdate, String name) {
-        eventService.getOrganizerEvents(JwtUtil.getAuthorizationValue(requireContext()), JwtUtil.extractId(requireContext()), name).enqueue(new Callback<>() {
+        eventService.getOrganizerEvents(AuthUtil.getAuthorizationValue(requireContext()), AuthUtil.extractId(requireContext()), name).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Page<BasicEventDTO>> call,
                                    @NonNull Response<Page<BasicEventDTO>> response) {

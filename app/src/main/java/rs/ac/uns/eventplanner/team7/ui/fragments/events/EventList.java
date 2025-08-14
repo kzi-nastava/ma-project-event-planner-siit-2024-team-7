@@ -33,8 +33,8 @@ import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.data.interfaces.SearchActionsListener;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class EventList extends Fragment implements SearchActionsListener, CardClickListener {
     private final EventService eventService = ClientUtils.injectService(EventService.class);
@@ -68,7 +68,7 @@ public class EventList extends Fragment implements SearchActionsListener, CardCl
 
     @Override
     public void onCardClicked(BasicCard entity) {
-        eventService.getEvent(JwtUtil.getAuthorizationValue(requireContext()), entity.getId()).enqueue(new Callback<GetEventResponseDTO>() {
+        eventService.getEvent(AuthUtil.getAuthorizationValue(requireContext()), entity.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<GetEventResponseDTO> call,
                                    @NonNull Response<GetEventResponseDTO> response) {
@@ -78,8 +78,7 @@ public class EventList extends Fragment implements SearchActionsListener, CardCl
                     bundle.putParcelable("eventDTO", response.body());
                     Navigation.findNavController(requireView())
                             .navigate(R.id.navigate_to_update_event, bundle);
-                }
-                else {
+                } else {
                     try {
                         // Show error message
                         String errorBody = Objects.requireNonNull(response.errorBody()).string();
@@ -126,7 +125,7 @@ public class EventList extends Fragment implements SearchActionsListener, CardCl
     }
 
     private void setContent(boolean isUpdate) {
-        eventService.getOrganizerEvents(JwtUtil.getAuthorizationValue(requireContext()), JwtUtil.extractId(requireContext()), "").enqueue(new Callback<>() {
+        eventService.getOrganizerEvents(AuthUtil.getAuthorizationValue(requireContext()), AuthUtil.extractId(requireContext()), "").enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Page<BasicEventDTO>> call,
                                    @NonNull Response<Page<BasicEventDTO>> response) {

@@ -573,7 +573,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
     }
 
     private void uploadImages(Integer serviceId, List<String> imageUrls) {
-        imagesService.uploadImagesForService(JwtUtil.getAuthorizationValue(requireContext()), serviceId, images, imageUrls)
+        imagesService.uploadImagesForService(AuthUtil.getAuthorizationValue(requireContext()), serviceId, images, imageUrls)
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<List<String>> call,

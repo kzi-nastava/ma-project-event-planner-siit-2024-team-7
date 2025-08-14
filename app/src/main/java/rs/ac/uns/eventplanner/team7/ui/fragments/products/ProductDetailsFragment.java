@@ -26,15 +26,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.data.dto.product.GetProductResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
-import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
 public class ProductDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
@@ -118,9 +118,9 @@ public class ProductDetailsFragment extends Fragment {
                     });
         });
 
-        if (!Objects.equals(JwtUtil.getRole(requireContext()), UserRole.EVENT_ORG.toString()) || productDTO.isPurchased() || !productDTO.isAvailable())
+        if (AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG || productDTO.isPurchased() || !productDTO.isAvailable())
             buyButton.setVisibility(View.GONE);
-        if (!Objects.equals(JwtUtil.getRole(requireContext()), UserRole.EVENT_ORG.toString()) || !productDTO.isPurchased() || !productDTO.isAvailable())
+        if (AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG || !productDTO.isPurchased() || !productDTO.isAvailable())
             alreadyPurchased.setVisibility(View.GONE);
 
         if (AuthUtil.extractRole(requireContext()) == UserRole.SPP) {

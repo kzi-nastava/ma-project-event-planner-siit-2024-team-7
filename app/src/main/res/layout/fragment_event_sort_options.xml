@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".fragments.home.all.EventSortOptionsFragment">
+    tools:context=".ui.fragments.home.all.EventSortOptionsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

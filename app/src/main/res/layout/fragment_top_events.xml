@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.home.top.TopEventsFragment"
+    tools:context=".ui.fragments.home.top.TopEventsFragment"
     android:orientation="vertical"
     android:id="@+id/top_events_fragment">
 

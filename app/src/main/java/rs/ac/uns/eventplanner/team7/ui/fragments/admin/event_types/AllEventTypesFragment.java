@@ -1,0 +1,109 @@
+package rs.ac.uns.eventplanner.team7.ui.fragments.admin.event_types;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textview.MaterialTextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.ui.adapters.CardRecyclerViewAdapter;
+import rs.ac.uns.eventplanner.team7.data.model.EventType;
+import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
+import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
+import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+
+
+public class AllEventTypesFragment extends Fragment implements CardClickListener {
+
+    private CardRecyclerViewAdapter<EventType> adapter;
+    private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
+    private MaterialTextView loadingMsg;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_all_event_types, container, false);
+
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        adapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(), this,
+                false, getString(R.string.more));
+        recyclerView.setAdapter(adapter);
+
+        loadingMsg = view.findViewById(R.id.loading_msg);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Check if a message was passed and show the Snackbar
+        if (getArguments() != null && getArguments().containsKey("snackbar_message")) {
+            Bundle args = getArguments();
+            String message = args.getString("snackbar_message");
+            Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_INDEFINITE);
+
+            snackbar.setAction("OK", v -> snackbar.dismiss()).show();
+            args.clear(); // Display this message only once!
+        }
+
+        FloatingActionButton create = view.findViewById(R.id.create_event_type);
+        create.setOnClickListener(v -> Navigation.findNavController(requireView())
+                .navigate(R.id.navigate_to_event_type_create));
+
+
+        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.event_types_swipe_refresh);
+        refreshLayout.setOnRefreshListener(() -> {
+            refreshLayout.setRefreshing(false);
+            fetchData();
+        });
+
+        fetchData();
+    }
+
+    private void fetchData() {
+        loadingMsg.setVisibility(View.VISIBLE);
+        eventTypeService.getAll(JwtUtil.getAuthorizationValue(requireContext())).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<EventType>> call, @NonNull Response<List<EventType>> response) {
+                if (!isAdded()) return;
+                if (response.isSuccessful() && response.body() != null) {
+                    adapter.clear();
+                    adapter.addAll(response.body());
+                    loadingMsg.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<EventType>> call, @NonNull Throwable t) {
+                loadingMsg.setText(R.string.unable_to_contact_server);
+            }
+        });
+    }
+
+    @Override
+    public void onCardClicked(BasicCard entity) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("eventTypeId", entity.getId());
+        Navigation.findNavController(requireView()).navigate(R.id.navigate_to_event_type_update, bundle);
+    }
+}
+

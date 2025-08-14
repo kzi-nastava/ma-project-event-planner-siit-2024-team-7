@@ -2,8 +2,12 @@ package rs.ac.uns.eventplanner.team7.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import java.util.Date;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 
 public class JwtUtil {
@@ -58,6 +62,14 @@ public class JwtUtil {
     }
 
     public static Integer extractId(Context context) {
+        return extractClaim(context, "id", Integer.class);
+    }
+
+    public static Date extractExpirationDate(Context context) {
+        return extractClaim(context, "exp", Date.class);
+    }
+
+    public static <T> T extractClaim(Context context, String claimName, Class<T> type) {
         try {
             String token = getToken(context);
             Claims claims = Jwts.parserBuilder()
@@ -66,10 +78,10 @@ public class JwtUtil {
                     .parseClaimsJws(token)
                     .getBody();
 
-            return claims.get("id", Integer.class); // Extract the "id" field
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null; // Handle exceptions appropriately
+            return claims.get(claimName, type);
+        } catch (ExpiredJwtException e) {
+            if (e.getMessage() != null) Log.e("JWT", e.getMessage());
+            return null;
         }
     }
 

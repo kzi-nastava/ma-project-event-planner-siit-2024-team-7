@@ -13,63 +13,64 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
-import rs.ac.uns.eventplanner.team7.services.AuthService;
-import rs.ac.uns.eventplanner.team7.services.BudgetService;
-import rs.ac.uns.eventplanner.team7.services.CategoryService;
-import rs.ac.uns.eventplanner.team7.services.EventService;
-import rs.ac.uns.eventplanner.team7.services.EventTypeService;
-import rs.ac.uns.eventplanner.team7.services.ImagesService;
-import rs.ac.uns.eventplanner.team7.services.InvitationService;
-import rs.ac.uns.eventplanner.team7.services.NotificationService;
-import rs.ac.uns.eventplanner.team7.services.PricingService;
-import rs.ac.uns.eventplanner.team7.services.ProductService;
-import rs.ac.uns.eventplanner.team7.services.PurchaseService;
-import rs.ac.uns.eventplanner.team7.services.ServiceService;
-import rs.ac.uns.eventplanner.team7.services.UserService;
+import rs.ac.uns.eventplanner.team7.data.services.AuthService;
+import rs.ac.uns.eventplanner.team7.data.services.BudgetService;
+import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
+import rs.ac.uns.eventplanner.team7.data.services.EventService;
+import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
+import rs.ac.uns.eventplanner.team7.data.services.ImagesService;
+import rs.ac.uns.eventplanner.team7.data.services.InvitationService;
+import rs.ac.uns.eventplanner.team7.data.services.NotificationService;
+import rs.ac.uns.eventplanner.team7.data.services.PricingService;
+import rs.ac.uns.eventplanner.team7.data.services.ProductService;
+import rs.ac.uns.eventplanner.team7.data.services.PurchaseService;
+import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
+import rs.ac.uns.eventplanner.team7.data.services.UserService;
 
 public final class ClientUtils {
-    private static final String API_PATH = "http://" + BuildConfig.IP_ADDR +":8080/api/";
-    public static final String WEBSOCKET_URL = API_PATH + "websocket/websocket";
+    public static final String API_PATH = "http://" + BuildConfig.IP_ADDR +":8080/api/";
 
-    private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
-            .create();
+    private static final Map<Class<?>, Object> serviceImplementations;
 
-    private static final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(API_PATH)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .client(test())
-            .build();
-    private static final Map<Class<?>, Object> serviceImplementations = new HashMap<>() {{
-        put(AuthService.class, retrofit.create(AuthService.class));
-        put(BudgetService.class, retrofit.create(BudgetService.class));
-        put(CategoryService.class, retrofit.create(CategoryService.class));
-        put(EventService.class, retrofit.create(EventService.class));
-        put(EventTypeService.class, retrofit.create(EventTypeService.class));
-        put(InvitationService.class, retrofit.create(InvitationService.class));
-        put(PricingService.class, retrofit.create(PricingService.class));
-        put(ProductService.class, retrofit.create(ProductService.class));
-        put(PurchaseService.class, retrofit.create(PurchaseService.class));
-        put(ServiceService.class, retrofit.create(ServiceService.class));
-        put(UserService.class, retrofit.create(UserService.class));
-        put(ImagesService.class, retrofit.create(ImagesService.class));
-        put(NotificationService.class, retrofit.create(NotificationService.class));
-    }};
+    static {
+        final Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
+                .create();
+
+        final OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .writeTimeout(120, TimeUnit.SECONDS)
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .addInterceptor(TokenInterceptor.INTERCEPTOR)
+                .build();
+
+        final Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(API_PATH)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(client)
+                .build();
+
+        serviceImplementations = new HashMap<>() {{
+            put(AuthService.class, retrofit.create(AuthService.class));
+            put(BudgetService.class, retrofit.create(BudgetService.class));
+            put(CategoryService.class, retrofit.create(CategoryService.class));
+            put(PricingService.class, retrofit.create(PricingService.class));
+            put(EventService.class, retrofit.create(EventService.class));
+            put(EventTypeService.class, retrofit.create(EventTypeService.class));
+            put(PurchaseService.class, retrofit.create(PurchaseService.class));
+            put(InvitationService.class, retrofit.create(InvitationService.class));
+            put(ProductService.class, retrofit.create(ProductService.class));
+            put(ServiceService.class, retrofit.create(ServiceService.class));
+            put(UserService.class, retrofit.create(UserService.class));
+            put(ImagesService.class, retrofit.create(ImagesService.class));
+            put(NotificationService.class, retrofit.create(NotificationService.class));
+        }};
+    }
 
     public static <T> T injectService(Class<T> type) {
         Object implementation = serviceImplementations.get(type);
         if (implementation != null) return type.cast(implementation);
         throw new IllegalArgumentException("No implementation found for type " + type.getName());
-    }
-
-    private static OkHttpClient test(){
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        return new OkHttpClient.Builder()
-                .connectTimeout(120, TimeUnit.SECONDS)
-                .readTimeout(120, TimeUnit.SECONDS)
-                .writeTimeout(120, TimeUnit.SECONDS)
-                .addInterceptor(interceptor).build();
     }
 }

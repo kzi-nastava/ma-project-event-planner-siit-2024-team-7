@@ -6,6 +6,12 @@
         <item name="colorAccent">@color/blue_500</item>
     </style>
 
+    <style name="AppTheme.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_screen_logo</item>
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
+    </style>
+
     <style name="Widget.MaterialComponents.TextInputLayout.OutlinedBox.RoundedCorners"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.RoundedCorners</item>

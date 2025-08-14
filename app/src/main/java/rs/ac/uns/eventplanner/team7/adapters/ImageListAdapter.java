@@ -14,14 +14,17 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import rs.ac.uns.eventplanner.team7.R;
 
 public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ViewHolder> {
     private final Context context;
-    private final List<String> images;
+    private final List<String> imageNames;
+    private final List<MultipartBody.Part> images;
 
-    public ImageListAdapter(Context context, List<String> images) {
+    public ImageListAdapter(Context context, List<String> imageNames, List<MultipartBody.Part> images) {
         this.context = context;
+        this.imageNames = imageNames;
         this.images = images;
     }
 
@@ -34,11 +37,11 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String image = images.get(position);
+        String image = imageNames.get(position);
         holder.titleView.setText(image);
         holder.subtitleView.setVisibility(View.GONE);
         holder.button.setOnClickListener(v -> {
-            images.remove(image);
+            imageNames.remove(image);
             notifyDataSetChanged();
             holder.setVisibility(View.GONE);
         });
@@ -47,15 +50,16 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.View
 
     @Override
     public int getItemCount() {
-        return images.size();
+        return imageNames.size();
     }
 
-    public void addImage(String imageName) {
-        for (String image : images) {
-            if (imageName == null || imageName.isEmpty() || image.equals(imageName))
+    public void addImage(String imageName, MultipartBody.Part image) {
+        for (String url : imageNames) {
+            if (imageName == null || imageName.isEmpty() || url.equals(imageName))
                 return;
         }
-        images.add(imageName);
+        imageNames.add(imageName);
+        images.add(image);
         notifyDataSetChanged();
     }
 

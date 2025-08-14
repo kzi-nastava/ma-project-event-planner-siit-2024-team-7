@@ -24,20 +24,22 @@ public class Service extends Item {
 
     private int reservationDeadlineInDays;
 
-
     private int cancellationDeadlineInDays;
+    private boolean isAutomatedReservationConformation;
 
     public Service(Integer id, String name, String description, Set<String> images, boolean isVisible, ItemStatus status,
-                   Location location, Pricing pricing, Category category, Set<EventType> appliesTo, boolean isAvailable, String specifics,
+                   Location location, Pricing pricing, Category category, Set<EventType> appliesTo, boolean isAvailable,
+                   boolean isCurrent, Integer version, Integer parentId, String specifics,
                    Set<WorkDay> workDays, int minDurationInMinutes, int maxDurationInMinutes,
-                   int reservationDeadlineInDays, int cancellationDeadlineInDays) {
-        super(id, name, description, images, isVisible, status, location, pricing, category, appliesTo, isAvailable);
+                   int reservationDeadlineInDays, int cancellationDeadlineInDays, boolean isAutomatedReservationConformation) {
+        super(id, name, description, images, isVisible, status, location, pricing, category, appliesTo, isAvailable, isCurrent, version, parentId);
         this.specifics = specifics;
         this.workDays = workDays;
         this.minDurationInMinutes = minDurationInMinutes;
         this.maxDurationInMinutes = maxDurationInMinutes;
         this.reservationDeadlineInDays = reservationDeadlineInDays;
         this.cancellationDeadlineInDays = cancellationDeadlineInDays;
+        this.isAutomatedReservationConformation = isAutomatedReservationConformation;
     }
 
     public boolean canMakeReservation(LocalDate desiredDate) {

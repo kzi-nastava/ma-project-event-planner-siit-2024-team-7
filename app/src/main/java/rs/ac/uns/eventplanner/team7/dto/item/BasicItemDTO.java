@@ -3,8 +3,6 @@ package rs.ac.uns.eventplanner.team7.dto.item;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 
 import lombok.Getter;
@@ -14,17 +12,19 @@ import rs.ac.uns.eventplanner.team7.model.Item;
 import rs.ac.uns.eventplanner.team7.model.Product;
 import rs.ac.uns.eventplanner.team7.model.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.model.interfaces.WithImage;
+import rs.ac.uns.eventplanner.team7.model.interfaces.WithVersion;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class BasicItemDTO implements BasicCard, WithImage, Parcelable {
+public class BasicItemDTO implements BasicCard, WithImage, WithVersion, Parcelable {
 
     protected Integer id;
     protected String type;
     protected String name;
     protected double price;
     protected String coverImage;
+    protected boolean current;
 
     public BasicItemDTO(Item item) {
         id = item.getId();
@@ -32,6 +32,7 @@ public class BasicItemDTO implements BasicCard, WithImage, Parcelable {
         name = item.getName();
         price = item.getPricing().getPrice();
         coverImage = item.getImages().isEmpty() ? null : new ArrayList<>(item.getImages()).get(0);
+        current = item.isCurrent();
     }
 
     protected BasicItemDTO(Parcel in) {
@@ -44,10 +45,11 @@ public class BasicItemDTO implements BasicCard, WithImage, Parcelable {
         name = in.readString();
         price = in.readDouble();
         coverImage = in.readString();
+        current = in.readByte() != 0;
     }
 
     @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest, int flags) {
         if (id == null) {
             dest.writeByte((byte) 0);
         } else {
@@ -58,6 +60,7 @@ public class BasicItemDTO implements BasicCard, WithImage, Parcelable {
         dest.writeString(name);
         dest.writeDouble(price);
         dest.writeString(coverImage);
+        dest.writeByte((byte) (current ? 1 : 0));
     }
 
     @Override
@@ -77,7 +80,6 @@ public class BasicItemDTO implements BasicCard, WithImage, Parcelable {
         }
     };
 
-
     @Override
     public String getTitle() {
         return name;
@@ -86,5 +88,10 @@ public class BasicItemDTO implements BasicCard, WithImage, Parcelable {
     @Override
     public String getSubtitle() {
         return String.valueOf(price);
+    }
+
+    @Override
+    public boolean isCurrent() {
+        return current;
     }
 }

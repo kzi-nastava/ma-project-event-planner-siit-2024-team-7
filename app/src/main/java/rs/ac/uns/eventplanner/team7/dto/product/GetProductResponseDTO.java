@@ -31,6 +31,7 @@ public class GetProductResponseDTO implements Parcelable {
     protected boolean visible;
     protected boolean available;
     protected boolean favourite;
+    private boolean purchased;
     protected boolean current;
 
     protected GetProductResponseDTO(Parcel in) {

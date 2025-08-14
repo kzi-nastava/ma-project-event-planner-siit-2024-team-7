@@ -195,6 +195,19 @@
         <action
             android:id="@+id/navigate_to_spp_details_from_product"
             app:destination="@id/nav_spp_details" />
+        <action
+            android:id="@+id/navigate_to_select_event"
+            app:destination="@id/nav_select_event_for_purchase"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_select_event_for_purchase"
+        android:name="rs.ac.uns.eventplanner.team7.fragments.purchases.SelectEventForPurchase"
+        android:label="Select Event"
+        tools:layout="@layout/fragment_select_event_for_purchase">
+        <action
+            android:id="@+id/navigate_back_from_purchase"
+            app:destination="@id/nav_product_details"/>
     </fragment>
 
     <fragment

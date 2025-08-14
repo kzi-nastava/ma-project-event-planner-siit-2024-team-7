@@ -26,22 +26,22 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.data.dto.product.GetProductResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
-import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
 public class ProductDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private GetProductResponseDTO productDTO;
 
     private ImageView favouriteStar;
-    private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView;
+    private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView, alreadyPurchased;
     private RecyclerView imagesView;
     private ImageAdapter imageAdapter;
 
@@ -78,6 +78,7 @@ public class ProductDetailsFragment extends Fragment {
         noImagesView = view.findViewById(R.id.product_details_no_images);
 
         buyButton = view.findViewById(R.id.buy_button);
+        alreadyPurchased = view.findViewById(R.id.product_already_purchased);
         viewProviderButton = view.findViewById(R.id.view_provider_button);
         chatWithProviderButton = view.findViewById(R.id.chat_w_provider_button);
 
@@ -117,13 +118,23 @@ public class ProductDetailsFragment extends Fragment {
                     });
         });
 
-        if (!productDTO.isAvailable())
-            buyButton.setEnabled(false);
+        if (AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG || productDTO.isPurchased() || !productDTO.isAvailable())
+            buyButton.setVisibility(View.GONE);
+        if (AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG || !productDTO.isPurchased() || !productDTO.isAvailable())
+            alreadyPurchased.setVisibility(View.GONE);
 
         if (AuthUtil.extractRole(requireContext()) == UserRole.SPP) {
             viewProviderButton.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);
         }
+
+        buyButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("productDTO", productDTO);
+            View view1 = getView();
+            if (view1 == null) return;
+            Navigation.findNavController(view1).navigate(R.id.navigate_to_select_event, bundle);
+        });
 
         viewProviderButton.setOnClickListener(v -> {
             Bundle args = new Bundle();

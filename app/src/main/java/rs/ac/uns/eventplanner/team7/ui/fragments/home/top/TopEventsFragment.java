@@ -27,7 +27,7 @@ import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class TopEventsFragment extends Fragment implements CardClickListener {
     private final EventService service = ClientUtils.injectService(EventService.class);
@@ -44,7 +44,7 @@ public class TopEventsFragment extends Fragment implements CardClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top_events, container, false);
-        userCity = JwtUtil.getCity(requireContext());
+        userCity = AuthUtil.extractCity(requireContext());
         eventsView = view.findViewById(R.id.top_events_recycler_view);
         messageView = view.findViewById(R.id.top_events_message_view);
         return view;
@@ -69,7 +69,7 @@ public class TopEventsFragment extends Fragment implements CardClickListener {
     }
 
     private void setContent() {
-        final String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
+        final String bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         service.findTopFive(bearerToken, userCity).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<DetailedEventDTO>> call,

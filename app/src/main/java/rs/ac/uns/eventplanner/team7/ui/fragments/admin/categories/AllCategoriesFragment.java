@@ -34,7 +34,7 @@ import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class AllCategoriesFragment extends Fragment implements CardClickListener {
 
@@ -103,7 +103,7 @@ public class AllCategoriesFragment extends Fragment implements CardClickListener
     }
 
     private void handleView() {
-        String token = JwtUtil.getAuthorizationValue(requireContext());
+        String token = AuthUtil.getAuthorizationValue(requireContext());
         if (isActive) {
             welcomeMsg.setText(R.string.all_active_categories);
             switchView.setTooltipText(getString(R.string.view_suggested));
@@ -126,7 +126,7 @@ public class AllCategoriesFragment extends Fragment implements CardClickListener
     }
 
     private void setupSearchView() {
-        String token = JwtUtil.getAuthorizationValue(requireContext());
+        String token = AuthUtil.getAuthorizationValue(requireContext());
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -38,7 +39,7 @@ import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class ServiceDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
@@ -52,7 +53,8 @@ public class ServiceDetailsFragment extends Fragment {
     private RecyclerView imagesView;
     private ImageAdapter imageAdapter;
 
-    private MaterialButton reserveButton, viewProviderButton;
+    private MaterialButton viewProviderButton, chatWithProviderButton;
+    private FloatingActionButton reserveButton;
 
     public ServiceDetailsFragment() {
         // Required empty public constructor
@@ -88,7 +90,7 @@ public class ServiceDetailsFragment extends Fragment {
         workDaysView = view.findViewById(R.id.service_details_availability);
         imagesView = view.findViewById(R.id.service_details_images);
         noImagesView = view.findViewById(R.id.service_details_no_images);
-
+        chatWithProviderButton = view.findViewById(R.id.chat_w_provider_button);
         reserveButton = view.findViewById(R.id.reserve_button);
         viewProviderButton = view.findViewById(R.id.view_provider_button);
 
@@ -99,7 +101,7 @@ public class ServiceDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        UserRole role = UserRole.valueOf(JwtUtil.getRole(requireContext()));
+        UserRole role = AuthUtil.extractRole(requireContext());
         viewProviderButton.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putInt("itemId", service.getId());
@@ -107,6 +109,7 @@ public class ServiceDetailsFragment extends Fragment {
             if (view1 == null) return;
             Navigation.findNavController(view1).navigate(R.id.navigate_to_spp_details_from_service, args);
         });
+        // TODO hide chat button for invalid roles
         if (role != UserRole.EVENT_ORG) {
             if (service.isOwn()) viewProviderButton.setVisibility(View.GONE);
         } else {
@@ -118,14 +121,14 @@ public class ServiceDetailsFragment extends Fragment {
         if (getArguments() != null) {
             boolean reservation = getArguments().getBoolean("reservation");
             if (reservation) {
-                Snackbar.make(requireView(), "Succesfully reserved service!", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(requireView(), R.string.successfully_reserved_service, Snackbar.LENGTH_SHORT).show();
             }
         }
     }
 
     private void initButtonsForOrganizer(@NonNull View view) {
-        String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
-        String organizerEmail = JwtUtil.extractEmail(requireContext());
+        String bearerToken = AuthUtil.getAuthorizationValue(requireContext());
+        String organizerEmail = AuthUtil.extractEmail(requireContext());
 
         getValidEvents(bearerToken, organizerEmail);
         reserveButton.setOnClickListener(v -> {
@@ -135,10 +138,10 @@ public class ServiceDetailsFragment extends Fragment {
             Navigation.findNavController(view).navigate(R.id.navigate_to_service_reservation_from_service_details, args);
         });
 
-        favouriteStar.setOnClickListener(v -> handleMarkingAsFavorite(v, bearerToken));
+        favouriteStar.setOnClickListener(v -> handleMarkingAsFavorite(bearerToken));
     }
 
-    private void handleMarkingAsFavorite(@NonNull View view, String bearerToken) {
+    private void handleMarkingAsFavorite(String bearerToken) {
         service.setFavourite(!service.isFavourite());
         if (service.isFavourite())
             favouriteStar.setImageResource(R.drawable.ic_star_filled);
@@ -146,7 +149,7 @@ public class ServiceDetailsFragment extends Fragment {
             favouriteStar.setImageResource(R.drawable.ic_star);
 
         userService.markItemAsFavourite(bearerToken,
-                                        JwtUtil.extractId(requireContext()),
+                                        AuthUtil.extractId(requireContext()),
                                         new FavouriteItemRequestDTO(service.getId(), service.isFavourite()))
                 .enqueue(new Callback<>() {
                     @Override

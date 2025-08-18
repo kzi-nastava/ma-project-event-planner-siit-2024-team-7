@@ -71,7 +71,7 @@ import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ImageListAdapter;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class ServiceManagementFragment extends Fragment implements CardClickListener {
     private ActivityResultLauncher<Intent> imagePickerLauncher;
@@ -227,7 +227,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
                 }
 
                 handleServiceCall(serviceService.createService(
-                        JwtUtil.getAuthorizationValue(requireContext()), dto),
+                        AuthUtil.getAuthorizationValue(requireContext()), dto),
                         getString(R.string.service_created_successfully));
             }
             else {
@@ -240,7 +240,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
                     return;
                 }
                 handleServiceCall(serviceService.updateService(
-                        JwtUtil.getAuthorizationValue(requireContext()), serviceDTO.getId(), dto),
+                        AuthUtil.getAuthorizationValue(requireContext()), serviceDTO.getId(), dto),
                         getString(R.string.service_updated_successfully));
             }
         });
@@ -463,7 +463,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
     }
 
     private void fetchCategories() {
-          categoryService.findAllActive(JwtUtil.getAuthorizationValue(getContext()))
+          categoryService.findAllActive(AuthUtil.getAuthorizationValue(getContext()))
                 .enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Category>> call,
@@ -490,7 +490,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
     }
 
     private void fetchEventTypes() {
-        eventTypeService.findAllActive(JwtUtil.getAuthorizationValue(getContext()))
+        eventTypeService.findAllActive(AuthUtil.getAuthorizationValue(getContext()))
                 .enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<EventType>> call,
@@ -524,7 +524,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
                 .setMessage("Are you sure you want to delete this service?")
                 .setPositiveButton("Delete", (d, which) ->
                         handleServiceCall(serviceService.deleteService(
-                        JwtUtil.getAuthorizationValue(getContext()),
+                        AuthUtil.getAuthorizationValue(getContext()),
                         Objects.requireNonNull(serviceDTO).getId()),
                         getString(R.string.service_deleted_successfully)))
                 .setNegativeButton("Cancel", (d, which) -> d.dismiss())
@@ -573,7 +573,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
     }
 
     private void uploadImages(Integer serviceId, List<String> imageUrls) {
-        imagesService.uploadImagesForService(JwtUtil.getAuthorizationValue(requireContext()), serviceId, images, imageUrls)
+        imagesService.uploadImagesForService(AuthUtil.getAuthorizationValue(requireContext()), serviceId, images, imageUrls)
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<List<String>> call,

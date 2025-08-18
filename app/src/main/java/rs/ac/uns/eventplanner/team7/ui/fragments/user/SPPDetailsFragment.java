@@ -1,5 +1,6 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.user;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.squareup.picasso.Picasso;
 
@@ -21,18 +24,24 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.dto.reporting.CreateReportRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.reporting.ReportDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.services.ReportService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
+import rs.ac.uns.eventplanner.team7.ui.fragments.reporting.ReportReasonDialogFragment;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class SPPDetailsFragment extends Fragment {
 
     private final UserService userService = ClientUtils.injectService(UserService.class);
+    private final ReportService reportService = ClientUtils.injectService(ReportService.class);
     private GetProviderResponseDTO providerDTO = null;
     private Integer itemId;
     private MaterialTextView titleNameView, emailView, descriptionView, addressView, phoneView;
     private ImageView providerImage;
+    private MaterialButton reportButton;
 
     public SPPDetailsFragment() {
         // Required empty public constructor
@@ -57,14 +66,14 @@ public class SPPDetailsFragment extends Fragment {
         addressView = view.findViewById(R.id.provider_address);
         phoneView = view.findViewById(R.id.provider_phone);
         providerImage = view.findViewById(R.id.spp_profile_pic);
-
+        reportButton = view.findViewById(R.id.report_account_button);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        userService.getProviderByItemId(JwtUtil.getAuthorizationValue(requireContext()), itemId)
+        userService.getProviderByItemId(AuthUtil.getAuthorizationValue(requireContext()), itemId)
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<GetProviderResponseDTO> call,
@@ -72,6 +81,7 @@ public class SPPDetailsFragment extends Fragment {
                         if (response.isSuccessful() && response.body() != null) {
                             providerDTO = response.body();
                             fillDetails();
+                            reportButton.setEnabled(true);
                         }
                     }
 
@@ -80,6 +90,49 @@ public class SPPDetailsFragment extends Fragment {
                         Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                     }
                 });
+
+        reportButton.setOnClickListener(v -> {
+            var dialog = ReportReasonDialogFragment.newInstance();
+            dialog.setCancelable(false);
+            dialog.setOnSubmitClickListener(this::reportProvider);
+            dialog.show(getChildFragmentManager(), "ReportProviderDialog");
+        });
+    }
+
+    private void reportProvider(String reportReason) {
+        reportButton.setEnabled(false);
+        String token = AuthUtil.getAuthorizationValue(requireContext());
+        String userEmail = AuthUtil.extractEmail(requireContext());
+        CreateReportRequestDTO dto = new CreateReportRequestDTO(userEmail, providerDTO.getEmail(), reportReason);
+        reportService.create(token, dto).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(
+                    @NonNull Call<ReportDTO> call,
+                    @NonNull Response<ReportDTO> response
+            ) {
+                if (!isAdded()) return;
+                View view = getView();
+                Context context = getContext();
+                if (response.isSuccessful() && response.body() != null) {
+                    if (view == null) return;
+                    Snackbar.make(view, R.string.report_submitted, Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
+                if (response.code() == 400) {
+                    var errorDto = ClientUtils.convertToErrorMessage(response.errorBody());
+                    if (errorDto != null && view != null && context != null) {
+                        Snackbar.make(view, errorDto.getMessage(), Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ReportDTO> call, @NonNull Throwable t) {
+                String message = t.getMessage();
+                if (message == null) return;
+                Log.d("ERROR", message);
+            }
+        });
     }
 
     private void fillDetails() {

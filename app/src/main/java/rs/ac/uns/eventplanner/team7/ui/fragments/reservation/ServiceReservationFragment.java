@@ -35,7 +35,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.services.ReservationService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ReservationStepsAdapter;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class ServiceReservationFragment extends Fragment {
 
@@ -104,8 +104,8 @@ public class ServiceReservationFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         MaterialTextView title = view.findViewById(R.id.reservation_title);
         title.setText(getString(R.string.service_reservation, viewModel.getService().getName()));
-        bearerToken = JwtUtil.getAuthorizationValue(requireContext());
-        viewModel.setOrganizerEmail(JwtUtil.extractEmail(requireContext()));
+        bearerToken = AuthUtil.getAuthorizationValue(requireContext());
+        viewModel.setOrganizerEmail(AuthUtil.extractEmail(requireContext()));
         getServiceProvider();
 
         viewModel.getCurrentStepValid()

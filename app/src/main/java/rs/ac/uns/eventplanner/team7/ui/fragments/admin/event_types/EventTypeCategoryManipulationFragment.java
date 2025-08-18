@@ -28,7 +28,7 @@ import rs.ac.uns.eventplanner.team7.ui.adapters.CategorySelectAdapter;
 import rs.ac.uns.eventplanner.team7.data.model.Category;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class EventTypeCategoryManipulationFragment extends Fragment {
 
@@ -109,7 +109,7 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
     }
 
     private void fetchAllCategories() {
-        Call<List<Category>> call = categoryService.getAll(JwtUtil.getAuthorizationValue(requireContext()));
+        Call<List<Category>> call = categoryService.getAll(AuthUtil.getAuthorizationValue(requireContext()));
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Category>> call, @NonNull Response<List<Category>> response) {

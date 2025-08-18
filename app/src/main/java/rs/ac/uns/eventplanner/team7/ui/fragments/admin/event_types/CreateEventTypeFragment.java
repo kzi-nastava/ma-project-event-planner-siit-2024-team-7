@@ -30,7 +30,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.event_type.CreateEventTypeRequestDT
 import rs.ac.uns.eventplanner.team7.data.dto.event_type.CreateEventTypeResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class CreateEventTypeFragment extends Fragment {
 
@@ -70,7 +70,7 @@ public class CreateEventTypeFragment extends Fragment {
         MaterialButton createButton = view.findViewById(R.id.create_event_type);
         createButton.setOnClickListener(v -> {
             Call<CreateEventTypeResponseDTO> call = eventTypeService.create(
-                    JwtUtil.getAuthorizationValue(requireContext()),
+                    AuthUtil.getAuthorizationValue(requireContext()),
                     createRequestDTO(view)
             );
             call.enqueue(createCallback());

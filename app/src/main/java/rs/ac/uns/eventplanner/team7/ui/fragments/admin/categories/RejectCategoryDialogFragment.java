@@ -33,7 +33,7 @@ import rs.ac.uns.eventplanner.team7.ui.fragments.MaterialDialogFragment;
 import rs.ac.uns.eventplanner.team7.data.model.Category;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class RejectCategoryDialogFragment extends MaterialDialogFragment {
     private Category category;
@@ -88,7 +88,7 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
                 return;
             }
 
-            categoryService.rejectCategory(JwtUtil.getAuthorizationValue(requireContext()), category.getId(), dto)
+            categoryService.rejectCategory(AuthUtil.getAuthorizationValue(requireContext()), category.getId(), dto)
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<DeleteCategoryResponseDTO> call,
@@ -129,7 +129,7 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
     }
 
     private void fetchCategories() {
-        categoryService.findAllActive(JwtUtil.getAuthorizationValue(requireContext()))
+        categoryService.findAllActive(AuthUtil.getAuthorizationValue(requireContext()))
             .enqueue(new Callback<>() {
                 @Override
                 public void onResponse(@NonNull Call<List<Category>> call,

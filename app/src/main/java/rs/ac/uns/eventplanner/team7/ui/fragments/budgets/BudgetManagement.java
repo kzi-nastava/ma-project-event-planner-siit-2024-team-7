@@ -53,7 +53,7 @@ import rs.ac.uns.eventplanner.team7.data.services.BudgetService;
 import rs.ac.uns.eventplanner.team7.data.services.ProductService;
 import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class BudgetManagement extends Fragment implements CardClickListener {
 
@@ -195,7 +195,7 @@ public class BudgetManagement extends Fragment implements CardClickListener {
     }
 
     private void refreshContent() {
-        budgetService.getEventBudget(JwtUtil.getAuthorizationValue(requireContext()), eventBudgetDTO.getEventBudgetId())
+        budgetService.getEventBudget(AuthUtil.getAuthorizationValue(requireContext()), eventBudgetDTO.getEventBudgetId())
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<EventBudgetResponseDTO> call,
@@ -240,7 +240,7 @@ public class BudgetManagement extends Fragment implements CardClickListener {
 
     @Override
     public void onCardClicked(BasicCard entity) {
-        final String token = JwtUtil.getAuthorizationValue(requireContext());
+        final String token = AuthUtil.getAuthorizationValue(requireContext());
         if (((BasicItemDTO)entity).getType().equals("services")) {
             serviceService.getService(token, entity.getId()).enqueue(new Callback<>() {
                 @Override
@@ -327,7 +327,7 @@ public class BudgetManagement extends Fragment implements CardClickListener {
     }
 
     private void deleteCategoryBudget() {
-        budgetService.removeCategoryBudget(JwtUtil.getAuthorizationValue(requireContext()), eventBudgetDTO.getEventBudgetId(), categoryBudgetDTO.getCategoryBudgetId())
+        budgetService.removeCategoryBudget(AuthUtil.getAuthorizationValue(requireContext()), eventBudgetDTO.getEventBudgetId(), categoryBudgetDTO.getCategoryBudgetId())
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<EventBudgetResponseDTO> call,
@@ -358,7 +358,7 @@ public class BudgetManagement extends Fragment implements CardClickListener {
     }
 
     private void updateBudget(UpdateCategoryBudgetRequestDTO dto) {
-        budgetService.updateCategoryBudget(JwtUtil.getAuthorizationValue(requireContext()),
+        budgetService.updateCategoryBudget(AuthUtil.getAuthorizationValue(requireContext()),
                 eventBudgetDTO.getEventBudgetId(), categoryBudgetDTO.getCategoryBudgetId(), dto)
                 .enqueue(new Callback<>() {
                     @Override

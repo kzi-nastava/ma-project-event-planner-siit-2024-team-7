@@ -28,7 +28,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.category.CreateCategoryRequestDTO;
 import rs.ac.uns.eventplanner.team7.ui.fragments.MaterialDialogFragment;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class CategorySuggestionDialogFragment extends MaterialDialogFragment {
     private List<Category> categories;
@@ -64,7 +64,7 @@ public class CategorySuggestionDialogFragment extends MaterialDialogFragment {
             String description = Objects.requireNonNull(descriptionInput.getText()).toString();
 
             if (!name.isEmpty() && !description.isEmpty()) {
-                categoryService.createCategory(JwtUtil.getAuthorizationValue(getContext()),
+                categoryService.createCategory(AuthUtil.getAuthorizationValue(getContext()),
                                 new CreateCategoryRequestDTO(name, description))
                         .enqueue(new Callback<>() {
                             @Override

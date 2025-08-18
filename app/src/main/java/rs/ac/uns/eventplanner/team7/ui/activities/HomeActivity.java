@@ -42,7 +42,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.invitation.InvitationAcceptanceDTO;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.NotificationUtils;
 import rs.ac.uns.eventplanner.team7.utils.TokenInterceptor;
 import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
@@ -58,7 +58,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        role = UserRole.valueOf(JwtUtil.getRole(this));
+        role = AuthUtil.extractRole(this);
         if (role == UserRole.ADMIN) {
             setContentView(R.layout.activity_home_admin);
         } else if (role == UserRole.GUEST) {
@@ -72,7 +72,7 @@ public class HomeActivity extends AppCompatActivity {
         checkStoragePermissions();
         if (role == UserRole.GUEST) return;
         setupNotifications();
-        TokenInterceptor.register(JwtUtil.extractExpirationDate(this), this::handleExpiredToken);
+        TokenInterceptor.register(AuthUtil.extractExpirationDate(this), this::handleExpiredToken);
         if (getIntent().getExtras() != null) handleIntentParams(getIntent().getExtras());
     }
 
@@ -160,7 +160,7 @@ public class HomeActivity extends AppCompatActivity {
         }
         if (webSocketService == null) {
             webSocketService = new WebSocketService(this);
-            webSocketService.connect(JwtUtil.getAuthorizationValue(this));
+            webSocketService.connect(AuthUtil.getAuthorizationValue(this));
         }
     }
 
@@ -174,7 +174,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void handleLogout() {
-        JwtUtil.setDefaultValues(this);
+        AuthUtil.clearPreferences(this);
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -182,7 +182,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void handleRegister() {
-        JwtUtil.setDefaultValues(this);
+        AuthUtil.clearPreferences(this);
         Intent intent = new Intent(this, RegistrationActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -192,8 +192,16 @@ public class HomeActivity extends AppCompatActivity {
     private void setupNavigation() {
         NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         navController = Objects.requireNonNull(navHost).getNavController();
-
         Toolbar toolbar = findViewById(R.id.toolbar);
+        if (AuthUtil.isSuspended(this)) {
+            toolbar.setVisibility(View.GONE);
+            NavOptions navOptions = new NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .setPopUpTo(R.id.nav_home, true)
+                    .build();
+            navController.navigate(R.id.nav_suspended, null, navOptions);
+            return;
+        }
         setSupportActionBar(toolbar);
 
         topLevelDestinations.add(R.id.nav_home);
@@ -257,7 +265,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void handleInvitationAccepting() {
-        String bearerToken = JwtUtil.getAuthorizationValue(this);
+        String bearerToken = AuthUtil.getAuthorizationValue(this);
         InvitationAcceptanceDTO dto;
         try {
             Bundle params = Objects.requireNonNull(getIntent().getExtras());

@@ -37,7 +37,7 @@ import rs.ac.uns.eventplanner.team7.data.model.Category;
 import rs.ac.uns.eventplanner.team7.data.model.enums.CategoryStatus;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class CategoryManagementFragment extends Fragment {
     private final CategoryService categoryService = ClientUtils.injectService(CategoryService.class);
@@ -109,7 +109,7 @@ public class CategoryManagementFragment extends Fragment {
                     return;
                 }
                 handleServiceCall(categoryService.createCategory(
-                        JwtUtil.getAuthorizationValue(requireContext()), dto),
+                        AuthUtil.getAuthorizationValue(requireContext()), dto),
                         "Category created successfully!");
             } else {
                 UpdateCategoryRequestDTO dto;
@@ -121,7 +121,7 @@ public class CategoryManagementFragment extends Fragment {
                     return;
                 }
                 handleServiceCall(categoryService.updateCategory(
-                        JwtUtil.getAuthorizationValue(requireContext()), dto, category.getId()),
+                        AuthUtil.getAuthorizationValue(requireContext()), dto, category.getId()),
                         "Category updated successfully!");
             }
         });
@@ -139,7 +139,7 @@ public class CategoryManagementFragment extends Fragment {
 
         acceptButton.setOnClickListener(v -> handleServiceCall(categoryService
                 .acceptRecommendedCategory(
-                        JwtUtil.getAuthorizationValue(requireContext()),
+                        AuthUtil.getAuthorizationValue(requireContext()),
                         category.getId()),
                 "Category updated successfully!"));
     }
@@ -214,7 +214,7 @@ public class CategoryManagementFragment extends Fragment {
                 .setMessage("Are you sure you want to delete this category?")
                 .setPositiveButton("Delete", (dialogInterface, which) ->
                         handleServiceCall(categoryService.deleteCategory
-                                (JwtUtil.getAuthorizationValue(requireContext()), category.getId()),
+                                (AuthUtil.getAuthorizationValue(requireContext()), category.getId()),
                                 "Category deleted successfully!"))
                 .setNegativeButton("Cancel", (dialogInterface, which) -> dialogInterface.dismiss())
                 .create();

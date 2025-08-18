@@ -24,7 +24,7 @@ public class NotificationActionReceiver extends BroadcastReceiver {
             int notificationId = intent.getIntExtra("NOTIFICATION_ID", -1);
             if (notificationId != -1) {
                 try {
-                    String token = JwtUtil.getAuthorizationValue(context);
+                    String token = AuthUtil.getAuthorizationValue(context);
                     notificationService.markAsRead(token, notificationId).enqueue(new Callback<>() {
                         @Override
                         public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {

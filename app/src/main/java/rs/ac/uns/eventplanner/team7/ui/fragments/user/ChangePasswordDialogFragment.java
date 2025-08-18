@@ -30,7 +30,7 @@ import rs.ac.uns.eventplanner.team7.ui.fragments.MaterialDialogFragment;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class ChangePasswordDialogFragment extends MaterialDialogFragment {
 
@@ -83,15 +83,15 @@ public class ChangePasswordDialogFragment extends MaterialDialogFragment {
                     if (role == UserRole.EVENT_ORG) {
                         UpdateOrganizerRequestDTO dto = createOrganizerDTO(oldPassword, newPassword, confirmPassword);
                         userService.updateOrganizer(
-                                JwtUtil.getAuthorizationValue(requireContext()),
-                                JwtUtil.extractId(requireContext()),
+                                AuthUtil.getAuthorizationValue(requireContext()),
+                                AuthUtil.extractId(requireContext()),
                                 dto
                         ).enqueue((Callback<UpdateOrganizerResponseDTO>) createPasswordChangeCallback(errorMsg));
                     } else if (role == UserRole.SPP) {
                         UpdateProviderRequestDTO dto = createProviderDTO(oldPassword, newPassword, confirmPassword);
                         userService.updateProvider(
-                                JwtUtil.getAuthorizationValue(requireContext()),
-                                JwtUtil.extractId(requireContext()),
+                                AuthUtil.getAuthorizationValue(requireContext()),
+                                AuthUtil.extractId(requireContext()),
                                 dto
                         ).enqueue((Callback<UpdateProviderResponseDTO>) createPasswordChangeCallback(errorMsg));
                     }

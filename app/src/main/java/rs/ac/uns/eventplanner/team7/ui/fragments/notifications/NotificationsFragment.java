@@ -41,7 +41,7 @@ import rs.ac.uns.eventplanner.team7.data.services.NotificationService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.NotificationAdapter;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 
 public class NotificationsFragment extends Fragment implements
@@ -86,7 +86,7 @@ public class NotificationsFragment extends Fragment implements
 
         requireContext().getSystemService(NotificationManager.class).cancelAll();
 
-        bearerToken = JwtUtil.getAuthorizationValue(requireContext());
+        bearerToken = AuthUtil.getAuthorizationValue(requireContext());
 
         adapter = new NotificationAdapter(
                 requireContext(), new ArrayList<>(),
@@ -129,7 +129,7 @@ public class NotificationsFragment extends Fragment implements
 
     @Override
     public void OnMuteNotificationsClicked(boolean areNotificationsEnabled) {
-        Integer userId = JwtUtil.extractId(requireContext());
+        Integer userId = AuthUtil.extractId(requireContext());
         userService.updatePreferences(bearerToken, userId, new UserPreferencesDTO(areNotificationsEnabled))
             .enqueue(new Callback<>() {
             @Override
@@ -188,7 +188,7 @@ public class NotificationsFragment extends Fragment implements
     }
 
     private void getNotificationEnabledStatus() {
-        final Integer userId = JwtUtil.extractId(requireContext());
+        final Integer userId = AuthUtil.extractId(requireContext());
         userService.getPreferences(bearerToken, userId).enqueue(
             new Callback<>() {
                 @Override

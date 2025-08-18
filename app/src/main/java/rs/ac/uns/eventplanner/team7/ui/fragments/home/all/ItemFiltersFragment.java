@@ -42,7 +42,7 @@ import rs.ac.uns.eventplanner.team7.data.services.ProductService;
 import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.DateConverter;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class ItemFiltersFragment extends BottomSheetDialogFragment {
     private final ProductService productService = ClientUtils.injectService(ProductService.class);
@@ -119,7 +119,7 @@ public class ItemFiltersFragment extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String userCity = JwtUtil.getCity(requireContext());
+        String userCity = AuthUtil.extractCity(requireContext());
         filters.put("city", userCity);
 
         setDropdownAdapters();

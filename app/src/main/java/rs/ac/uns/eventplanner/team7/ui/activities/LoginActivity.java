@@ -2,6 +2,7 @@ package rs.ac.uns.eventplanner.team7.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -24,7 +25,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.auth.LoginResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.AuthService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -87,11 +88,13 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponseDTO loginResponse = response.body();
                     String token = loginResponse.getToken();
-                    UserRole role = loginResponse.getRole();
-                    JwtUtil.saveToken(LoginActivity.this, token);
-                    JwtUtil.saveRole(LoginActivity.this, role.toString());
-                    JwtUtil.saveCity(LoginActivity.this, loginResponse.getCity());
-                    switchToHomeActivity();
+                    if (token != null) {
+                        AuthUtil.saveToken(LoginActivity.this, token);
+                        switchToHomeActivity();
+                    } else if (loginResponse.getSuspensionEnd() != null) {
+                        AuthUtil.saveSuspensionEnd(LoginActivity.this, loginResponse.getSuspensionEnd());
+                        switchToHomeActivity();
+                    }
                 } else {
                     clearFocus();
                     MaterialTextView errorMsg = findViewById(R.id.error_login);

@@ -51,7 +51,7 @@ import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.CurrentDayDecorator;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 public class UserProfileFragment extends Fragment {
 
@@ -96,14 +96,13 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        String roleString = JwtUtil.getRole(context);
-        this.role = UserRole.valueOf(roleString);
+        this.role = AuthUtil.extractRole(requireContext());
     }
 
     private void setupCalendar(View view) {
         calendarView.setSelectedDate(LocalDate.now());
-        Integer userId = JwtUtil.extractId(requireContext());
-        Call<List<BusynessDTO>> call = userService.getBusyness(JwtUtil.getAuthorizationValue(requireContext()), userId);
+        Integer userId = AuthUtil.extractId(requireContext());
+        Call<List<BusynessDTO>> call = userService.getBusyness(AuthUtil.getAuthorizationValue(requireContext()), userId);
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<BusynessDTO>> call, @NonNull Response<List<BusynessDTO>> response) {
@@ -239,8 +238,8 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void updateField(int fieldId, String value) {
-        Integer userId = JwtUtil.extractId(requireContext());
-        String authHeader = JwtUtil.getAuthorizationValue(requireContext());
+        Integer userId = AuthUtil.extractId(requireContext());
+        String authHeader = AuthUtil.getAuthorizationValue(requireContext());
         TextInputLayout field = requireView().findViewById(fieldId);
         if (value.isEmpty()) {
             field.setError("Value can't be empty!");
@@ -387,8 +386,8 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void fillFields(View view) {
-        Integer userId = JwtUtil.extractId(requireContext());
-        String authHeader = JwtUtil.getAuthorizationValue(requireContext());
+        Integer userId = AuthUtil.extractId(requireContext());
+        String authHeader = AuthUtil.getAuthorizationValue(requireContext());
 
         if (role == UserRole.EVENT_ORG) {
             userService.getOrganizer(authHeader, userId).enqueue((Callback<GetOrganizerResponseDTO>) createFillCallback(view, true));

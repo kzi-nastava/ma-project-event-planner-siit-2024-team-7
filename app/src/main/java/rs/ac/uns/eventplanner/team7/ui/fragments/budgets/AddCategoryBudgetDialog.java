@@ -37,8 +37,8 @@ import rs.ac.uns.eventplanner.team7.data.model.Category;
 import rs.ac.uns.eventplanner.team7.data.services.BudgetService;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.ui.fragments.MaterialDialogFragment;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class AddCategoryBudgetDialog extends MaterialDialogFragment {
 
@@ -105,7 +105,7 @@ public class AddCategoryBudgetDialog extends MaterialDialogFragment {
             }
             dto.setBudget(Double.parseDouble(budgetInput.getText().toString()));
 
-            budgetService.addCategoryBudget(JwtUtil.getAuthorizationValue(requireContext()), eventBudgetDTO.getEventBudgetId(), dto)
+            budgetService.addCategoryBudget(AuthUtil.getAuthorizationValue(requireContext()), eventBudgetDTO.getEventBudgetId(), dto)
                     .enqueue(new Callback<>() {
                         @Override
                         public void onResponse(@NonNull Call<EventBudgetResponseDTO> call,
@@ -137,7 +137,7 @@ public class AddCategoryBudgetDialog extends MaterialDialogFragment {
     }
 
     private void fetchCategories() {
-        categoryService.findAllActive(JwtUtil.getAuthorizationValue(requireContext()))
+        categoryService.findAllActive(AuthUtil.getAuthorizationValue(requireContext()))
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<List<Category>> call,

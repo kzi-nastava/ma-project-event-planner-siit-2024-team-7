@@ -32,7 +32,7 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.reservation.AvailableTimeSlotsDTO;
 import rs.ac.uns.eventplanner.team7.data.model.TimeSlot;
 import rs.ac.uns.eventplanner.team7.data.services.ReservationService;
-import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 
 
 public class ReservationTimestampStepFragment extends Fragment {
@@ -81,6 +81,7 @@ public class ReservationTimestampStepFragment extends Fragment {
         timeslotDropdown.setAdapter(availableTimeslotsAdapter);
 
         viewModel.getSelectedDate().observe(getViewLifecycleOwner(), date -> {
+            if (!viewModel.isServiceAvailable(date)) return;
             var dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             getTimeslotsForSelectedDate(dateFormat.format(new Date(date)));
         });
@@ -104,7 +105,7 @@ public class ReservationTimestampStepFragment extends Fragment {
         timeslotDropdown.setText("", false);
         reservationService
                 .getAvailableTimeSlotsForDate(
-                        JwtUtil.getAuthorizationValue(requireContext()),
+                        AuthUtil.getAuthorizationValue(requireContext()),
                         viewModel.getService().getId(),
                         formattedDate
                 ).enqueue(new Callback<>() {

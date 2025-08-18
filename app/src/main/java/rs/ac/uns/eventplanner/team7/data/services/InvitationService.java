@@ -7,6 +7,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.invitation.InvitationAcceptanceDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.invitation.InvitationSendingDTO;
 
 public interface InvitationService {
 
@@ -15,7 +16,7 @@ public interface InvitationService {
             "Content-Type: application/json"
     })
     @POST("invitations/send")
-    Call<ResponseMessageDTO> sendInvitations(@Header("Authorization") String token, @Body InvitationAcceptanceDTO dto);
+    Call<ResponseMessageDTO> sendInvitations(@Header("Authorization") String token, @Body InvitationSendingDTO dto);
 
     @Headers({
             "User-Agent: Mobile-Android",

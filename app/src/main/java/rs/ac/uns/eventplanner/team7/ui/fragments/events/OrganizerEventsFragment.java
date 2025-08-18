@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 
 import org.json.JSONObject;
@@ -36,33 +37,38 @@ import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
-public class EventList extends Fragment implements SearchActionsListener, CardClickListener {
+public class OrganizerEventsFragment extends Fragment implements SearchActionsListener, CardClickListener {
     private final EventService eventService = ClientUtils.injectService(EventService.class);
 
-    private final Page<BasicEventDTO> page;
+    private final Page<BasicEventDTO> page = Page.getDefault();;
     private RecyclerView eventsView;
     private MaterialTextView messageView;
     private CardRecyclerViewAdapter<BasicEventDTO> viewAdapter;
+    private FloatingActionButton createEventButton;
     private boolean isLoading;
 
-    public EventList() {
-        page = Page.getDefault();
+    public OrganizerEventsFragment() {
+        // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_event_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_organizer_events, container, false);
         messageView = view.findViewById(R.id.events_search_result_message_view);
         eventsView = view.findViewById(R.id.event_list_recycler_view);
-        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(), this);
-        eventsView.setAdapter(viewAdapter);
+        createEventButton = view.findViewById(R.id.create_event_button);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewAdapter = new CardRecyclerViewAdapter<>(requireContext(), new ArrayList<>(), this);
+        eventsView.setAdapter(viewAdapter);
+        createEventButton.setOnClickListener(v ->
+                Navigation.findNavController(requireView()).navigate(R.id.navigate_to_event_creation));
+
         setContent(false);
     }
 

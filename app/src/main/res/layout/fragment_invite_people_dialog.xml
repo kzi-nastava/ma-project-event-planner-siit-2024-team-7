@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".ui.fragments.events.InvitePeopleDialogFragment"
+    >
+
+    <com.google.android.material.textview.MaterialTextView
+        android:textSize="22sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/invite_people"
+        android:paddingBottom="8dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="140dp"
+            android:orientation="vertical"
+            >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/email_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/email"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/ic_add"
+                app:endIconTint="?attr/colorPrimary"
+                app:endIconContentDescription="Add email">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:imeOptions="actionDone"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/blank_email_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:textColor="@color/red_delete"
+                android:text="@string/blank_email"
+                android:visibility="gone"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/invalid_format_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:textColor="@color/red_delete"
+                android:text="@string/invalid_email_format"
+                android:visibility="gone"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/already_added_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:textColor="@color/red_delete"
+                android:text="@string/email_already_added"
+                android:visibility="gone"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/capacity_reached_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:textColor="@color/red_delete"
+                android:text="@string/event_capacity_reached"
+                android:visibility="gone"
+                />
+
+        </LinearLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:text="@string/people_to_be_invited"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/inputted_emails_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="270dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/invitation_horizontal_button_card"
+            />
+
+    </LinearLayout>
+
+    <!-- Invite limit count   -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginVertical="10dp"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="@string/invite_limit"
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/current_count_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="0"
+            tools:ignore="HardcodedText"
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="2dp"
+            android:text="/"
+            tools:ignore="HardcodedText" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/max_count_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"
+            tools:ignore="HardcodedText"
+            />
+
+    </LinearLayout>
+
+    <!-- Action buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        >
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancel_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?attr/borderlessButtonStyle"
+            android:layout_gravity="center"
+            android:text="@string/cancel"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/confirm_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            style="?attr/borderlessButtonStyle"
+            android:text="@string/confirm"
+            android:enabled="false"/>
+
+    </LinearLayout>
+
+</LinearLayout>

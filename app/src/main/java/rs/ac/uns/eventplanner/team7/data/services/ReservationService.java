@@ -8,13 +8,11 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rs.ac.uns.eventplanner.team7.data.dto.reservation.AvailableTimeSlotsDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reservation.CreateReservationRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reservation.ReservationDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.reservation.UpdateReservationRequestDTO;
 
 
 public interface ReservationService {
@@ -27,17 +25,6 @@ public interface ReservationService {
     Call<ReservationDTO> create(
             @Header("Authorization") String token,
             @Body CreateReservationRequestDTO dto
-    );
-
-    @Headers({
-            "User-Agent: Mobile-Android",
-            "Content-Type: application/json"
-    })
-    @PUT("reservations/{reservationId}")
-    Call<ReservationDTO> update(
-            @Header("Authorization") String token,
-            @Path("reservationId") int reservationId,
-            @Body UpdateReservationRequestDTO dto
     );
 
     @Headers({

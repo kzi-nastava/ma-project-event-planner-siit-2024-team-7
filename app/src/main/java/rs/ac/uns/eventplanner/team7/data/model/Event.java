@@ -44,9 +44,16 @@ public class Event implements Parcelable {
     }
 
     protected Event(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readInt();
+        }
         name = in.readString();
         description = in.readString();
+        coverImage = in.readString();
         maxParticipants = in.readInt();
+        currentParticipants = in.readInt();
         date = DateConverter.toLocalDateTime(in.readLong());
         place = in.readParcelable(Location.class.getClassLoader(), Location.class);
         visibility = EventVisibility.fromInteger(in.readInt());
@@ -54,7 +61,7 @@ public class Event implements Parcelable {
         activities = in.createTypedArrayList(Activity.CREATOR);
     }
 
-    public static final Creator<Event> CREATOR = new Creator<>() {
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
         public Event createFromParcel(Parcel in) {
             return new Event(in);
@@ -73,9 +80,17 @@ public class Event implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(id);
+        }
         dest.writeString(name);
         dest.writeString(description);
+        dest.writeString(coverImage);
         dest.writeInt(maxParticipants);
+        dest.writeInt(currentParticipants);
         dest.writeLong(DateConverter.toLong(date));
         dest.writeParcelable(place, flags);
         dest.writeInt(visibility.ordinal());

@@ -65,4 +65,10 @@ public class WorkDayDTO implements BasicCard, Parcelable {
     public String getSubtitle() {
         return String.format("%s - %s", workTimeStart, workTimeEnd);
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format("%s: %s", day, getSubtitle());
+    }
 }

@@ -15,31 +15,36 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
+import rs.ac.uns.eventplanner.team7.data.dto.event.FutureReservableEventsDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.event.GetEventResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
+import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.JwtUtil;
 
 public class ServiceDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
-    private GetServiceResponseDTO serviceDTO;
+    private final EventService eventService = ClientUtils.injectService(EventService.class);
+    private GetServiceResponseDTO service;
+    private List<GetEventResponseDTO> organizerEvents;
 
     private ImageView favouriteStar;
     private MaterialTextView nameView, descriptionView, specificsView, priceView, discountView, minDurationView, maxDurationView,
@@ -47,7 +52,7 @@ public class ServiceDetailsFragment extends Fragment {
     private RecyclerView imagesView;
     private ImageAdapter imageAdapter;
 
-    private MaterialButton reserveButton, cancelButton, viewProviderButton, chatWithProviderButton;
+    private MaterialButton reserveButton, viewProviderButton;
 
     public ServiceDetailsFragment() {
         // Required empty public constructor
@@ -57,7 +62,7 @@ public class ServiceDetailsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            serviceDTO = getArguments().getParcelable("serviceDTO", GetServiceResponseDTO.class);
+            service = getArguments().getParcelable("serviceDTO", GetServiceResponseDTO.class);
         }
     }
 
@@ -66,7 +71,7 @@ public class ServiceDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_service_details, container, false);
         favouriteStar = view.findViewById(R.id.favourite_star);
-        if (serviceDTO.isFavourite())
+        if (service.isFavourite())
             favouriteStar.setImageResource(R.drawable.ic_star_filled);
 
         nameView = view.findViewById(R.id.service_details_name);
@@ -85,9 +90,7 @@ public class ServiceDetailsFragment extends Fragment {
         noImagesView = view.findViewById(R.id.service_details_no_images);
 
         reserveButton = view.findViewById(R.id.reserve_button);
-        cancelButton = view.findViewById(R.id.cancel_reservation_button);
         viewProviderButton = view.findViewById(R.id.view_provider_button);
-        chatWithProviderButton = view.findViewById(R.id.chat_w_provider_button);
 
         fillDetails();
         return view;
@@ -96,69 +99,111 @@ public class ServiceDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        favouriteStar.setOnClickListener(v -> {
-            serviceDTO.setFavourite(!serviceDTO.isFavourite());
-            if (serviceDTO.isFavourite())
-                favouriteStar.setImageResource(R.drawable.ic_star_filled);
-            else
-                favouriteStar.setImageResource(R.drawable.ic_star);
-
-            userService.markItemAsFavourite(JwtUtil.getAuthorizationValue(requireContext()),
-                                            JwtUtil.extractId(requireContext()),
-                                            new FavouriteItemRequestDTO(serviceDTO.getId(), serviceDTO.isFavourite()))
-                    .enqueue(new Callback<>() {
-                        @Override
-                        public void onResponse(@NonNull Call<FavouriteItemResponseDTO> call,
-                                               @NonNull Response<FavouriteItemResponseDTO> response) {
-                            if (response.isSuccessful() && response.body() != null) {
-                                String message = serviceDTO.isFavourite() ? "Service added to favourites!" : "Service removed from favourites!";
-                                Snackbar snackbar = Snackbar.make(view, message, BaseTransientBottomBar.LENGTH_SHORT);
-                                snackbar.show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<FavouriteItemResponseDTO> call, @NonNull Throwable t) {
-                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                        }
-                    });
-        });
-
-        if (!Objects.equals(JwtUtil.getRole(requireContext()), UserRole.EVENT_ORG.toString()) || serviceDTO.isReserved() || !serviceDTO.isAvailable())
-            reserveButton.setVisibility(View.GONE);
-        if (!Objects.equals(JwtUtil.getRole(requireContext()), UserRole.EVENT_ORG.toString()) || !serviceDTO.isReserved() || !serviceDTO.isAvailable())
-            cancelButton.setVisibility(View.GONE);
-
-        if (Objects.equals(JwtUtil.getRole(requireContext()), UserRole.SPP.toString())) {
-            viewProviderButton.setVisibility(View.GONE);
-            chatWithProviderButton.setVisibility(View.GONE);
-        }
-
+        UserRole role = UserRole.valueOf(JwtUtil.getRole(requireContext()));
         viewProviderButton.setOnClickListener(v -> {
             Bundle args = new Bundle();
-            args.putInt("itemId", serviceDTO.getId());
+            args.putInt("itemId", service.getId());
             View view1 = getView();
             if (view1 == null) return;
             Navigation.findNavController(view1).navigate(R.id.navigate_to_spp_details_from_service, args);
         });
+        if (role != UserRole.EVENT_ORG) {
+            if (service.isOwn()) viewProviderButton.setVisibility(View.GONE);
+        } else {
+            reserveButton.setVisibility(View.VISIBLE);
+            favouriteStar.setVisibility(View.VISIBLE);
+            initButtonsForOrganizer(view);
+        }
+
+        if (getArguments() != null) {
+            boolean reservation = getArguments().getBoolean("reservation");
+            if (reservation) {
+                Snackbar.make(requireView(), "Succesfully reserved service!", Snackbar.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void initButtonsForOrganizer(@NonNull View view) {
+        String bearerToken = JwtUtil.getAuthorizationValue(requireContext());
+        String organizerEmail = JwtUtil.extractEmail(requireContext());
+
+        getValidEvents(bearerToken, organizerEmail);
+        reserveButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putParcelable("service", service);
+            args.putParcelable("organizerEvents", new FutureReservableEventsDTO(organizerEvents));
+            Navigation.findNavController(view).navigate(R.id.navigate_to_service_reservation_from_service_details, args);
+        });
+
+        favouriteStar.setOnClickListener(v -> handleMarkingAsFavorite(v, bearerToken));
+    }
+
+    private void handleMarkingAsFavorite(@NonNull View view, String bearerToken) {
+        service.setFavourite(!service.isFavourite());
+        if (service.isFavourite())
+            favouriteStar.setImageResource(R.drawable.ic_star_filled);
+        else
+            favouriteStar.setImageResource(R.drawable.ic_star);
+
+        userService.markItemAsFavourite(bearerToken,
+                                        JwtUtil.extractId(requireContext()),
+                                        new FavouriteItemRequestDTO(service.getId(), service.isFavourite()))
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<FavouriteItemResponseDTO> call,
+                                           @NonNull Response<FavouriteItemResponseDTO> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            String message = service.isFavourite() ? "Service added to favourites!" : "Service removed from favourites!";
+                            if (getView() != null) {
+                                Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<FavouriteItemResponseDTO> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
+    }
+
+    private void getValidEvents(String bearerToken, String organizerEmail) {
+        eventService.getOrganizerFutureReservableEvents(bearerToken, service.getId(), organizerEmail)
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(
+                            @NonNull Call<FutureReservableEventsDTO> call,
+                            @NonNull Response<FutureReservableEventsDTO> response
+                    ) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            organizerEvents = response.body().getEvents();
+                            reserveButton.setEnabled(!organizerEvents.isEmpty() && service.isAvailable());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<FutureReservableEventsDTO> call,
+                                          @NonNull Throwable t) {
+
+                    }
+        });
     }
 
     private void fillDetails() {
-        nameView.setText(serviceDTO.getName());
-        descriptionView.setText(serviceDTO.getDescription());
-        specificsView.setText(serviceDTO.getSpecifics());
-        priceView.setText(String.format("%s €", serviceDTO.getPricing().getPrice()));
-        discountView.setText(String.format("%s %%", serviceDTO.getPricing().getDiscount()));
-        minDurationView.setText(String.format("%s min", serviceDTO.getMinDurationInMinutes()));
-        maxDurationView.setText(String.format("%s min", serviceDTO.getMaxDurationInMinutes()));
-        reservationDeadlineView.setText(String.format("%s d", serviceDTO.getReservationDeadlineInDays()));
-        cancellationDeadlineView.setText(String.format("%s d", serviceDTO.getCancellationDeadlineInDays()));
-        categoryView.setText(serviceDTO.getCategory().getName());
+        nameView.setText(service.getName());
+        descriptionView.setText(service.getDescription());
+        specificsView.setText(service.getSpecifics());
+        priceView.setText(String.format("%s €", service.getPricing().getPrice()));
+        discountView.setText(String.format("%s %%", service.getPricing().getDiscount()));
+        minDurationView.setText(String.format("%s min", service.getMinDurationInMinutes()));
+        maxDurationView.setText(String.format("%s min", service.getMaxDurationInMinutes()));
+        reservationDeadlineView.setText(String.format("%s d", service.getReservationDeadlineInDays()));
+        cancellationDeadlineView.setText(String.format("%s d", service.getCancellationDeadlineInDays()));
+        categoryView.setText(service.getCategory().getName());
 
-        if (!serviceDTO.getAppliesTo().isEmpty()) {
+        if (!service.getAppliesTo().isEmpty()) {
             StringBuilder eventTypesStr = new StringBuilder();
-            for (EventType eventType : serviceDTO.getAppliesTo()) {
+            for (EventType eventType : service.getAppliesTo()) {
                 eventTypesStr.append(eventType.getName()).append('\n');
             }
             eventTypesStr.deleteCharAt(eventTypesStr.length()-1);
@@ -168,22 +213,19 @@ public class ServiceDetailsFragment extends Fragment {
             eventTypesView.setText("Currently no event types!");
         }
 
-        if (!serviceDTO.getWorkDaysDTOs().isEmpty()) {
+        if (!service.getWorkDaysDTOs().isEmpty()) {
             StringBuilder workDaysStr = new StringBuilder();
-            for (WorkDayDTO workDayDTO : serviceDTO.getWorkDaysDTOs()) {
-                workDaysStr.append(workDayDTO.getDay()).append(": ")
-                        .append(workDayDTO.getWorkTimeStart()).append(" - ")
-                        .append(workDayDTO.getWorkTimeEnd()).append('\n');
+            for (WorkDayDTO workDayDTO : service.getWorkDaysDTOs()) {
+                workDaysStr.append(workDayDTO).append('\n');
             }
             workDaysStr.deleteCharAt(workDaysStr.length()-1);
             workDaysView.setText(workDaysStr.toString());
-        }
-        else {
+        } else {
             workDaysView.setText("Currently unavailable!");
         }
 
-        if (!serviceDTO.getImages().isEmpty()) {
-            imageAdapter = new ImageAdapter(requireContext(), new ArrayList<>(serviceDTO.getImages()));
+        if (!service.getImages().isEmpty()) {
+            imageAdapter = new ImageAdapter(requireContext(), new ArrayList<>(service.getImages()));
             LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
             imagesView.setLayoutManager(layoutManager);
             imagesView.setAdapter(imageAdapter);

@@ -3,16 +3,20 @@ package rs.ac.uns.eventplanner.team7.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
+import rs.ac.uns.eventplanner.team7.data.dto.ErrorMessageDTO;
 import rs.ac.uns.eventplanner.team7.data.services.AuthService;
 import rs.ac.uns.eventplanner.team7.data.services.BudgetService;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
@@ -24,6 +28,7 @@ import rs.ac.uns.eventplanner.team7.data.services.NotificationService;
 import rs.ac.uns.eventplanner.team7.data.services.PricingService;
 import rs.ac.uns.eventplanner.team7.data.services.ProductService;
 import rs.ac.uns.eventplanner.team7.data.services.PurchaseService;
+import rs.ac.uns.eventplanner.team7.data.services.ReservationService;
 import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 
@@ -31,6 +36,7 @@ public final class ClientUtils {
     public static final String API_PATH = "http://" + BuildConfig.IP_ADDR +":8080/api/";
 
     private static final Map<Class<?>, Object> serviceImplementations;
+    private static final Retrofit retrofit;
 
     static {
         final Gson gson = new GsonBuilder()
@@ -45,7 +51,7 @@ public final class ClientUtils {
                 .addInterceptor(TokenInterceptor.INTERCEPTOR)
                 .build();
 
-        final Retrofit retrofit = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl(API_PATH)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
@@ -65,6 +71,7 @@ public final class ClientUtils {
             put(UserService.class, retrofit.create(UserService.class));
             put(ImagesService.class, retrofit.create(ImagesService.class));
             put(NotificationService.class, retrofit.create(NotificationService.class));
+            put(ReservationService.class, retrofit.create(ReservationService.class));
         }};
     }
 
@@ -72,5 +79,15 @@ public final class ClientUtils {
         Object implementation = serviceImplementations.get(type);
         if (implementation != null) return type.cast(implementation);
         throw new IllegalArgumentException("No implementation found for type " + type.getName());
+    }
+
+    public static ErrorMessageDTO convertToErrorMessage(ResponseBody errorBody) {
+        try {
+            return retrofit
+                    .<ErrorMessageDTO>responseBodyConverter(ErrorMessageDTO.class, new Annotation[0])
+                    .convert(errorBody);
+        } catch (IOException e) {
+            return null;
+        }
     }
 }

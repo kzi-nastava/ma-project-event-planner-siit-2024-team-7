@@ -21,8 +21,8 @@ import rs.ac.uns.eventplanner.team7.utils.DateConverter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class GetEventResponseDTO implements Parcelable {
     private Integer id;
     private String name;
@@ -36,6 +36,7 @@ public class GetEventResponseDTO implements Parcelable {
     private EventType eventType;
     private List<Activity> activities;
     private boolean isFav;
+    private boolean isOwn;
     private EventBudgetResponseDTO budget;
 
     protected GetEventResponseDTO(Parcel in) {
@@ -55,6 +56,7 @@ public class GetEventResponseDTO implements Parcelable {
         eventType = in.readParcelable(EventType.class.getClassLoader(), EventType.class);
         activities = in.createTypedArrayList(Activity.CREATOR);
         isFav = in.readByte() != 0;
+        isOwn = in.readByte() != 0;
         budget = in.readParcelable(EventBudgetResponseDTO.class.getClassLoader(), EventBudgetResponseDTO.class);
     }
 
@@ -69,6 +71,12 @@ public class GetEventResponseDTO implements Parcelable {
             return new GetEventResponseDTO[size];
         }
     };
+
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
+    }
 
     @Override
     public int describeContents() {
@@ -94,6 +102,7 @@ public class GetEventResponseDTO implements Parcelable {
         dest.writeParcelable(eventType, flags);
         dest.writeTypedList(activities);
         dest.writeByte((byte) (isFav ? 1 : 0));
+        dest.writeByte((byte) (isOwn ? 1 : 0));
         dest.writeParcelable(budget, flags);
     }
 }

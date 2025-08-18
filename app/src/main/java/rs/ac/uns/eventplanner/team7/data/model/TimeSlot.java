@@ -1,7 +1,11 @@
 package rs.ac.uns.eventplanner.team7.data.model;
 
+import androidx.annotation.NonNull;
+
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
@@ -18,19 +22,30 @@ public class TimeSlot implements Comparable<TimeSlot> {
 
     public TimeSlot(LocalDateTime startTime, LocalDateTime endTime) {
         if (!startTime.toLocalDate().equals(endTime.toLocalDate()))
-            throw new IllegalArgumentException("Start and end dates must be the same day");
+            endTime = LocalDateTime.of(endTime.toLocalDate(), LocalTime.parse("23:59"));
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public boolean isOverlapping(TimeSlot other) {
-        return equals(other)
-                || (startTime.isBefore(other.getEndTime()) && startTime.isAfter(other.getStartTime()))
-                || (endTime.isAfter(other.getStartTime()) && endTime.isBefore(other.getEndTime()));
+    public LocalDate getDate() {
+        return startTime.toLocalDate();
     }
 
-    public boolean isOnTheSameDate(LocalDate date) {
-        return startTime.toLocalDate().equals(date);
+    public Duration getSlotDuration() {
+        return Duration.between(startTime, endTime.plusSeconds(1));
+    }
+
+    public boolean isWithin(TimeSlot other) {
+        return (startTime.isEqual(other.getStartTime()) || startTime.isAfter(other.getStartTime()))
+                && (endTime.isBefore(other.getEndTime()) || endTime.isEqual(other.getEndTime()));
+    }
+
+    public String getFormattedStartTime() {
+        return startTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+    }
+
+    public String getFormattedEndTime() {
+        return endTime.format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     @Override
@@ -40,7 +55,7 @@ public class TimeSlot implements Comparable<TimeSlot> {
         } else if (this.startTime.isAfter(other.endTime)) {
             return 1;
         } else {
-            throw new IllegalArgumentException("Overlapping TimeSlots are not allowed in a collection");
+            return 0;
         }
     }
 
@@ -58,11 +73,9 @@ public class TimeSlot implements Comparable<TimeSlot> {
         return Objects.hash(startTime, endTime);
     }
 
+    @NonNull
     @Override
     public String toString() {
-        String date = startTime.format(DateTimeFormatter.ISO_LOCAL_DATE);
-        String from  = startTime.format(DateTimeFormatter.ISO_LOCAL_TIME);
-        String to  = endTime.format(DateTimeFormatter.ISO_LOCAL_TIME);
-        return String.format("Date: %s From %s Until %s", date, from, to);
+        return String.format("%s - %s", getFormattedStartTime(), getFormattedEndTime());
     }
 }

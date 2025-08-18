@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_marginTop="10dp"
+    android:layout_gravity="center_horizontal"
+    tools:context=".ui.fragments.reservation.ReservationTimestampStepFragment"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp"
+        android:gravity="center_vertical"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/step_indicator"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/reservation_step_num_bg"
+            android:gravity="center"
+            android:text="3"
+            android:textSize="16sp"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_slot_step"
+            android:textSize="22sp"
+            android:layout_marginStart="10dp"
+            />
+
+    </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/fetching_timeslots"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:layout_marginVertical="5dp"
+        android:textSize="20sp"
+        android:text="@string/fetching_timeslots"
+        android:visibility="gone"
+        />
+
+    <LinearLayout
+        android:id="@+id/timeslot_main_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:textSize="20sp"
+            android:text="@string/select_one_of_the_slots"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/timeslot_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:endIconMode="dropdown_menu">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/reservation_timeslot_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:paddingStart="18sp"
+                android:paddingEnd="5sp"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"
+                android:hint="@string/choose_a_free_slot"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/error_no_timeslot_selected"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/design_default_color_error"
+            android:gravity="center"
+            android:layout_marginVertical="5dp"
+            android:text="@string/select_a_timeslot_first"
+            android:visibility="invisible"
+            />
+
+    </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/error_no_timeslots"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textColor="@color/design_default_color_error"
+        android:gravity="center"
+        android:layout_marginVertical="5dp"
+        android:textSize="22sp"
+        android:text="@string/no_free_slots_on_selected_date"
+        android:visibility="gone"
+        />
+
+
+</LinearLayout>

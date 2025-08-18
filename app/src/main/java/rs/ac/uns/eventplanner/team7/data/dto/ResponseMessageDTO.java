@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseMessageDTO {
-    private String message;
+    protected String message;
 }

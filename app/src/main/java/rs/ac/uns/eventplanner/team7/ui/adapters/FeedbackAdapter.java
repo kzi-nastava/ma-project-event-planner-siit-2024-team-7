@@ -9,14 +9,12 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.AutoTransition;
 import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.time.LocalDateTime;
@@ -26,21 +24,21 @@ import java.util.List;
 import java.util.Locale;
 
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.data.dto.reporting.ReportDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.feedback.FeedbackDTO;
 
-public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ViewHolder> {
+public class FeedbackAdapter extends RecyclerView.Adapter<FeedbackAdapter.ViewHolder> {
     public interface OnDecideClickListener {
-        void onDecideClicked(ReportDTO report);
+        void onDecideClicked(FeedbackDTO feedback);
     }
 
     private final Object mutex = new Object();
-    private final List<ReportDTO> reports;
+    private final List<FeedbackDTO> feedback;
     private final OnDecideClickListener onDecideClickListener;
     private RecyclerView recyclerView;
     private int expandedPosition = -1;
 
-    public ReportsAdapter(List<ReportDTO> reports, OnDecideClickListener onDecideClickListener) {
-        this.reports = reports;
+    public FeedbackAdapter(List<FeedbackDTO> feedback, OnDecideClickListener onDecideClickListener) {
+        this.feedback = feedback;
         this.onDecideClickListener = onDecideClickListener;
     }
 
@@ -49,12 +47,12 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ViewHold
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.expandable_card, parent, false);
-        return new ViewHolder(v);
+        return new FeedbackAdapter.ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(reports.get(position));
+        holder.bind(feedback.get(position));
     }
 
     @Override
@@ -65,35 +63,33 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return reports.size();
+        return feedback.size();
     }
 
     public int getLastItemIndex() {
         return getItemCount()-1;
     }
 
-    public void addAll(@NonNull Collection<ReportDTO> reports) {
+    public void addAll(@NonNull Collection<FeedbackDTO> feedback) {
         int initialSize;
         synchronized (mutex) {
-            initialSize = this.reports.size();
-            this.reports.addAll(reports);
+            initialSize = this.feedback.size();
+            this.feedback.addAll(feedback);
         }
-        notifyItemRangeInserted(initialSize, reports.size());
+        notifyItemRangeInserted(initialSize, feedback.size());
     }
 
     public void clear() {
         if (getItemCount() == 0) return;
         int size;
         synchronized (mutex) {
-            size = reports.size();
-            reports.clear();
+            size = feedback.size();
+            feedback.clear();
         }
         notifyItemRangeRemoved(0, size);
-    }
+    }    
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
-        private final MaterialCardView rootView;
         private final LinearLayout header, body;
         private final ImageView leadingIcon, expandIcon;
         private final MaterialTextView title, topRightText, bodyText, bottomText, optionalBottomText;
@@ -101,7 +97,6 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ViewHold
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            rootView = itemView.findViewById(R.id.expandable_card);
             leadingIcon = itemView.findViewById(R.id.leading_icon);
             header = itemView.findViewById(R.id.card_header);
             body = itemView.findViewById(R.id.card_description);
@@ -113,76 +108,64 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ViewHold
             optionalBottomText = itemView.findViewById(R.id.optional_bottom_text);
             decideButton = itemView.findViewById(R.id.card_btn);
         }
-
-        public void bind(ReportDTO report) {
+        
+        public void bind(FeedbackDTO feedback) {
             var context = itemView.getContext();
-            boolean isDecided = report.isDecided();
+            formatButton(context);
 
-            formatBackground(isDecided, context);
+            formatHeader(feedback, context);
 
-            formatButton(isDecided, context);
+            formatTopRightText(feedback);
 
-            formatHeader(report, context);
+            formatBody(feedback.getComment());
 
-            formatTopRightText(report);
-
-            formatBody(report.getReason());
-
-            formatBottomText(report, context);
+            formatBottomText(feedback, context);
 
             header.setOnClickListener(v -> onHeaderClickListener());
 
-            decideButton.setOnClickListener(v -> onDecideClickListener.onDecideClicked(report));
+            decideButton.setOnClickListener(v -> onDecideClickListener.onDecideClicked(feedback));
         }
 
-        private void formatBackground(boolean isDecided, Context context) {
-            if (!isDecided) {
-                rootView.setStrokeColor(ContextCompat.getColor(context, R.color.red_delete));
-            } else {
-                rootView.setStrokeColor(ContextCompat.getColor(context, R.color.grey));
-            }
-        }
-
-        private void formatButton(boolean isDecided, Context context) {
-            decideButton.setVisibility(isDecided ? View.GONE : View.VISIBLE);
+        private void formatButton(Context context) {
             decideButton.setIcon(AppCompatResources.getDrawable(context, R.drawable.ic_flowchart));
             decideButton.setText(R.string.decide);
         }
 
-        private void formatHeader(ReportDTO report, Context context) {
-            int titleRes = report.isDecided() ? R.string.resolved_for_user : R.string.reported_user;
-            title.setText(context.getString(titleRes, report.getReportedUserEmail()));
-
-            int drawableRes = report.isDecided() ? R.drawable.ic_assignment_turned_in : R.drawable.ic_assignment_late;
+        private void formatHeader(FeedbackDTO feedback, Context context) {
+            String titleText;
+            int drawableRes;
+            if (feedback.getEventName() != null) {
+                titleText = context.getString(R.string.event_feedback, feedback.getEventName());
+                drawableRes = R.drawable.ic_event;
+            } else if (feedback.getItemName() != null) {
+                titleText = context.getString(R.string.item_feedback, feedback.getItemName());
+                drawableRes = R.drawable.ic_hand_package;
+            } else if (feedback.getProviderOrganization() != null) {
+                titleText = context.getString(R.string.organizer_feedback, feedback.getProviderOrganization());
+                drawableRes = R.drawable.ic_corporate_fare;
+            } else throw new IllegalStateException("Feedback must have either event, item or organizer!");
+            title.setText(titleText);
             leadingIcon.setImageDrawable(AppCompatResources.getDrawable(context, drawableRes));
         }
 
-        private void formatBody(String reason) {
-            bodyText.setText(reason);
+        private void formatTopRightText(FeedbackDTO feedback) {
+            var currentYear = LocalDateTime.now().getYear();
+            var feedbackDate = feedback.getCreatedAt();
+            String pattern = String.format("EEEE, MMMM dd %s HH:mm", feedbackDate.getYear() == currentYear ? "" : "yyyy");
+            topRightText.setText(
+                    feedbackDate.format(DateTimeFormatter.ofPattern(pattern).withLocale(Locale.US))
+            );
+        }
+
+        private void formatBody(String comment) {
+            bodyText.setText(comment);
             body.setVisibility(View.GONE);
             expandIcon.setRotation(0f);
         }
 
-        private void formatTopRightText(ReportDTO report) {
-            var currentYear = LocalDateTime.now().getYear();
-            var parsedDate = LocalDateTime.parse(report.getReportDate());
-            String pattern = String.format("EEEE, MMMM dd %s HH:mm", parsedDate.getYear() == currentYear ? "" : "yyyy");
-            topRightText.setText(
-                    parsedDate.format(DateTimeFormatter.ofPattern(pattern).withLocale(Locale.US))
-            );
-        }
-
-        private void formatBottomText(ReportDTO report, Context context) {
-            optionalBottomText.setText(context.getString(R.string.submitted_by_user, report.getReporterEmail()));
-
-            var feedback = report.getReportedFeedback();
-            if (feedback != null) {
-                String feedbackText = context.getString(R.string.reported_feedback) + '\n' +
-                        feedback.getComment() + '\n' +
-                        context.getString(R.string.reported_rating, feedback.getRating());
-                bottomText.setText(feedbackText);
-            }
-            bottomText.setVisibility(feedback != null ? View.VISIBLE : View.GONE);
+        private void formatBottomText(FeedbackDTO feedback, Context context) {
+            bottomText.setText(context.getString(R.string.rated, feedback.getRating()));
+            optionalBottomText.setText(context.getString(R.string.submitted_by_user, feedback.getUserEmail()));
         }
 
         private void onHeaderClickListener() {
@@ -221,7 +204,5 @@ public class ReportsAdapter extends RecyclerView.Adapter<ReportsAdapter.ViewHold
 
             arrow.animate().rotation(expand ? 180f : 0f).setDuration(200).start();
         }
-
-
     }
 }

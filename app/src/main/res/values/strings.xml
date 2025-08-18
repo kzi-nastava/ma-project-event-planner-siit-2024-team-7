@@ -335,4 +335,15 @@
     <string name="report_reason_required">Report reason is required</string>
     <string name="report_reason_min_length">Reason must be at least 20 characters long.</string>
     <string name="report_reason_max_length">Reason cannot exceed 500 characters.</string>
+    <string name="all_feedback">All feedback</string>
+    <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
+    <string name="event_feedback">Feedback on event: %s</string>
+    <string name="item_feedback">Feedback on item: %s</string>
+    <string name="organizer_feedback">Feedback on organization: %s</string>
+    <string name="rated">Rated %d / 5</string>
+    <string name="no_feedback">No new feedback.</string>
+    <string name="decision_submitted">Decision submitted!</string>
+    <string name="feedback">Feedback</string>
+    <string name="feedback_actions">What will you do with this feedback?</string>
 </resources>

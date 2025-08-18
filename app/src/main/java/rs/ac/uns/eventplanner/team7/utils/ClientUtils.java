@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,12 +23,14 @@ import rs.ac.uns.eventplanner.team7.data.services.BudgetService;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
+import rs.ac.uns.eventplanner.team7.data.services.FeedbackService;
 import rs.ac.uns.eventplanner.team7.data.services.ImagesService;
 import rs.ac.uns.eventplanner.team7.data.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.data.services.NotificationService;
 import rs.ac.uns.eventplanner.team7.data.services.PricingService;
 import rs.ac.uns.eventplanner.team7.data.services.ProductService;
 import rs.ac.uns.eventplanner.team7.data.services.PurchaseService;
+import rs.ac.uns.eventplanner.team7.data.services.ReportService;
 import rs.ac.uns.eventplanner.team7.data.services.ReservationService;
 import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
@@ -41,6 +44,7 @@ public final class ClientUtils {
     static {
         final Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
+                .registerTypeAdapter(Instant.class, new InstantConverter())
                 .create();
 
         final OkHttpClient client = new OkHttpClient.Builder()
@@ -72,6 +76,8 @@ public final class ClientUtils {
             put(ImagesService.class, retrofit.create(ImagesService.class));
             put(NotificationService.class, retrofit.create(NotificationService.class));
             put(ReservationService.class, retrofit.create(ReservationService.class));
+            put(ReportService.class, retrofit.create(ReportService.class));
+            put(FeedbackService.class, retrofit.create(FeedbackService.class));
         }};
     }
 

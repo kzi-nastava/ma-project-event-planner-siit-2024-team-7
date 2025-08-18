@@ -111,7 +111,9 @@
             style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="@string/back" />
+            android:text="@string/back"
+            android:enabled="false"
+            />
 
         <include layout="@layout/space_divider"/>
 

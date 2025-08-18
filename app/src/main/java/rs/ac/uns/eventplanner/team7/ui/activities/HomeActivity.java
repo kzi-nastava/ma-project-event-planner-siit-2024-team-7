@@ -41,8 +41,8 @@ import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.invitation.InvitationAcceptanceDTO;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.InvitationService;
-import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.NotificationUtils;
 import rs.ac.uns.eventplanner.team7.utils.TokenInterceptor;
 import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
@@ -182,7 +182,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void handleRegister() {
-        AuthUtil.clearPreferences(this);
         Intent intent = new Intent(this, RegistrationActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

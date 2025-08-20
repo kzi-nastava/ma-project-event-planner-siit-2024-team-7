@@ -245,6 +245,7 @@ public class HomeActivity extends AppCompatActivity {
         navController.addOnDestinationChangedListener((c, destination, b)
                 -> bottomNavigationView.setVisibility(
                         topLevelDestinations.contains(destination.getId()) ? View.VISIBLE : View.GONE));
+
     }
 
     private void handleIntentParams(Bundle extras) {

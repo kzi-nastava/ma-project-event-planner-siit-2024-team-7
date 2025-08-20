@@ -35,8 +35,8 @@ public class GetEventResponseDTO implements Parcelable {
     private EventVisibility visibility;
     private EventType eventType;
     private List<Activity> activities;
-    private boolean isFav;
-    private boolean isOwn;
+    private boolean fav;
+    private boolean own;
     private EventBudgetResponseDTO budget;
 
     protected GetEventResponseDTO(Parcel in) {
@@ -55,8 +55,8 @@ public class GetEventResponseDTO implements Parcelable {
         visibility = EventVisibility.fromInteger(in.readInt());
         eventType = in.readParcelable(EventType.class.getClassLoader(), EventType.class);
         activities = in.createTypedArrayList(Activity.CREATOR);
-        isFav = in.readByte() != 0;
-        isOwn = in.readByte() != 0;
+        fav = in.readByte() != 0;
+        own = in.readByte() != 0;
         budget = in.readParcelable(EventBudgetResponseDTO.class.getClassLoader(), EventBudgetResponseDTO.class);
     }
 
@@ -101,8 +101,12 @@ public class GetEventResponseDTO implements Parcelable {
         dest.writeInt(visibility.ordinal());
         dest.writeParcelable(eventType, flags);
         dest.writeTypedList(activities);
-        dest.writeByte((byte) (isFav ? 1 : 0));
-        dest.writeByte((byte) (isOwn ? 1 : 0));
+        dest.writeByte((byte) (fav ? 1 : 0));
+        dest.writeByte((byte) (own ? 1 : 0));
         dest.writeParcelable(budget, flags);
+    }
+
+    public String getFullAddress() {
+        return String.format("%s, %s, %s, %s", location.getCountry(), location.getCity(), location.getStreet(), location.getHouseNumber());
     }
 }

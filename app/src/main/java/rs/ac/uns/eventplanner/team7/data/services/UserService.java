@@ -8,9 +8,12 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import rs.ac.uns.eventplanner.team7.data.dto.BusynessDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.event.FavouriteEventRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetOrganizerResponseDTO;
@@ -80,6 +83,13 @@ public interface UserService {
     })
     @PUT("users/{id}/favourites/items")
     Call<FavouriteItemResponseDTO> markItemAsFavourite(@Header("Authorization") String token, @Path("id") Integer id, @Body FavouriteItemRequestDTO dto);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @POST("users/{id}/favourites/events")
+    Call<ResponseMessageDTO> markEventAsFavourite(@Header("Authorization") String token, @Path("id") Integer id, @Body FavouriteEventRequestDTO dto);
 
     @Headers({
             "User-Agent: Mobile-Android",

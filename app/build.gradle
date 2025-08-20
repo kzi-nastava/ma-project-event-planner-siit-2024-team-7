@@ -72,6 +72,7 @@ dependencies {
     implementation libs.stompprotocolandroid
     implementation libs.rxjava
     implementation libs.rxandroid
+    implementation 'org.osmdroid:osmdroid-android:6.1.14'
     runtimeOnly libs.jjwt.impl
     runtimeOnly libs.jjwt.jackson
     testImplementation libs.junit

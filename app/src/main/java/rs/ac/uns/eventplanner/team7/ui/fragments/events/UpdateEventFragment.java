@@ -7,17 +7,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -100,7 +104,7 @@ public class UpdateEventFragment extends Fragment {
         addActivityButton = view.findViewById(R.id.add_activity_button);
         updateButton = view.findViewById(R.id.update_submit_button);
         deleteButton = view.findViewById(R.id.delete_button);
-        deleteButton.setOnClickListener(v -> deleteEvent());
+        deleteButton.setOnClickListener(v -> showDeleteConfirmationDialog());
 
         MaterialButton updateBudgetButton = view.findViewById(R.id.update_budget_btn);
         updateBudgetButton.setOnClickListener(v -> {
@@ -402,5 +406,23 @@ public class UpdateEventFragment extends Fragment {
         int minute = Integer.parseInt(parts[1]);
 
         return date.atTime(hour, minute);
+    }
+
+    private void showDeleteConfirmationDialog() {
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Confirm Deletion")
+                .setMessage("Are you sure you want to delete this event?")
+                .setPositiveButton("Delete", (d, which) ->
+                        deleteEvent())
+                .setNegativeButton("Cancel", (d, which) -> d.dismiss())
+                .create();
+
+        dialog.setOnShowListener(dialogInterface -> {
+            Button deleteButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            if (deleteButton != null) {
+                deleteButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark));
+            }
+        });
+        dialog.show();
     }
 }

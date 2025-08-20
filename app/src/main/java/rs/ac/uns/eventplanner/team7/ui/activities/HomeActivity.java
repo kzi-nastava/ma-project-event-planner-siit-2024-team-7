@@ -237,7 +237,7 @@ public class HomeActivity extends AppCompatActivity {
             topLevelDestinations.add(R.id.nav_event);
         } else if (role == UserRole.SPP) {
             bottomNavigationView.inflateMenu(R.menu.spp_menu);
-            topLevelDestinations.addAll(Set.of(R.id.nav_product, R.id.nav_service));
+            topLevelDestinations.addAll(Set.of(R.id.nav_product_list, R.id.nav_service));
         } else {
             bottomNavigationView.inflateMenu(R.menu.basic_menu);
         }

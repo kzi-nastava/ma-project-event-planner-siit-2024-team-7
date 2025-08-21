@@ -225,6 +225,17 @@ public class HomeActivity extends AppCompatActivity {
                         if (!topLevelDestinations.contains(destination.getId()))
                             drawerLayout.closeDrawers();
             });
+        } else if (role == UserRole.SPP) {
+            DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout_spp);
+            appBarConfigBuilder.setOpenableLayout(drawerLayout);
+
+            NavigationView navigationDrawerView = findViewById(R.id.navigation_view_spp);
+            NavigationUI.setupWithNavController(navigationDrawerView, navController);
+            navController.addOnDestinationChangedListener((controller, navDestination, bundle) -> {
+                if (!topLevelDestinations.contains(navDestination.getId())) {
+                    drawerLayout.closeDrawers();
+                }
+            });
         }
 
         appBarConfig = appBarConfigBuilder.build();

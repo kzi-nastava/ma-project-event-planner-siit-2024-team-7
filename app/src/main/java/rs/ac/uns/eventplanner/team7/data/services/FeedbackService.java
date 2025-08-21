@@ -12,6 +12,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rs.ac.uns.eventplanner.team7.data.dto.Page;
+import rs.ac.uns.eventplanner.team7.data.dto.feedback.AverageRatingDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.CreateEventFeedbackRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.CreateItemFeedbackRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.CreateProviderFeedbackRequestDTO;
@@ -81,4 +82,25 @@ public interface FeedbackService {
     })
     @GET("feedback/approved/providers")
     Call<List<FeedbackDTO>> getAllApprovedForProvider(@Query("providerId") Integer providerId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("feedback/average/items")
+    Call<AverageRatingDTO> getAverageRatingForItem(@Query("itemId") Integer itemId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("feedback/average/events")
+    Call<AverageRatingDTO> getAverageRatingForEvent(@Query("eventId") Integer eventId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("feedback/average/providers")
+    Call<AverageRatingDTO> getAverageRatingForProvider(@Query("providerId") Integer providerId);
 }

@@ -9,10 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateItemFeedbackRequestDTO {
-    private String userEmail;
-    private Integer rating;
-    private String comment;
-    private Integer serviceId;
-    private Integer productId;
+public class AverageRatingDTO {
+    private Integer id;     // can be itemId, eventId or providerId
+    private double rating;
+    private int feedbackCount;
 }

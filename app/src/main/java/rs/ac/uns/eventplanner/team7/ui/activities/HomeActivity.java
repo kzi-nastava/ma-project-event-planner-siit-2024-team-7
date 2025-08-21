@@ -231,7 +231,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupBottomNavbar(BottomNavigationView bottomNavigationView) {
-        topLevelDestinations.addAll(Set.of(R.id.nav_chats, R.id.nav_account));
+        topLevelDestinations.addAll(Set.of(R.id.nav_contacts, R.id.nav_account));
         if (role == UserRole.EVENT_ORG) {
             bottomNavigationView.inflateMenu(R.menu.event_organizer_menu);
             topLevelDestinations.add(R.id.nav_event);

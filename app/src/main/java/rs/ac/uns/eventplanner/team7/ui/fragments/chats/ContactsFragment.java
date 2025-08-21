@@ -1,12 +1,19 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.chats;
 
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +35,7 @@ import rs.ac.uns.eventplanner.team7.data.services.ChatService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ContactAdapter;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 
 public class ContactsFragment extends Fragment {
 
@@ -68,11 +76,34 @@ public class ContactsFragment extends Fragment {
         contactsView.setAdapter(adapter);
 
         setContent();
+
+        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.contact_swipe_refresh);
+        refreshLayout.setOnRefreshListener(() -> {
+            refreshLayout.setRefreshing(false);
+            setContent();
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(requireContext())
+                .registerReceiver(
+                        newNotificationReceiver,
+                        new IntentFilter(WebSocketService.ACTION_NEW_NOTIFICATION)
+                );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(requireContext())
+                .unregisterReceiver(newNotificationReceiver);
     }
 
     private void onCardClicked(ChatContactDTO contact) {
         Bundle bundle = new Bundle();
-        bundle.putInt("contact", contact.getUserId());
+        bundle.putParcelable("contactDTO", contact);
         Navigation.findNavController(requireView()).navigate(R.id.navigate_to_chat_from_contacts, bundle);
     }
 
@@ -98,4 +129,12 @@ public class ContactsFragment extends Fragment {
             }
         });
     }
+
+    private final BroadcastReceiver newNotificationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            context.getSystemService(NotificationManager.class).cancelAll();
+            setContent();
+        }
+    };
 }

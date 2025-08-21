@@ -13,6 +13,7 @@ public class ChatResponseDTO {
     private Integer id;
     private Integer senderId;
     private String senderEmail;
+    private String senderPhotoUrl;
     private String recipientEmail;
     private String message;
     private String timestamp;

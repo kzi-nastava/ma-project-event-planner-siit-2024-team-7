@@ -38,6 +38,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.invitation.InvitationAcceptanceDTO;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.InvitationService;
@@ -250,7 +251,11 @@ public class HomeActivity extends AppCompatActivity {
     private void handleIntentParams(Bundle extras) {
         if ("notifications".equals(extras.getString("navigate_to"))) {
             handleNotificationsNavigation();
-        } else handleInvitationAccepting();
+        }
+        else if ("chats".equals(extras.getString("navigate_to"))) {
+            handleChatNotificationNavigation(extras.getBundle("message"));
+        }
+        else handleInvitationAccepting();
     }
 
     private void handleNotificationsNavigation() {
@@ -260,6 +265,16 @@ public class HomeActivity extends AppCompatActivity {
                     .setLaunchSingleTop(true)
                     .build();
             navController.navigate(R.id.nav_notifications, null, navOptions);
+        }
+    }
+
+    private void handleChatNotificationNavigation(Bundle bundle) {
+        NavDestination current = navController.getCurrentDestination();
+        if (current != null && current.getId() != R.id.nav_chats) {
+            NavOptions navOptions = new NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .build();
+            navController.navigate(R.id.nav_chats, bundle, navOptions);
         }
     }
 

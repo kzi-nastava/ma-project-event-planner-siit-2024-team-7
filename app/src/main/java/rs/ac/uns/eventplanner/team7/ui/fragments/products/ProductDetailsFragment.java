@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -27,28 +28,35 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.feedback.AverageRatingDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.feedback.FeedbackDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.product.GetProductResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.data.services.FeedbackService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
+import rs.ac.uns.eventplanner.team7.ui.adapters.CommentAdapter;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
+import rs.ac.uns.eventplanner.team7.ui.fragments.feedback.FeedbackDialog;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
 public class ProductDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
+    private final FeedbackService feedbackService = ClientUtils.injectService(FeedbackService.class);
     private GetProductResponseDTO productDTO;
     private GetProviderResponseDTO providerDTO;
 
-    private ImageView favouriteStar;
-    private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView;
-    private RecyclerView imagesView;
+    private ImageView favouriteStar, star1, star2, star3, star4, star5;
+    private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView, ratingCount, noComments;
+    private RecyclerView imagesView, commentsView;
     private ImageAdapter imageAdapter;
+    private CommentAdapter commentAdapter;
 
-    private MaterialButton buyButton, viewProviderButton, chatWithProviderButton;
+    private MaterialButton buyButton, viewProviderButton, chatWithProviderButton, rateButton;
 
     public ProductDetailsFragment() {
         // Required empty public constructor
@@ -84,6 +92,16 @@ public class ProductDetailsFragment extends Fragment {
         viewProviderButton = view.findViewById(R.id.view_provider_button);
         chatWithProviderButton = view.findViewById(R.id.chat_w_provider_button);
 
+        rateButton = view.findViewById(R.id.rate_product_button);
+        commentsView = view.findViewById(R.id.product_comments);
+        noComments = view.findViewById(R.id.no_comments_product);
+        ratingCount = view.findViewById(R.id.rating_count);
+        star1 = view.findViewById(R.id.star1);
+        star2 = view.findViewById(R.id.star2);
+        star3 = view.findViewById(R.id.star3);
+        star4 = view.findViewById(R.id.star4);
+        star5 = view.findViewById(R.id.star5);
+
         fillDetails();
         return view;
     }
@@ -91,6 +109,9 @@ public class ProductDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        commentAdapter = new CommentAdapter(requireContext(), new ArrayList<>());
+        commentsView.setAdapter(commentAdapter);
 
         userService.getProviderByItemId(AuthUtil.getAuthorizationValue(requireContext()), productDTO.getId())
                 .enqueue(new Callback<>() {
@@ -145,6 +166,10 @@ public class ProductDetailsFragment extends Fragment {
             chatWithProviderButton.setVisibility(View.GONE);
         }
 
+        if (!productDTO.isPurchased())
+            rateButton.setEnabled(true);
+        setFeedbacks();
+
         buyButton.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putParcelable("productDTO", productDTO);
@@ -165,6 +190,11 @@ public class ProductDetailsFragment extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putParcelable("contactDTO", new ChatContactDTO(providerDTO.getId(), providerDTO.getEmail(), providerDTO.getPhotoURL(), false));
             Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
+        });
+
+        rateButton.setOnClickListener(v -> {
+            FeedbackDialog dialog = new FeedbackDialog(productDTO.getId(), null, "item", "product");
+            dialog.show(requireActivity().getSupportFragmentManager(), "FeedbackDialog");
         });
     }
 
@@ -203,6 +233,79 @@ public class ProductDetailsFragment extends Fragment {
         else {
             noImagesView.setVisibility(View.VISIBLE);
             imagesView.setVisibility(View.GONE);
+        }
+    }
+
+    private void setFeedbacks() {
+        String token = AuthUtil.getAuthorizationValue(requireContext());
+        feedbackService.getAllApprovedForItem(token, productDTO.getId()).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<FeedbackDTO>> call,
+                                   @NonNull Response<List<FeedbackDTO>> response) {
+                if (!isAdded()) return;
+                commentAdapter.clear();
+                if (response.body() == null || !response.isSuccessful()) {
+                    noComments.setText(R.string.unable_to_contact_server);
+                    return;
+                }
+                if (response.body().isEmpty()) {
+                    noComments.setText(R.string.no_comments_yet);
+                    return;
+                }
+                commentAdapter.addAll(response.body());
+                noComments.setText("");
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<FeedbackDTO>> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
+
+        feedbackService.getAverageRatingForItem(token, productDTO.getId()).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<AverageRatingDTO> call,
+                                   @NonNull Response<AverageRatingDTO> response) {
+                if (!isAdded()) return;
+                if (response.body() == null || !response.isSuccessful()) return;
+                ratingCount.setText(String.format("(%s)", response.body().getFeedbackCount()));
+                fillStars(response.body().getRating());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AverageRatingDTO> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
+    }
+
+    private void fillStars(double rating) {
+        int filledStar = R.drawable.ic_star_filled;
+        int emptyStar = R.drawable.ic_star;
+        int halfStar = R.drawable.ic_half_star;
+
+        ImageView[] stars = { star1, star2, star3, star4, star5 };
+
+        int fullStars = (int) rating;
+        double decimal = rating - fullStars;
+
+        if (decimal > 0.7) {
+            fullStars++;
+            decimal = 0;
+        } else if (decimal < 0.3) {
+            decimal = 0;
+        } else {
+            decimal = 0.5;
+        }
+
+        for (int i = 0; i < stars.length; i++) {
+            if (i < fullStars) {
+                stars[i].setImageResource(filledStar);
+            } else if (i == fullStars && decimal == 0.5) {
+                stars[i].setImageResource(halfStar);
+            } else {
+                stars[i].setImageResource(emptyStar);
+            }
         }
     }
 }

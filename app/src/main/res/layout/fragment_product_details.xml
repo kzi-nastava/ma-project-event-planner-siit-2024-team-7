@@ -269,7 +269,8 @@
             android:text="Chat with Provider"
             app:icon="@drawable/ic_add_comment"
             app:iconPadding="8dp"
-            android:layout_marginStart="4dp"/>
+            android:layout_marginStart="4dp"
+            android:enabled="false"/>
     </LinearLayout>
 
 </ScrollView>

@@ -38,6 +38,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.invitation.InvitationAcceptanceDTO;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.InvitationService;
@@ -224,6 +225,17 @@ public class HomeActivity extends AppCompatActivity {
                         if (!topLevelDestinations.contains(destination.getId()))
                             drawerLayout.closeDrawers();
             });
+        } else if (role == UserRole.SPP) {
+            DrawerLayout drawerLayout = findViewById(R.id.home_drawer_layout_spp);
+            appBarConfigBuilder.setOpenableLayout(drawerLayout);
+
+            NavigationView navigationDrawerView = findViewById(R.id.navigation_view_spp);
+            NavigationUI.setupWithNavController(navigationDrawerView, navController);
+            navController.addOnDestinationChangedListener((controller, navDestination, bundle) -> {
+                if (!topLevelDestinations.contains(navDestination.getId())) {
+                    drawerLayout.closeDrawers();
+                }
+            });
         }
 
         appBarConfig = appBarConfigBuilder.build();
@@ -231,7 +243,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupBottomNavbar(BottomNavigationView bottomNavigationView) {
-        topLevelDestinations.addAll(Set.of(R.id.nav_chats, R.id.nav_account));
+        topLevelDestinations.addAll(Set.of(R.id.nav_contacts, R.id.nav_account));
         if (role == UserRole.EVENT_ORG) {
             bottomNavigationView.inflateMenu(R.menu.event_organizer_menu);
             topLevelDestinations.add(R.id.nav_event);
@@ -250,7 +262,11 @@ public class HomeActivity extends AppCompatActivity {
     private void handleIntentParams(Bundle extras) {
         if ("notifications".equals(extras.getString("navigate_to"))) {
             handleNotificationsNavigation();
-        } else handleInvitationAccepting();
+        }
+        else if ("chats".equals(extras.getString("navigate_to"))) {
+            handleChatNotificationNavigation(extras.getBundle("message"));
+        }
+        else handleInvitationAccepting();
     }
 
     private void handleNotificationsNavigation() {
@@ -260,6 +276,16 @@ public class HomeActivity extends AppCompatActivity {
                     .setLaunchSingleTop(true)
                     .build();
             navController.navigate(R.id.nav_notifications, null, navOptions);
+        }
+    }
+
+    private void handleChatNotificationNavigation(Bundle bundle) {
+        NavDestination current = navController.getCurrentDestination();
+        if (current != null && current.getId() != R.id.nav_chats) {
+            NavOptions navOptions = new NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .build();
+            navController.navigate(R.id.nav_chats, bundle, navOptions);
         }
     }
 

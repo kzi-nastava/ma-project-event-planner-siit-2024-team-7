@@ -27,12 +27,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.FutureReservableEventsDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.GetEventResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
@@ -45,6 +47,7 @@ public class ServiceDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final EventService eventService = ClientUtils.injectService(EventService.class);
     private GetServiceResponseDTO service;
+    private GetProviderResponseDTO providerDTO;
     private List<GetEventResponseDTO> organizerEvents;
 
     private ImageView favouriteStar;
@@ -101,6 +104,24 @@ public class ServiceDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        userService.getProviderByItemId(AuthUtil.getAuthorizationValue(requireContext()), service.getId())
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<GetProviderResponseDTO> call,
+                                           @NonNull Response<GetProviderResponseDTO> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            providerDTO = response.body();
+                            chatWithProviderButton.setEnabled(true);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<GetProviderResponseDTO> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
+
         UserRole role = AuthUtil.extractRole(requireContext());
         viewProviderButton.setOnClickListener(v -> {
             Bundle args = new Bundle();
@@ -109,10 +130,15 @@ public class ServiceDetailsFragment extends Fragment {
             if (view1 == null) return;
             Navigation.findNavController(view1).navigate(R.id.navigate_to_spp_details_from_service, args);
         });
-        // TODO hide chat button for invalid roles
-        if (role != UserRole.EVENT_ORG) {
-            if (service.isOwn()) viewProviderButton.setVisibility(View.GONE);
-        } else {
+        chatWithProviderButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("contactDTO", new ChatContactDTO(providerDTO.getId(), providerDTO.getEmail(), providerDTO.getPhotoURL(), false));
+            Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
+        });
+        if (role == UserRole.SPP) {
+            viewProviderButton.setVisibility(View.GONE);
+            chatWithProviderButton.setVisibility(View.GONE);
+        } else if (role == UserRole.EVENT_ORG) {
             reserveButton.setVisibility(View.VISIBLE);
             favouriteStar.setVisibility(View.VISIBLE);
             initButtonsForOrganizer(view);

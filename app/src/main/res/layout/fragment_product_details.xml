@@ -239,15 +239,6 @@
                 app:iconPadding="8dp"
                 android:enabled="true"/>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/product_already_purchased"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/already_purchased"
-                android:textSize="14sp"
-                android:textColor="@color/black"
-                android:padding="8dp"/>
-
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton

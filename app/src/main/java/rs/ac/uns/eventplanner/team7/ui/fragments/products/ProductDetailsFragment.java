@@ -44,7 +44,7 @@ public class ProductDetailsFragment extends Fragment {
     private GetProviderResponseDTO providerDTO;
 
     private ImageView favouriteStar;
-    private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView, alreadyPurchased;
+    private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView;
     private RecyclerView imagesView;
     private ImageAdapter imageAdapter;
 
@@ -81,7 +81,6 @@ public class ProductDetailsFragment extends Fragment {
         noImagesView = view.findViewById(R.id.product_details_no_images);
 
         buyButton = view.findViewById(R.id.buy_button);
-        alreadyPurchased = view.findViewById(R.id.product_already_purchased);
         viewProviderButton = view.findViewById(R.id.view_provider_button);
         chatWithProviderButton = view.findViewById(R.id.chat_w_provider_button);
 
@@ -138,10 +137,8 @@ public class ProductDetailsFragment extends Fragment {
                     });
         });
 
-        if (AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG || productDTO.isPurchased() || !productDTO.isAvailable())
+        if (AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG || !productDTO.isAvailable())
             buyButton.setVisibility(View.GONE);
-        if (AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG || !productDTO.isPurchased() || !productDTO.isAvailable())
-            alreadyPurchased.setVisibility(View.GONE);
 
         if (AuthUtil.extractRole(requireContext()) == UserRole.SPP) {
             viewProviderButton.setVisibility(View.GONE);

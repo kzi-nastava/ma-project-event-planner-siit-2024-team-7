@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+
+import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -26,17 +29,16 @@ import rs.ac.uns.eventplanner.team7.data.dto.feedback.CreateItemFeedbackRequestD
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.CreateProviderFeedbackRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.FeedbackDTO;
 import rs.ac.uns.eventplanner.team7.data.services.FeedbackService;
-import rs.ac.uns.eventplanner.team7.ui.fragments.MaterialDialogFragment;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
-public class FeedbackDialog extends MaterialDialogFragment {
+public class FeedbackDialog extends DialogFragment {
 
     private final FeedbackService feedbackService = ClientUtils.injectService(FeedbackService.class);
 
-    private Integer id; // can be itemId, eventId or providerId
-    private String providerEmail;
-    private String type, itemType; // item, event, provider + product/service
+    private final Integer id; // can be itemId, eventId or providerId
+    private final String providerEmail;
+    private final String type, itemType; // item, event, provider + product/service
 
     private ImageView starOne, starTwo, starThree, starFour, starFive;
     private int selectedRating;
@@ -45,19 +47,12 @@ public class FeedbackDialog extends MaterialDialogFragment {
 
     private String bearerToken, userEmail;
 
-    public FeedbackDialog() {
-        selectedRating = 0;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            id = getArguments().getInt("id");
-            providerEmail = getArguments().getString("providerEmail");
-            type = getArguments().getString("type");
-            itemType = getArguments().getString("itemType");
-        }
+    public FeedbackDialog(Integer id, String providerEmail, String type, String itemType) {
+        this.selectedRating = 0;
+        this.id = id;
+        this.providerEmail = providerEmail;
+        this.type = type;
+        this.itemType = itemType;
     }
 
     @Override
@@ -143,7 +138,7 @@ public class FeedbackDialog extends MaterialDialogFragment {
                 handleServiceCall(feedbackService.createForProvider(bearerToken, providerDTO));
                 return;
             default:
-                Log.d("Feedback", "Unknown error");
+                Log.d("Feedback", "Unknown type:" + type);
 
         }
 
@@ -154,15 +149,28 @@ public class FeedbackDialog extends MaterialDialogFragment {
             @Override
             public void onResponse(@NonNull Call<FeedbackDTO> call, @NonNull Response<FeedbackDTO> response) {
                 if (!isAdded()) return;
-                if (!response.isSuccessful()) return;
-                showToast("Successfully gave feedback!");
-                dismiss();
+                if (response.isSuccessful()) {
+                    showToast("Successfully gave feedback!");
+                    dismiss();
+                } else {
+                    try {
+                        // Show error message
+                        if (response.errorBody() == null) return;
+                        String errorBody = response.errorBody().string();
+                        JSONObject jsonObject = new JSONObject(errorBody);
+                        showToast(jsonObject.getString("message"));
+                    } catch (Exception e) {
+                        String message = e.getMessage();
+                        if (message == null) return;
+                        Log.d("ERROR", message);
+                    }
+                }
             }
-
             @Override
             public void onFailure(@NonNull Call<FeedbackDTO> call, @NonNull Throwable t) {
                 String message = t.getMessage();
                 Log.d("Feedback", message == null ? "Unknown error" : message);
+                showToast(message == null ? "Unknown error" : message);
             }
         });
     }

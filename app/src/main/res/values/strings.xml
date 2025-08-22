@@ -369,5 +369,15 @@
     <string name="event_event_type_is_required">Event type is required</string>
     <string name="event_visibility_is_required">Event visibility is required</string>
     <string name="event_details">Event details</string>
+    <string name="d_products_found">%d products found</string>
+    <string name="product_name_is_required">Product name is required</string>
+    <string name="product_desc_is_required">Product Description is required</string>
+    <string name="product_price_is_required">Product Price is required</string>
+    <string name="product_discount_is_required">Product Discount is required</string>
+    <string-array name="availability_options">
+        <item>All</item>
+        <item>Available</item>
+        <item>Unavailable</item>
+    </string-array>
     <string name="no_comments_yet">No comments yet!</string>
 </resources>

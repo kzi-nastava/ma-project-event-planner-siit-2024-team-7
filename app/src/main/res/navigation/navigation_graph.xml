@@ -22,6 +22,8 @@
             app:destination="@id/nav_product_details" />
         <action android:id="@+id/navigate_to_event_details"
             app:destination="@+id/nav_event_details" />
+        <action android:id="@+id/navigate_to_product_list"
+            app:destination="@+id/nav_product_list" />
     </fragment>
 
     <fragment
@@ -40,6 +42,42 @@
         android:label="@string/toolbar_chats"
         tools:layout="@layout/fragment_chats"/>
 
+    <fragment
+        android:id="@+id/nav_product_list"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.products.ProductList"
+        android:label="Products"
+        tools:layout="@layout/fragment_product_list">
+
+        <action
+            android:id="@+id/navigate_to_create_product"
+            app:destination="@id/nav_create_product" />
+
+        <action
+            android:id="@+id/navigate_to_product_update"
+            app:destination="@id/nav_update_product" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_create_product"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.products.CreateProductFragment"
+        android:label="Create Product"
+        tools:layout="@layout/fragment_create_product">
+
+        <action android:id="@+id/navigate_back_from_product_creation"
+            app:destination="@id/nav_product_list" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_update_product"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.products.UpdateProductFragment"
+        android:label="Update Product"
+        tools:layout="@layout/fragment_update_product">
+
+        <action android:id="@+id/navigate_back_from_product_update"
+            app:destination="@id/nav_product_list" />
+    </fragment>
     <fragment
         android:id="@+id/nav_notifications"
         android:name="rs.ac.uns.eventplanner.team7.ui.fragments.notifications.NotificationsFragment"

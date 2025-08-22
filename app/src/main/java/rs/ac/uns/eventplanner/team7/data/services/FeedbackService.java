@@ -12,6 +12,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rs.ac.uns.eventplanner.team7.data.dto.Page;
+import rs.ac.uns.eventplanner.team7.data.dto.feedback.AverageRatingDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.CreateEventFeedbackRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.CreateItemFeedbackRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.CreateProviderFeedbackRequestDTO;
@@ -66,19 +67,40 @@ public interface FeedbackService {
             "Content-Type: application/json"
     })
     @GET("feedback/approved/items")
-    Call<List<FeedbackDTO>> getAllApprovedForItem(@Query("itemId") Integer itemId);
+    Call<List<FeedbackDTO>> getAllApprovedForItem(@Header("Authorization") String token, @Query("itemId") Integer itemId);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
     @GET("feedback/approved/events")
-    Call<List<FeedbackDTO>> getAllApprovedForEvent(@Query("eventId") Integer eventId);
+    Call<List<FeedbackDTO>> getAllApprovedForEvent(@Header("Authorization") String token, @Query("eventId") Integer eventId);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
     @GET("feedback/approved/providers")
-    Call<List<FeedbackDTO>> getAllApprovedForProvider(@Query("providerId") Integer providerId);
+    Call<List<FeedbackDTO>> getAllApprovedForProvider(@Header("Authorization") String token, @Query("providerId") Integer providerId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("feedback/average/items")
+    Call<AverageRatingDTO> getAverageRatingForItem(@Header("Authorization") String token, @Query("itemId") Integer itemId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("feedback/average/events")
+    Call<AverageRatingDTO> getAverageRatingForEvent(@Header("Authorization") String token, @Query("eventId") Integer eventId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("feedback/average/providers")
+    Call<AverageRatingDTO> getAverageRatingForProvider(@Header("Authorization") String token, @Query("providerId") Integer providerId);
 }

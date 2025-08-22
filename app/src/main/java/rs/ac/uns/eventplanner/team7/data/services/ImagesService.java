@@ -23,4 +23,13 @@ public interface ImagesService {
                                                        @Path("id") Integer id,
                                                        @Part List<MultipartBody.Part> images,
                                                        @Query("imageUrls") List<String> imageUrls);
+
+    // Only imageUrls, no images
+    @Headers({
+            "User-Agent: Mobile-Android",
+    })
+    @PUT("images/service/{id}")
+    Call<List<String>> updateImageUrlsForService(@Header("Authorization") String token,
+                                                @Path("id") Integer id,
+                                                @Query("imageUrls") List<String> imageUrls);
 }

@@ -12,7 +12,9 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.MultipartBody;
 import rs.ac.uns.eventplanner.team7.R;
@@ -20,11 +22,13 @@ import rs.ac.uns.eventplanner.team7.R;
 public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ViewHolder> {
     private final Context context;
     private final List<String> imageNames;
+    private final List<String> imageUrls;
     private final List<MultipartBody.Part> images;
 
-    public ImageListAdapter(Context context, List<String> imageNames, List<MultipartBody.Part> images) {
+    public ImageListAdapter(Context context, List<String> imageNames, List<String> imageUrls, List<MultipartBody.Part> images) {
         this.context = context;
         this.imageNames = imageNames;
+        this.imageUrls = imageUrls;
         this.images = images;
     }
 
@@ -41,7 +45,9 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.View
         holder.titleView.setText(image);
         holder.subtitleView.setVisibility(View.GONE);
         holder.button.setOnClickListener(v -> {
+            imageUrls.remove(image);
             imageNames.remove(image);
+            removePartByFileName(image);
             notifyDataSetChanged();
             holder.setVisibility(View.GONE);
         });
@@ -61,6 +67,18 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.View
         imageNames.add(imageName);
         images.add(image);
         notifyDataSetChanged();
+    }
+
+    private void removePartByFileName(String targetFileName) {
+        Iterator<MultipartBody.Part> iterator = this.images.iterator();
+        while (iterator.hasNext()) {
+            MultipartBody.Part part = iterator.next();
+            String disposition = Objects.requireNonNull(part.headers()).get("Content-Disposition");
+            if (disposition != null && disposition.contains("filename=\"" + targetFileName + "\"")) {
+                iterator.remove();
+                break;
+            }
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

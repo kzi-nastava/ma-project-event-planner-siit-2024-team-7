@@ -385,7 +385,9 @@ public class CreateEventFragment extends Fragment {
                         Navigation.findNavController(requireView()).navigate(R.id.nav_event);
                     }
                     else {
-                        Navigation.findNavController(requireView()).navigate(R.id.navigate_to_budget_management);
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("eventBudget", response.body());
+                        Navigation.findNavController(requireView()).navigate(R.id.navigate_to_budget_creation, bundle);
                     }
                 } else {
                     Toast.makeText(requireContext(), "Failed to create budget", Toast.LENGTH_SHORT).show();

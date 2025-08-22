@@ -379,4 +379,5 @@
         <item>Available</item>
         <item>Unavailable</item>
     </string-array>
+    <string name="no_comments_yet">No comments yet!</string>
 </resources>

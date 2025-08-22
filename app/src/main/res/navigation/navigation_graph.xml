@@ -126,6 +126,9 @@
             app:destination="@id/nav_event"
             app:popUpTo="@id/nav_event"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/navigate_to_budget_creation"
+            app:destination="@id/nav_budget_management" />
 
     </fragment>
 
@@ -195,6 +198,8 @@
         <action
             android:id="@+id/navigate_to_event_statistics"
             app:destination="@id/nav_event_statistics" />
+        <action android:id="@+id/navigate_to_chat_from_details"
+            app:destination="@id/nav_chats" />
 
     </fragment>
 

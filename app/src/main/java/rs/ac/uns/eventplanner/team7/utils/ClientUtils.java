@@ -19,6 +19,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.data.dto.ErrorMessageDTO;
+import rs.ac.uns.eventplanner.team7.data.services.ActivationLinkService;
 import rs.ac.uns.eventplanner.team7.data.services.AuthService;
 import rs.ac.uns.eventplanner.team7.data.services.BudgetService;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
@@ -82,6 +83,7 @@ public final class ClientUtils {
             put(ReportService.class, retrofit.create(ReportService.class));
             put(FeedbackService.class, retrofit.create(FeedbackService.class));
             put(ChatService.class, retrofit.create(ChatService.class));
+            put(ActivationLinkService.class, retrofit.create(ActivationLinkService.class));
         }};
     }
 

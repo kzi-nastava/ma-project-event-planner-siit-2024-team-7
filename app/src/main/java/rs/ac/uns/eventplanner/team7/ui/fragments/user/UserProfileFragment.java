@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateUserRequestDTO;
 import rs.ac.uns.eventplanner.team7.ui.adapters.CalendarAdapter;
 import rs.ac.uns.eventplanner.team7.ui.adapters.CarouselAdapter;
 import rs.ac.uns.eventplanner.team7.data.dto.BusynessDTO;
@@ -296,6 +299,27 @@ public class UserProfileFragment extends Fragment {
             }
             userService.updateProvider(authHeader, userId, dto).enqueue((Callback<UpdateProviderResponseDTO>) createUpdateFieldCallback());
         }
+        if (role == UserRole.AUTH) {
+            UpdateUserRequestDTO dto = new UpdateUserRequestDTO();
+            Location location = getCurrentLocationData(); // Retrieve the full location data
+
+            if (fieldId == R.id.change_country_layout) {
+                location.setCountry(value);
+            } else if (fieldId == R.id.change_city_layout) {
+                location.setCity(value);
+            } else if (fieldId == R.id.change_street_layout) {
+                location.setStreet(value);
+            } else if (fieldId == R.id.change_house_number_layout) {
+                location.setHouseNumber(value);
+            }
+            dto.setLocation(location);
+
+            if (fieldId == R.id.change_phone_layout && validatePhone(value)) {
+                dto.setPhone(value);
+            }
+            dto.setRole(UserRole.AUTH);
+            userService.updateAuthUser(AuthUtil.getAuthorizationValue(requireContext()), userId, dto).enqueue((Callback<Void>) createUpdateFieldCallback());
+        }
     }
 
 
@@ -388,27 +412,38 @@ public class UserProfileFragment extends Fragment {
     private void fillFields(View view) {
         Integer userId = AuthUtil.extractId(requireContext());
         String authHeader = AuthUtil.getAuthorizationValue(requireContext());
-
         if (role == UserRole.EVENT_ORG) {
-            userService.getOrganizer(authHeader, userId).enqueue((Callback<GetOrganizerResponseDTO>) createFillCallback(view, true));
+            userService.getOrganizer(authHeader, userId).enqueue((Callback<GetOrganizerResponseDTO>) createFillCallback(view, UserRole.EVENT_ORG));
         } else if (role == UserRole.SPP) {
-            userService.getProvider(authHeader, userId).enqueue((Callback<GetProviderResponseDTO>) createFillCallback(view, false));
+            userService.getProvider(authHeader, userId).enqueue((Callback<GetProviderResponseDTO>) createFillCallback(view, UserRole.SPP));
+        }
+        else if (role == UserRole.AUTH) {
+            Log.d("CALL", "We are making the get call");
+            userService.getUser(authHeader, userId).enqueue((Callback<GetUserResponseDTO>) createFillCallback(view, UserRole.AUTH));
         }
     }
 
-    private Callback<?> createFillCallback(View view, boolean isOrganizer) {
+    private Callback<?> createFillCallback(View view, UserRole role) {
         return new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
                 if (!isAdded()) return;
+                Log.d("INFO", "We are in onResponse");
                 if (response.isSuccessful()) {
-                    if (isOrganizer) {
+                    Log.d("INFO", "response successful");
+
+                    if (role == UserRole.EVENT_ORG) {
                         GetOrganizerResponseDTO dto = (GetOrganizerResponseDTO) response.body();
-                        fillFieldsFromDto(view, dto, null);
-                    } else {
+                        fillFieldsFromDto(view, dto, null, null);
+                    } else if (role == UserRole.SPP) {
                         GetProviderResponseDTO dto = (GetProviderResponseDTO) response.body();
-                        fillFieldsFromDto(view, null, dto);
+                        fillFieldsFromDto(view, null, dto, null);
+                    } else if (role == UserRole.AUTH) {
+                        Log.d("In", "we are in");
+                        GetUserResponseDTO dto = (GetUserResponseDTO) response.body();
+                        fillFieldsFromDto(view, null, null, dto);
                     }
+
                 }
             }
             @Override
@@ -418,7 +453,7 @@ public class UserProfileFragment extends Fragment {
         };
     }
 
-    private void fillFieldsFromDto(View view, GetOrganizerResponseDTO orgDto, GetProviderResponseDTO proDto) {
+    private void fillFieldsFromDto(View view, GetOrganizerResponseDTO orgDto, GetProviderResponseDTO proDto, GetUserResponseDTO userDto) {
         if (orgDto != null) {
             fillCommonFields(view, orgDto.getEmail(), orgDto.getPhone(), orgDto.getLocation().getCountry(),
                     orgDto.getLocation().getCity(), orgDto.getLocation().getStreet(), orgDto.getLocation().getHouseNumber(),
@@ -437,6 +472,11 @@ public class UserProfileFragment extends Fragment {
             fillField(view, R.id.change_org_desc, proDto.getOrgDesc());
 
             setupAllCarousels(view, null, proDto);
+        }
+        else if (userDto != null) {
+            fillCommonFields(view, userDto.getEmail(), userDto.getPhone(), userDto.getLocation().getCountry(),
+                    userDto.getLocation().getCity(), userDto.getLocation().getStreet(), userDto.getLocation().getHouseNumber(),
+                    userDto.getPhotoURL());
         }
     }
 
@@ -472,5 +512,12 @@ public class UserProfileFragment extends Fragment {
     private void showConfirmDeactivationDialog() {
         AccountDeactivationDialogFragment fragment = AccountDeactivationDialogFragment.newInstance(role);
         fragment.show(getParentFragmentManager(), "ConfirmDeactivationFragment");
+    }
+
+    private boolean validatePhone(String phone) {
+        if (!Patterns.PHONE.matcher(phone).matches()) {
+            return false;
+        }
+        return true;
     }
 }

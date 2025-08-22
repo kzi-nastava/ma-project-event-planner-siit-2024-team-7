@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,10 +14,17 @@ import androidx.core.splashscreen.SplashScreen;
 import java.time.Instant;
 import java.util.Date;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.data.services.ActivationLinkService;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
 public class RoutingActivity extends AppCompatActivity {
+
+    private final ActivationLinkService activationLinkService = ClientUtils.injectService(ActivationLinkService.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +74,9 @@ public class RoutingActivity extends AppCompatActivity {
             case "accept_invitation":
                 return handleInvitation(data, defaultIntent);
 
+            case "activate":
+                return handleActivation(data, defaultIntent);
+
             default:
                 return defaultIntent;
         }
@@ -103,6 +114,46 @@ public class RoutingActivity extends AppCompatActivity {
         } catch (NumberFormatException e) {
             return targetIntent;
         }
+    }
+
+    @NonNull
+    private Intent handleActivation(Uri data, Intent defaultIntent) {
+        String token = data.getQueryParameter("id");
+        if (token == null) return defaultIntent;
+
+        // Start the activation process
+        activationLinkService.activate(AuthUtil.getAuthorizationValue(this), Integer.parseInt(token))
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (response.code() == 204 || response.isSuccessful()) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(RoutingActivity.this,
+                                        "Account activation successful, you may login now",
+                                        Toast.LENGTH_LONG).show();
+                            });
+                        } else {
+                            runOnUiThread(() -> {
+                                Toast.makeText(RoutingActivity.this,
+                                        "Account activation unsuccessful, please try again later",
+                                        Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(RoutingActivity.this,
+                                    "Account activation failed, please try again later",
+                                    Toast.LENGTH_LONG).show();
+                        });
+                    }
+                });
+
+        // Show a loading message and return to login
+        Toast.makeText(this, "Activating account...", Toast.LENGTH_SHORT).show();
+        return new Intent(this, LoginActivity.class);
     }
 
     private boolean isTokenExpired() {

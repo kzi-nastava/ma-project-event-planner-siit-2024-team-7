@@ -18,10 +18,12 @@ import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateOrganizerRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateProviderRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateUserRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UserPreferencesDTO;
 
 public interface UserService {
@@ -118,4 +120,18 @@ public interface UserService {
     })
     @PUT("users/{id}/preferences")
     Call<UserPreferencesDTO> updatePreferences(@Header("Authorization") String token, @Path("id") Integer id, @Body UserPreferencesDTO preferences);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @PUT("users/{id}")
+    Call<Void> updateAuthUser(@Header("Authorization") String token, @Path("id") Integer id, @Body UpdateUserRequestDTO dto);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("users/{id}")
+    Call<GetUserResponseDTO> getUser(@Header("Authorization") String token, @Path("id") Integer id);
 }

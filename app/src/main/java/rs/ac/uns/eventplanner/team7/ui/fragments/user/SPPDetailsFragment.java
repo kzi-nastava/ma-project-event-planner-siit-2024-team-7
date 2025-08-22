@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,17 +20,26 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.feedback.AverageRatingDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.feedback.FeedbackDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reporting.CreateReportRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reporting.ReportDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.services.FeedbackService;
 import rs.ac.uns.eventplanner.team7.data.services.ReportService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
+import rs.ac.uns.eventplanner.team7.ui.adapters.CommentAdapter;
+import rs.ac.uns.eventplanner.team7.ui.fragments.feedback.FeedbackDialog;
 import rs.ac.uns.eventplanner.team7.ui.fragments.reporting.ReportReasonDialogFragment;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
@@ -37,11 +48,14 @@ public class SPPDetailsFragment extends Fragment {
 
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final ReportService reportService = ClientUtils.injectService(ReportService.class);
+    private final FeedbackService feedbackService = ClientUtils.injectService(FeedbackService.class);
     private GetProviderResponseDTO providerDTO = null;
     private Integer itemId;
-    private MaterialTextView titleNameView, emailView, descriptionView, addressView, phoneView;
-    private ImageView providerImage;
-    private MaterialButton reportButton;
+    private MaterialTextView titleNameView, emailView, descriptionView, addressView, phoneView, noComments, ratingCount;
+    private ImageView providerImage, star1, star2, star3, star4, star5;
+    private MaterialButton reportButton, chatButton, rateButton;
+    private RecyclerView commentsView;
+    private CommentAdapter commentAdapter;
 
     public SPPDetailsFragment() {
         // Required empty public constructor
@@ -67,12 +81,26 @@ public class SPPDetailsFragment extends Fragment {
         phoneView = view.findViewById(R.id.provider_phone);
         providerImage = view.findViewById(R.id.spp_profile_pic);
         reportButton = view.findViewById(R.id.report_account_button);
+        chatButton = view.findViewById(R.id.chat_w_provider_button);
+        rateButton = view.findViewById(R.id.rate_provider_button);
+        commentsView = view.findViewById(R.id.provider_comments);
+        noComments = view.findViewById(R.id.no_comments_provider);
+        ratingCount = view.findViewById(R.id.rating_count);
+        star1 = view.findViewById(R.id.star1);
+        star2 = view.findViewById(R.id.star2);
+        star3 = view.findViewById(R.id.star3);
+        star4 = view.findViewById(R.id.star4);
+        star5 = view.findViewById(R.id.star5);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        commentAdapter = new CommentAdapter(requireContext(), new ArrayList<>());
+        commentsView.setAdapter(commentAdapter);
+
         userService.getProviderByItemId(AuthUtil.getAuthorizationValue(requireContext()), itemId)
                 .enqueue(new Callback<>() {
                     @Override
@@ -81,7 +109,10 @@ public class SPPDetailsFragment extends Fragment {
                         if (response.isSuccessful() && response.body() != null) {
                             providerDTO = response.body();
                             fillDetails();
+                            setFeedbacks();
                             reportButton.setEnabled(true);
+                            chatButton.setEnabled(true);
+                            rateButton.setEnabled(true);
                         }
                     }
 
@@ -96,6 +127,17 @@ public class SPPDetailsFragment extends Fragment {
             dialog.setCancelable(false);
             dialog.setOnSubmitClickListener(this::reportProvider);
             dialog.show(getChildFragmentManager(), "ReportProviderDialog");
+        });
+
+        chatButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("contactDTO", new ChatContactDTO(providerDTO.getId(), providerDTO.getEmail(), providerDTO.getPhotoURL(), false));
+            Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
+        });
+
+        rateButton.setOnClickListener(v -> {
+            FeedbackDialog dialog = new FeedbackDialog(null, providerDTO.getEmail(), "provider", null);
+            dialog.show(requireActivity().getSupportFragmentManager(), "FeedbackDialog");
         });
     }
 
@@ -145,11 +187,86 @@ public class SPPDetailsFragment extends Fragment {
                 providerDTO.getLocation().getCountry()));
         phoneView.setText(providerDTO.getPhone());
         if (providerDTO.getPhotoURL() != null && !providerDTO.getPhotoURL().isEmpty()) {
+            String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + providerDTO.getPhotoURL();
             Picasso.get()
-                    .load(providerDTO.getPhotoURL())
+                    .load(backendUrl)
                     .error(R.drawable.image_placeholder)
                     .placeholder(R.drawable.image_placeholder)
                     .into(providerImage);
         }
     }
+
+    private void setFeedbacks() {
+        String token = AuthUtil.getAuthorizationValue(requireContext());
+        feedbackService.getAllApprovedForProvider(token, providerDTO.getId()).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<FeedbackDTO>> call,
+                                   @NonNull Response<List<FeedbackDTO>> response) {
+                if (!isAdded()) return;
+                commentAdapter.clear();
+                if (response.body() == null || !response.isSuccessful()) {
+                    noComments.setText(R.string.unable_to_contact_server);
+                    return;
+                }
+                if (response.body().isEmpty()) {
+                    noComments.setText(R.string.no_comments_yet);
+                    return;
+                }
+                commentAdapter.addAll(response.body());
+                noComments.setText("");
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<FeedbackDTO>> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
+
+        feedbackService.getAverageRatingForProvider(token, providerDTO.getId()).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<AverageRatingDTO> call,
+                                   @NonNull Response<AverageRatingDTO> response) {
+                if (!isAdded()) return;
+                if (response.body() == null || !response.isSuccessful()) return;
+                ratingCount.setText(String.format("(%s)", response.body().getFeedbackCount()));
+                fillStars(response.body().getRating());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AverageRatingDTO> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
+    }
+
+    private void fillStars(double rating) {
+        int filledStar = R.drawable.ic_star_filled;
+        int emptyStar = R.drawable.ic_star;
+        int halfStar = R.drawable.ic_half_star;
+
+        ImageView[] stars = { star1, star2, star3, star4, star5 };
+
+        int fullStars = (int) rating;
+        double decimal = rating - fullStars;
+
+        if (decimal > 0.7) {
+            fullStars++;
+            decimal = 0;
+        } else if (decimal < 0.3) {
+            decimal = 0;
+        } else {
+            decimal = 0.5;
+        }
+
+        for (int i = 0; i < stars.length; i++) {
+            if (i < fullStars) {
+                stars[i].setImageResource(filledStar);
+            } else if (i == fullStars && decimal == 0.5) {
+                stars[i].setImageResource(halfStar);
+            } else {
+                stars[i].setImageResource(emptyStar);
+            }
+        }
+    }
+
 }

@@ -22,6 +22,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.ErrorMessageDTO;
 import rs.ac.uns.eventplanner.team7.data.services.AuthService;
 import rs.ac.uns.eventplanner.team7.data.services.BudgetService;
 import rs.ac.uns.eventplanner.team7.data.services.CategoryService;
+import rs.ac.uns.eventplanner.team7.data.services.ChatService;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.data.services.FeedbackService;
@@ -80,6 +81,7 @@ public final class ClientUtils {
             put(ReservationService.class, retrofit.create(ReservationService.class));
             put(ReportService.class, retrofit.create(ReportService.class));
             put(FeedbackService.class, retrofit.create(FeedbackService.class));
+            put(ChatService.class, retrofit.create(ChatService.class));
         }};
     }
 

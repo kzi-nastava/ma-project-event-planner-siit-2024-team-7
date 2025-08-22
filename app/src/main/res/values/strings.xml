@@ -369,4 +369,5 @@
     <string name="event_event_type_is_required">Event type is required</string>
     <string name="event_visibility_is_required">Event visibility is required</string>
     <string name="event_details">Event details</string>
+    <string name="no_comments_yet">No comments yet!</string>
 </resources>

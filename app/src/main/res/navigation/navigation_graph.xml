@@ -27,6 +27,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/nav_contacts"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.chats.ContactsFragment"
+        android:label="Contacts"
+        tools:layout="@layout/fragment_contacts">
+        <action
+            android:id="@+id/navigate_to_chat_from_contacts"
+            app:destination="@id/nav_chats"/>
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_chats"
         android:name="rs.ac.uns.eventplanner.team7.ui.fragments.chats.ChatsFragment"
         android:label="@string/toolbar_chats"
@@ -259,7 +269,11 @@
     <fragment
         android:id="@+id/nav_spp_details"
         android:name="rs.ac.uns.eventplanner.team7.ui.fragments.user.SPPDetailsFragment"
-        android:label="@string/user_details"/>
+        android:label="@string/user_details">
+        <action
+            android:id="@+id/navigate_to_chat_from_spp"
+            app:destination="@+id/nav_chats" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_product_details"
@@ -272,6 +286,9 @@
         <action
             android:id="@+id/navigate_to_select_event"
             app:destination="@id/nav_select_event_for_purchase"/>
+        <action
+            android:id="@+id/navigate_to_chat_from_product"
+            app:destination="@+id/nav_chats" />
     </fragment>
 
     <fragment
@@ -295,6 +312,9 @@
         <action
             android:id="@+id/navigate_to_service_reservation_from_service_details"
             app:destination="@id/nav_service_reservation" />
+        <action
+            android:id="@+id/navigate_to_chat_from_service"
+            app:destination="@+id/nav_chats" />
     </fragment>
     <fragment
         android:id="@+id/nav_service_reservation"

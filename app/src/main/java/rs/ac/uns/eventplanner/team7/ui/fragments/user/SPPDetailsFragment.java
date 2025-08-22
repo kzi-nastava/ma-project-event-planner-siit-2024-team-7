@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +24,9 @@ import java.util.Objects;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reporting.CreateReportRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reporting.ReportDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
@@ -41,7 +44,7 @@ public class SPPDetailsFragment extends Fragment {
     private Integer itemId;
     private MaterialTextView titleNameView, emailView, descriptionView, addressView, phoneView;
     private ImageView providerImage;
-    private MaterialButton reportButton;
+    private MaterialButton reportButton, chatButton;
 
     public SPPDetailsFragment() {
         // Required empty public constructor
@@ -67,6 +70,7 @@ public class SPPDetailsFragment extends Fragment {
         phoneView = view.findViewById(R.id.provider_phone);
         providerImage = view.findViewById(R.id.spp_profile_pic);
         reportButton = view.findViewById(R.id.report_account_button);
+        chatButton = view.findViewById(R.id.chat_w_provider_button);
         return view;
     }
 
@@ -82,6 +86,7 @@ public class SPPDetailsFragment extends Fragment {
                             providerDTO = response.body();
                             fillDetails();
                             reportButton.setEnabled(true);
+                            chatButton.setEnabled(true);
                         }
                     }
 
@@ -96,6 +101,12 @@ public class SPPDetailsFragment extends Fragment {
             dialog.setCancelable(false);
             dialog.setOnSubmitClickListener(this::reportProvider);
             dialog.show(getChildFragmentManager(), "ReportProviderDialog");
+        });
+
+        chatButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("contactDTO", new ChatContactDTO(providerDTO.getId(), providerDTO.getEmail(), providerDTO.getPhotoURL(), false));
+            Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
         });
     }
 
@@ -145,8 +156,9 @@ public class SPPDetailsFragment extends Fragment {
                 providerDTO.getLocation().getCountry()));
         phoneView.setText(providerDTO.getPhone());
         if (providerDTO.getPhotoURL() != null && !providerDTO.getPhotoURL().isEmpty()) {
+            String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + providerDTO.getPhotoURL();
             Picasso.get()
-                    .load(providerDTO.getPhotoURL())
+                    .load(backendUrl)
                     .error(R.drawable.image_placeholder)
                     .placeholder(R.drawable.image_placeholder)
                     .into(providerImage);

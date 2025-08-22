@@ -13,7 +13,7 @@
         android:title="@string/my_services"
         android:icon="@drawable/ic_services"/>
 
-    <item android:id="@+id/nav_chats"
+    <item android:id="@+id/nav_contacts"
         android:title="@string/toolbar_chats"
         android:icon="@drawable/ic_chat"/>
 

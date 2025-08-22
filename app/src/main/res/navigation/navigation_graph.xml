@@ -20,6 +20,8 @@
         <action
             android:id="@+id/navigate_to_product_details"
             app:destination="@id/nav_product_details" />
+        <action android:id="@+id/navigate_to_event_details"
+            app:destination="@+id/nav_event_details" />
     </fragment>
 
     <fragment
@@ -86,17 +88,20 @@
             app:destination="@id/nav_event"
             app:popUpTo="@id/nav_event"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/navigate_to_budget_creation"
+            app:destination="@id/nav_budget_management" />
 
     </fragment>
 
     <fragment
         android:id="@+id/nav_update_event"
-        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.UpdateEvent"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.UpdateEventFragment"
         android:label="@string/my_events"
         tools:layout="@layout/fragment_update_event">
         <action
             android:id="@+id/navigate_to_budget_management"
-            app:destination="@id/nav_budget_management"/>
+            app:destination="@id/nav_budget_management" />
     </fragment>
 
     <fragment
@@ -145,6 +150,26 @@
             app:destination="@id/nav_category_management"/>
 
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_details"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.EventDetailsFragment"
+        android:label="@string/event_details"
+        tools:layout="@layout/fragment_event_details">
+
+        <action
+            android:id="@+id/navigate_to_event_statistics"
+            app:destination="@id/nav_event_statistics" />
+        <action android:id="@+id/navigate_to_chat_from_details"
+            app:destination="@id/nav_chats" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_statistics"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.EventStatisticsFragment"
+        android:label="Event Statistics"
+        tools:layout="@layout/fragment_event_statistics"/>
 
     <fragment
         android:id="@+id/nav_service_management"

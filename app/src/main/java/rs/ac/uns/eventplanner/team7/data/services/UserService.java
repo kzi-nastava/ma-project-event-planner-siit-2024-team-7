@@ -8,9 +8,12 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import rs.ac.uns.eventplanner.team7.data.dto.BusynessDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.event.FavouriteEventRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetOrganizerResponseDTO;
@@ -85,8 +88,22 @@ public interface UserService {
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
+    @POST("users/{id}/favourites/events")
+    Call<ResponseMessageDTO> markEventAsFavourite(@Header("Authorization") String token, @Path("id") Integer id, @Body FavouriteEventRequestDTO dto);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
     @GET("users/providers/by_item/{itemId}")
     Call<GetProviderResponseDTO> getProviderByItemId(@Header("Authorization") String token, @Path("itemId") Integer itemId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("users/organizers/by_event/{eventId}")
+    Call<GetOrganizerResponseDTO> getOrganizerByEventId(@Header("Authorization") String token, @Path("eventId") Integer eventId);
 
     @Headers({
             "User-Agent: Mobile-Android",

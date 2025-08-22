@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +47,7 @@ public final class ClientUtils {
         final Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
                 .registerTypeAdapter(Instant.class, new InstantConverter())
+                .registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
                 .create();
 
         final OkHttpClient client = new OkHttpClient.Builder()

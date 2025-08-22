@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,26 +16,26 @@ public class Activity implements Parcelable {
 
     private String name;
     private String description;
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private String location;
 
     public Activity() {}
 
-    public Activity(String name, String description, LocalDateTime start,
-                    LocalDateTime end, String location) {
+    public Activity(String name, String description, LocalTime start,
+                    LocalTime end, String location) {
         this.name = name;
         this.description = description;
-        this.start = start;
-        this.end = end;
+        this.startTime = start;
+        this.endTime = end;
         this.location = location;
     }
 
     protected Activity(Parcel in) {
         name = in.readString();
         description = in.readString();
-        start = DateConverter.toLocalDateTime(in.readLong());
-        end = DateConverter.toLocalDateTime(in.readLong());
+        startTime = DateConverter.toLocalTime(in.readLong());
+        endTime = DateConverter.toLocalTime(in.readLong());
         location = in.readString();
     }
 
@@ -60,8 +60,8 @@ public class Activity implements Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(description);
-        dest.writeLong(DateConverter.toLong(start));
-        dest.writeLong(DateConverter.toLong(end));
+        dest.writeLong(DateConverter.toLong(startTime));
+        dest.writeLong(DateConverter.toLong(endTime));
         dest.writeString(location);
     }
 }

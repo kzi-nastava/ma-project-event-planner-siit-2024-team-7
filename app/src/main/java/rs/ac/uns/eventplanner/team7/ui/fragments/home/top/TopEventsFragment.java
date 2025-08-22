@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -21,6 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.dto.event.GetEventResponseDTO;
 import rs.ac.uns.eventplanner.team7.ui.adapters.CardRecyclerViewAdapter;
 import rs.ac.uns.eventplanner.team7.data.dto.event.DetailedEventDTO;
 import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
@@ -100,6 +103,20 @@ public class TopEventsFragment extends Fragment implements CardClickListener {
 
     @Override
     public void onCardClicked(BasicCard entity) {
+        service.getEvent(AuthUtil.getAuthorizationValue(requireContext()), entity.getId()).enqueue(new Callback<GetEventResponseDTO>() {
+            @Override
+            public void onResponse(@NonNull Call<GetEventResponseDTO> call, @NonNull Response<GetEventResponseDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("eventDTO", response.body());
+                    Navigation.findNavController(requireView()).navigate(R.id.navigate_to_event_details, bundle);
+                }
+            }
 
+            @Override
+            public void onFailure(@NonNull Call<GetEventResponseDTO> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

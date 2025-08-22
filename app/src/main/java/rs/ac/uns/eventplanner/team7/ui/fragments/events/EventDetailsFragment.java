@@ -37,8 +37,10 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.FavouriteEventRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.GetEventResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
@@ -51,6 +53,7 @@ public class EventDetailsFragment extends Fragment {
 
     private static final String event = "eventDTO";
     private GetEventResponseDTO eventDto;
+    private GetOrganizerResponseDTO organizerDTO;
 
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final EventService eventService = ClientUtils.injectService(EventService.class);
@@ -77,6 +80,31 @@ public class EventDetailsFragment extends Fragment {
 
         Button exportGuestListButton = view.findViewById(R.id.btn_export_guest_list_pdf);
         exportGuestListButton.setOnClickListener(v -> downloadGuestListPdf());
+
+
+        Button chatButton = view.findViewById(R.id.btn_chat_w_organizer);
+        chatButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("contactDTO", new ChatContactDTO(organizerDTO.getId(), organizerDTO.getEmail(), organizerDTO.getPhotoURL(), false));
+            Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
+
+        });
+        String token = AuthUtil.getAuthorizationValue(requireContext());
+        userService.getOrganizerByEventId(token, eventDto.getId()).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<GetOrganizerResponseDTO> call,
+                                   @NonNull Response<GetOrganizerResponseDTO> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    organizerDTO = response.body();
+                    chatButton.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GetOrganizerResponseDTO> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         initMap(view);
         populateEventDetails(view);

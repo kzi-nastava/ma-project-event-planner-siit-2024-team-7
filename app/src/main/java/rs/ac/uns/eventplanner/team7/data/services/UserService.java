@@ -102,6 +102,13 @@ public interface UserService {
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
+    @GET("users/organizers/by_event/{eventId}")
+    Call<GetOrganizerResponseDTO> getOrganizerByEventId(@Header("Authorization") String token, @Path("eventId") Integer eventId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
     @GET("users/{id}/preferences")
     Call<UserPreferencesDTO> getPreferences(@Header("Authorization") String token, @Path("id") Integer id);
 

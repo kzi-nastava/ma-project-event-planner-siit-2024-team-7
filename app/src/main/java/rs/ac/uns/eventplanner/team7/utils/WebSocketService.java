@@ -17,6 +17,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
+import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.notification.PersonalNotificationDTO;
 import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompClient;
@@ -62,7 +63,20 @@ public class WebSocketService {
                                 Intent broadcast = new Intent(ACTION_NEW_NOTIFICATION);
                                 LocalBroadcastManager.getInstance(context).sendBroadcast(broadcast);
                             }, throwable -> Log.e(tag, "Error in WebSocket: ", throwable));
+
+                    Disposable dispTopicChat = stompClient.topic("/user/queue/chats")
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(stompMessage -> {
+                                Log.d(tag, "New message: " + stompMessage.getPayload());
+                                var dto = gson.fromJson(stompMessage.getPayload(), ChatResponseDTO.class);
+                                NotificationUtils.showChatNotification(context, dto);
+                                Intent broadcast = new Intent(ACTION_NEW_NOTIFICATION);
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(broadcast);
+                            }, throwable -> Log.e(tag, "Error in WebSocket: ", throwable));
+
                     compositeDisposable.add(dispTopic);
+                    compositeDisposable.add(dispTopicChat);
                     break;
                 case ERROR:
                     Log.e(tag, "WebSocket Error", lifecycleEvent.getException());

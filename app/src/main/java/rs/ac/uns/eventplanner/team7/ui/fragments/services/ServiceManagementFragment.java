@@ -89,6 +89,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
 
     private final List<WorkDayDTO> workDays;
     private final List<String> imageNames;
+    private final List<String> imageUrls;
     private final List<MultipartBody.Part> images;
     private final List<EventType> selectedEventTypes;
     private List<Category> categories;
@@ -103,6 +104,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
     public ServiceManagementFragment() {
         this.workDays = new ArrayList<>();
         this.imageNames = new ArrayList<>();
+        this.imageUrls = new ArrayList<>();
         this.images = new ArrayList<>();
         this.selectedEventTypes = new ArrayList<>();
         this.categories = new ArrayList<>();
@@ -113,6 +115,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             serviceDTO = getArguments().getParcelable("serviceDTO", GetServiceResponseDTO.class);
+            imageUrls.addAll(Objects.requireNonNull(serviceDTO).getImages());
         }
     }
 
@@ -165,7 +168,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
                 }
             }
         });
-        imageListAdapter = new ImageListAdapter(getContext(), imageNames, images);
+        imageListAdapter = new ImageListAdapter(getContext(), imageNames, imageUrls, images);
         imagesView.setAdapter(imageListAdapter);
 
         selectImagesBtn.setOnClickListener(v -> {
@@ -547,8 +550,10 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
                 if (response.isSuccessful() && response.body() != null) {
                     if (serviceDTO == null)
                         uploadImages(((CreateServiceResponseDTO)response.body()).getId(), new ArrayList<>());
+                    else if (!images.isEmpty())
+                        uploadImages(((UpdateServiceResponseDTO)response.body()).getId(), new ArrayList<>(imageUrls));
                     else
-                        uploadImages(((UpdateServiceResponseDTO)response.body()).getId(), new ArrayList<>(serviceDTO.getImages()));
+                        uploadOnlyUrls(((UpdateServiceResponseDTO)response.body()).getId(), new ArrayList<>(imageUrls));
                     returnToBaseFragment(responseMessage);
                 } else {
                     try {
@@ -574,6 +579,36 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
 
     private void uploadImages(Integer serviceId, List<String> imageUrls) {
         imagesService.uploadImagesForService(AuthUtil.getAuthorizationValue(requireContext()), serviceId, images, imageUrls)
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<String>> call,
+                                           @NonNull Response<List<String>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Log.d("SUCCESS", "Images uploaded successfully!");
+                        } else {
+                            try {
+                                // Show error message
+                                String errorBody = Objects.requireNonNull(response.errorBody()).string();
+                                JSONObject jsonObject = new JSONObject(errorBody);
+                                String message = jsonObject.getString("message");
+                                MaterialTextView errorMsg = requireView().findViewById(R.id.error_msg);
+                                errorMsg.setText(message);
+                                errorMsg.setVisibility(View.VISIBLE);
+                            } catch (Exception e) {
+                                Log.d("ERROR", Objects.requireNonNull(e.getMessage()));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
+                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    }
+                });
+    }
+
+    private void uploadOnlyUrls(Integer serviceId, List<String> imageUrls) {
+        imagesService.updateImageUrlsForService(AuthUtil.getAuthorizationValue(requireContext()), serviceId, imageUrls)
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<List<String>> call,

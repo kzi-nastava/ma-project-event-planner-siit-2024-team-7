@@ -381,4 +381,5 @@
     </string-array>
     <string name="no_comments_yet">No comments yet!</string>
     <string name="no_contacts_yet">No contacts yet!</string>
+    <string name="contact_name">Contact Name</string>
 </resources>

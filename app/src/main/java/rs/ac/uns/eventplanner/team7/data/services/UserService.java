@@ -13,6 +13,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import rs.ac.uns.eventplanner.team7.data.dto.BusynessDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.blocking.BlockUserRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.FavouriteEventRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
@@ -92,6 +93,13 @@ public interface UserService {
     })
     @POST("users/{id}/favourites/events")
     Call<ResponseMessageDTO> markEventAsFavourite(@Header("Authorization") String token, @Path("id") Integer id, @Body FavouriteEventRequestDTO dto);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @POST("users/block")
+    Call<Void> blockUser(@Header("Authorization") String token, @Body BlockUserRequestDTO dto);
 
     @Headers({
             "User-Agent: Mobile-Android",

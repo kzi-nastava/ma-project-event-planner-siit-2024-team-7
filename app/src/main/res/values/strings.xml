@@ -380,4 +380,5 @@
         <item>Unavailable</item>
     </string-array>
     <string name="no_comments_yet">No comments yet!</string>
+    <string name="no_contacts_yet">No contacts yet!</string>
 </resources>

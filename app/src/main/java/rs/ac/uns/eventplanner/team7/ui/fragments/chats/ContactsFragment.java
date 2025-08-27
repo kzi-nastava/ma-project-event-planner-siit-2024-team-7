@@ -119,7 +119,7 @@ public class ContactsFragment extends Fragment {
                     return;
                 }
                 adapter.addAll(response.body());
-                messageTextView.setText("");
+                messageTextView.setText(adapter.getItemCount() > 0 ? "" : getString(R.string.no_contacts_yet));
             }
 
             @Override

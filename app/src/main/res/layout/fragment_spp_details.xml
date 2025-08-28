@@ -19,7 +19,7 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1"
             >
 
@@ -231,9 +231,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/chat_w_provider_button"
             style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/open_chat"
             app:icon="@drawable/ic_add_comment"
             android:enabled="false"
@@ -243,9 +242,8 @@
             android:id="@+id/report_account_button"
             style="?attr/materialIconButtonFilledTonalStyle"
             android:backgroundTint="@color/orange_warning"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.9"
             android:text="@string/report"
             app:icon="@drawable/ic_feedback"
             app:iconPadding="8dp"
@@ -254,18 +252,6 @@
             android:enabled="false"
             />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/block_account_button"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            android:backgroundTint="@color/red_delete"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.9"
-            android:text="@string/block"
-            app:icon="@drawable/ic_block"
-            app:iconPadding="8dp"
-            android:enabled="false"
-            />
     </LinearLayout>
 
 </LinearLayout>

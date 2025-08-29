@@ -11,17 +11,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,30 +35,35 @@ import java.util.Objects;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.dto.blocking.BlockUserRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.services.ChatService;
+import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ChatAdapter;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 
 
-public class ChatsFragment extends Fragment {
+public class ChatsFragment extends Fragment implements ContactInfoDialogFragment.OnActionClickListener {
 
     private final ChatService chatService = ClientUtils.injectService(ChatService.class);
+    private final UserService userService = ClientUtils.injectService(UserService.class);
 
     private ChatContactDTO contactDTO;
-    private ImageView profilePicView, sendButton;
     private MaterialTextView contactNameView, noMessageTextView;
-    private RecyclerView chatsRecycleView;
+    private RecyclerView chatsRecyclerView;
     private TextInputEditText messageInput;
+    private LinearLayout mainContentView;
+    private ContactInfoDialogFragment contactInfoDialog;
 
     private ChatAdapter adapter;
-    private String bearerToken;
+    private String bearerToken, email, contactName;
+    private MaterialButton contactInfoButton;
 
     public ChatsFragment() {
     }
@@ -70,38 +80,32 @@ public class ChatsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
-        profilePicView = view.findViewById(R.id.chat_profile_pic);
         contactNameView = view.findViewById(R.id.chat_contact_name);
         noMessageTextView = view.findViewById(R.id.no_chats_message_view);
-        chatsRecycleView = view.findViewById(R.id.chats_recycler_view);
+        chatsRecyclerView = view.findViewById(R.id.chats_recycler_view);
+        mainContentView = view.findViewById(R.id.main_content_layout);
         messageInput = view.findViewById(R.id.chat_message_input);
-        sendButton = view.findViewById(R.id.send_button);
+        contactInfoButton = view.findViewById(R.id.contact_info_button);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        mainContentView.setVisibility(View.INVISIBLE);
         bearerToken = AuthUtil.getAuthorizationValue(requireContext());
+        email = AuthUtil.extractEmail(requireContext());
         adapter = new ChatAdapter(requireContext(), new ArrayList<>(), contactDTO.getPhotoUrl());
-        chatsRecycleView.setAdapter(adapter);
-
-        if (contactDTO.getPhotoUrl() != null && !contactDTO.getPhotoUrl().isEmpty()) {
-            String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + contactDTO.getPhotoUrl();
-            Picasso.get()
-                    .load(backendUrl)
-                    .placeholder(R.drawable.image_placeholder)
-                    .error(R.drawable.image_placeholder)
-                    .into(profilePicView);
-        }
-        contactNameView.setText(contactDTO.getUserEmail());
+        chatsRecyclerView.setAdapter(adapter);
+        getUserInfo();
 
         setContent();
 
         adapter.setOnMessagesInsertedListener(itemCount ->
-                chatsRecycleView.scrollToPosition(itemCount - 1)
+                chatsRecyclerView.scrollToPosition(itemCount - 1)
         );
+
+        adapter.setOnProfilePictureClickListener(this::showContactInfoDialog);
 
         view.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             Rect r = new Rect();
@@ -111,30 +115,137 @@ public class ChatsFragment extends Fragment {
             int keypadHeight = screenHeight - r.bottom;
 
             if (keypadHeight > screenHeight * 0.15) {
-                chatsRecycleView.smoothScrollToPosition(adapter.getItemCount() - 1);
+                int position = adapter.getItemCount() - 1;
+                if (position > 0) chatsRecyclerView.smoothScrollToPosition(position);
             }
         });
 
-        sendButton.setOnClickListener(v -> {
-            String message = Objects.requireNonNull(messageInput.getText()).toString();
-            if (message.isEmpty()) return;
-            ChatRequestDTO dto = new ChatRequestDTO(contactDTO.getUserEmail(), message);
-            chatService.sendChatMessage(bearerToken, dto).enqueue(new Callback<>() {
-                @Override
-                public void onResponse(@NonNull Call<ChatResponseDTO> call,
-                                       @NonNull Response<ChatResponseDTO> response) {
-                    if (!isAdded()) return;
-                    if (response.body() == null || !response.isSuccessful()) return;
-                    setContent();
-                }
+        MaterialButton scrollToBottomButton = view.findViewById(R.id.scroll_to_bottom_button);
 
-                @Override
-                public void onFailure(@NonNull Call<ChatResponseDTO> call, @NonNull Throwable t) {
-                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-                }
-            });
-            messageInput.setText("");
+        chatsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
+                RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+                if (layoutManager instanceof LinearLayoutManager) {
+                    LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+
+                    int lastVisibleItemPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+                    int totalItemCount = linearLayoutManager.getItemCount();
+
+                    scrollToBottomButton.setVisibility(lastVisibleItemPosition == totalItemCount - 1 ? View.INVISIBLE : View.VISIBLE);
+                }
+            }
+        });
+
+        scrollToBottomButton.setOnClickListener(v ->
+                chatsRecyclerView.smoothScrollToPosition(adapter.getItemCount() - 1)
+        );
+
+        TextInputLayout sendLayout = view.findViewById(R.id.chat_message_input_layout);
+        sendLayout.setEndIconOnClickListener(v -> sendMessage());
+
+        contactInfoButton.setOnClickListener(v -> showContactInfoDialog());
+    }
+
+    private void showContactInfoDialog() {
+        if (contactInfoDialog != null) {
+            contactInfoDialog.dismiss();
+        }
+        contactInfoDialog = ContactInfoDialogFragment.newInstance(contactName, contactDTO.getPhotoUrl());
+        contactInfoDialog.show(getChildFragmentManager(), "ContactInfoDialog");
+        contactInfoDialog.setOnActionClickListener(this);
+    }
+
+    @Override
+    public void OnBlockUserClicked() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.block_user)
+                .setMessage(getString(R.string.confirm_blocking, contactName))
+                .setPositiveButton(R.string.confirm, (dialog, which) -> blockUser())
+                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
+
+    @Override
+    public void OnViewProfileClicked() {
+
+    }
+
+    private void blockUser() {
+        contactInfoButton.setEnabled(false);
+        BlockUserRequestDTO dto = new BlockUserRequestDTO(email, contactDTO.getUserEmail());
+        userService.blockUser(bearerToken, dto).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (!isAdded()) return;
+                if (response.isSuccessful()) {
+                    Toast.makeText(requireContext(), R.string.user_blocked_successfully, Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(requireView()).navigate(R.id.navigate_back_to_contacts_after_blocking);
+                    return;
+                }
+                contactInfoButton.setEnabled(true);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                contactInfoButton.setEnabled(true);
+                String message = t.getMessage();
+                if (message == null) return;
+                Log.d("ERROR", message);
+            }
+        });
+    }
+
+    private void sendMessage() {
+        messageInput.clearFocus();
+        String message = Objects.requireNonNull(messageInput.getText()).toString();
+        if (message.isEmpty()) return;
+        ChatRequestDTO dto = new ChatRequestDTO(contactDTO.getUserEmail(), message);
+        chatService.sendChatMessage(bearerToken, dto).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<ChatResponseDTO> call,
+                                   @NonNull Response<ChatResponseDTO> response) {
+                if (!isAdded()) return;
+                if (response.body() == null || !response.isSuccessful()) return;
+                adapter.add(response.body());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ChatResponseDTO> call, @NonNull Throwable t) {
+                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+            }
+        });
+        messageInput.setText("");
+    }
+
+    private void getUserInfo() {
+        userService.getUserDetails(bearerToken, contactDTO.getId()).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<GetUserDetailsResponseDTO> call,
+                                   @NonNull Response<GetUserDetailsResponseDTO> response) {
+                if (!isAdded()) return;
+                if (response.isSuccessful() && response.body() != null) {
+                    GetUserDetailsResponseDTO user = response.body();
+                    if (user.getFirstName() != null && user.getLastName() != null) {
+                        contactName = String.format("%s %s", user.getFirstName(), user.getLastName());
+                    } else if (user.getOrgName() != null) {
+                        contactName = user.getOrgName();
+                    } else {
+                        contactName = user.getEmail();
+                    }
+                    contactNameView.setText(contactName);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
+                String message = t.getMessage();
+                if (message == null) return;
+                Log.d("ERROR", message);
+            }
         });
     }
 
@@ -162,7 +273,10 @@ public class ChatsFragment extends Fragment {
                                    @NonNull Response<List<ChatResponseDTO>> response) {
                 if (!isAdded()) return;
                 adapter.clear();
-                if (response.body() == null || !response.isSuccessful()) {
+                boolean isSuccess = response.isSuccessful();
+                noMessageTextView.setVisibility(isSuccess ? View.GONE : View.VISIBLE);
+                mainContentView.setVisibility(View.VISIBLE);
+                if (response.body() == null || !isSuccess) {
                     noMessageTextView.setText(R.string.unable_to_contact_server);
                     return;
                 }
@@ -174,6 +288,8 @@ public class ChatsFragment extends Fragment {
             public void onFailure(@NonNull Call<List<ChatResponseDTO>> call, @NonNull Throwable t) {
                 Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                 noMessageTextView.setText("");
+                noMessageTextView.setVisibility(View.VISIBLE);
+                mainContentView.setVisibility(View.INVISIBLE);
             }
         });
 

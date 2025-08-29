@@ -382,4 +382,12 @@
     <string name="no_comments_yet">No comments yet!</string>
     <string name="no_contacts_yet">No contacts yet!</string>
     <string name="contact_name">Contact Name</string>
+    <string name="view_profile">View Profile</string>
+    <string name="write_a_message">Write a Message!</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="scroll_to_bottom">Scroll to bottom</string>
+    <string name="block_user">Block this user</string>
+    <string name="confirm_blocking">"If you block %s, you won't be able to chat or see their profile and items anymore. Do you want to proceed? They won't be notified if you block them."</string>
+    <string name="user_blocked_successfully">Successfully blocked the user!</string>
 </resources>

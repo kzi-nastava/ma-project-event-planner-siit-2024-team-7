@@ -1,80 +1,105 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragments.chats.ChatsFragment"
-    android:orientation="vertical">
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/no_chats_message_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:textSize="16sp"
-        android:text="@string/fetching_data"
-        />
-
-    <ImageView
-        android:id="@+id/chat_profile_pic"
-        android:layout_marginTop="3dp"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:src="@drawable/image_placeholder" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/chat_contact_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="3dp"
-        android:textSize="24sp"
-        android:text="Contact Name"
-        android:textAlignment="center"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chats_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/chat_bubble"
-        />
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        >
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/no_chats_message_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="@string/fetching_data"
+                android:layout_gravity="center"
+                />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/chat_message_input_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:id="@+id/main_content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
             android:layout_weight="1"
-            android:hint="Write a Message!">
+            >
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/chat_message_input"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapSentences|textMultiLine"
-                android:maxLines="3"
-                android:scrollbars="vertical"
-                android:overScrollMode="ifContentScrolls"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                >
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/chat_contact_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:textSize="24sp"
+                    android:text="@string/contact_name" />
 
-        <ImageButton
-            android:id="@+id/send_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Send"
-            android:src="@drawable/baseline_arrow_circle_right_24"
-            android:layout_gravity="center_vertical"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/contact_info_button"
+                    style="?attr/materialIconButtonFilledTonalStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:tooltipText="@string/more_info"
+                    app:icon="@drawable/ic_info" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/chats_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/chat_bubble" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/chat_message_input_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/write_a_message"
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/ic_send">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/chat_message_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences|textMultiLine"
+                        android:maxLines="3"
+                        android:scrollbars="vertical"
+                        android:overScrollMode="ifContentScrolls" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/scroll_to_bottom_button"
+        style="?attr/materialIconButtonFilledTonalStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:layout_gravity="bottom|center"
+        android:visibility="invisible"
+        android:tooltipText="@string/scroll_to_bottom"
+        app:icon="@drawable/ic_keyboard_arrow_down" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

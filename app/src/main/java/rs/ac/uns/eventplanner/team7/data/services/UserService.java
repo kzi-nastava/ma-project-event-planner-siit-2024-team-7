@@ -142,4 +142,11 @@ public interface UserService {
     })
     @GET("users/{id}")
     Call<GetUserResponseDTO> getUser(@Header("Authorization") String token, @Path("id") Integer id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @GET("users/{id}/details")
+    Call<GetUserDetailsResponseDTO> getUserDetails(@Header("Authorization") String token, @Path("id") Integer id);
 }

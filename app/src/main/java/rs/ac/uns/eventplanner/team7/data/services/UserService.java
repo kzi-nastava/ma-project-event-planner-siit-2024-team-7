@@ -19,6 +19,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateOrganizerRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateOrganizerResponseDTO;
@@ -106,14 +107,14 @@ public interface UserService {
             "Content-Type: application/json"
     })
     @GET("users/providers/by_item/{itemId}")
-    Call<GetProviderResponseDTO> getProviderByItemId(@Header("Authorization") String token, @Path("itemId") Integer itemId);
+    Call<GetUserDetailsResponseDTO> getProviderByItemId(@Header("Authorization") String token, @Path("itemId") Integer itemId);
 
     @Headers({
             "User-Agent: Mobile-Android",
             "Content-Type: application/json"
     })
     @GET("users/organizers/by_event/{eventId}")
-    Call<GetOrganizerResponseDTO> getOrganizerByEventId(@Header("Authorization") String token, @Path("eventId") Integer eventId);
+    Call<GetUserDetailsResponseDTO> getOrganizerByEventId(@Header("Authorization") String token, @Path("eventId") Integer eventId);
 
     @Headers({
             "User-Agent: Mobile-Android",

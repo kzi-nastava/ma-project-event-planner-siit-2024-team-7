@@ -37,10 +37,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.blocking.BlockUserRequestDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.ChatService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ChatAdapter;
@@ -50,11 +50,10 @@ import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 
 
 public class ChatsFragment extends Fragment implements ContactInfoDialogFragment.OnActionClickListener {
-
     private final ChatService chatService = ClientUtils.injectService(ChatService.class);
     private final UserService userService = ClientUtils.injectService(UserService.class);
 
-    private ChatContactDTO contactDTO;
+    private GetUserDetailsResponseDTO contactDTO;
     private MaterialTextView contactNameView, noMessageTextView;
     private RecyclerView chatsRecyclerView;
     private TextInputEditText messageInput;
@@ -72,7 +71,7 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            contactDTO = getArguments().getParcelable("contactDTO", ChatContactDTO.class);
+            contactDTO = getArguments().getParcelable("contactDTO", GetUserDetailsResponseDTO.class);
         }
     }
 
@@ -95,7 +94,7 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
         mainContentView.setVisibility(View.INVISIBLE);
         bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         email = AuthUtil.extractEmail(requireContext());
-        adapter = new ChatAdapter(requireContext(), new ArrayList<>(), contactDTO.getPhotoUrl());
+        adapter = new ChatAdapter(requireContext(), new ArrayList<>(), contactDTO.getPhotoURL());
         chatsRecyclerView.setAdapter(adapter);
         getUserInfo();
 
@@ -153,7 +152,7 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
         if (contactInfoDialog != null) {
             contactInfoDialog.dismiss();
         }
-        contactInfoDialog = ContactInfoDialogFragment.newInstance(contactName, contactDTO.getPhotoUrl());
+        contactInfoDialog = ContactInfoDialogFragment.newInstance(contactName, contactDTO.getPhotoURL(), contactDTO.getRole());
         contactInfoDialog.show(getChildFragmentManager(), "ContactInfoDialog");
         contactInfoDialog.setOnActionClickListener(this);
     }
@@ -174,9 +173,14 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
 
     }
 
+    @Override
+    public void OnReportUserClicked() {
+
+    }
+
     private void blockUser() {
         contactInfoButton.setEnabled(false);
-        BlockUserRequestDTO dto = new BlockUserRequestDTO(email, contactDTO.getUserEmail());
+        BlockUserRequestDTO dto = new BlockUserRequestDTO(email, contactDTO.getEmail());
         userService.blockUser(bearerToken, dto).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
@@ -203,7 +207,7 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
         messageInput.clearFocus();
         String message = Objects.requireNonNull(messageInput.getText()).toString();
         if (message.isEmpty()) return;
-        ChatRequestDTO dto = new ChatRequestDTO(contactDTO.getUserEmail(), message);
+        ChatRequestDTO dto = new ChatRequestDTO(contactDTO.getEmail(), message);
         chatService.sendChatMessage(bearerToken, dto).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ChatResponseDTO> call,
@@ -267,7 +271,7 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
     }
 
     private void setContent() {
-        chatService.findBySenderAndRecipient(bearerToken, contactDTO.getUserId()).enqueue(new Callback<>() {
+        chatService.findBySenderAndRecipient(bearerToken, contactDTO.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<ChatResponseDTO>> call,
                                    @NonNull Response<List<ChatResponseDTO>> response) {
@@ -293,7 +297,7 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
             }
         });
 
-        chatService.markAsRead(bearerToken, contactDTO.getUserId()).enqueue(new Callback<>() {
+        chatService.markAsRead(bearerToken, contactDTO.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call,
                                    @NonNull Response<Void> response) {

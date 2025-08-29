@@ -25,9 +25,8 @@
         <LinearLayout
             android:id="@+id/main_content_layout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_weight="1"
             >
 
             <LinearLayout
@@ -58,7 +57,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/chats_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/chat_bubble" />
 

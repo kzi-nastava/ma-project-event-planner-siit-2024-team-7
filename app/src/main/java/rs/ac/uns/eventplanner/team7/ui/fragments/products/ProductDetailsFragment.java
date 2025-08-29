@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
@@ -27,13 +28,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.AverageRatingDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.FeedbackDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.product.GetProductResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.FeedbackService;
@@ -48,7 +48,7 @@ public class ProductDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final FeedbackService feedbackService = ClientUtils.injectService(FeedbackService.class);
     private GetProductResponseDTO productDTO;
-    private GetProviderResponseDTO providerDTO;
+    private GetUserDetailsResponseDTO providerDTO;
 
     private ImageView favouriteStar, star1, star2, star3, star4, star5;
     private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView, ratingCount, noComments;
@@ -56,7 +56,8 @@ public class ProductDetailsFragment extends Fragment {
     private ImageAdapter imageAdapter;
     private CommentAdapter commentAdapter;
 
-    private MaterialButton buyButton, viewProviderButton, chatWithProviderButton, rateButton;
+    private FloatingActionButton buyButton;
+    private MaterialButton viewProviderButton, chatWithProviderButton, rateButton;
 
     public ProductDetailsFragment() {
         // Required empty public constructor
@@ -116,8 +117,8 @@ public class ProductDetailsFragment extends Fragment {
         userService.getProviderByItemId(AuthUtil.getAuthorizationValue(requireContext()), productDTO.getId())
                 .enqueue(new Callback<>() {
                     @Override
-                    public void onResponse(@NonNull Call<GetProviderResponseDTO> call,
-                                           @NonNull Response<GetProviderResponseDTO> response) {
+                    public void onResponse(@NonNull Call<GetUserDetailsResponseDTO> call,
+                                           @NonNull Response<GetUserDetailsResponseDTO> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             providerDTO = response.body();
                             chatWithProviderButton.setEnabled(true);
@@ -125,7 +126,7 @@ public class ProductDetailsFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<GetProviderResponseDTO> call, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
                         Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                     }
                 });
@@ -158,10 +159,16 @@ public class ProductDetailsFragment extends Fragment {
                     });
         });
 
-        if (AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG || !productDTO.isAvailable())
-            buyButton.setVisibility(View.GONE);
+        UserRole role = AuthUtil.extractRole(requireContext());
 
-        if (AuthUtil.extractRole(requireContext()) == UserRole.SPP) {
+        if (role == UserRole.GUEST) {
+            chatWithProviderButton.setVisibility(View.GONE);
+        }
+        if (role != UserRole.EVENT_ORG || !productDTO.isAvailable()) {
+            rateButton.setVisibility(View.GONE);
+            buyButton.setVisibility(View.GONE);
+        }
+        if (role == UserRole.SPP) {
             viewProviderButton.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);
         }
@@ -188,7 +195,7 @@ public class ProductDetailsFragment extends Fragment {
 
         chatWithProviderButton.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putParcelable("contactDTO", new ChatContactDTO(providerDTO.getId(), providerDTO.getEmail(), providerDTO.getPhotoURL(), false));
+            bundle.putParcelable("contactDTO", providerDTO);
             Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
         });
 

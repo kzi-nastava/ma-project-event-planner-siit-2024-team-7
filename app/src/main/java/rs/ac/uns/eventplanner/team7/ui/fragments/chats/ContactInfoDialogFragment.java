@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import lombok.Setter;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 
 
 public class ContactInfoDialogFragment extends BottomSheetDialogFragment {
@@ -25,12 +26,15 @@ public class ContactInfoDialogFragment extends BottomSheetDialogFragment {
     public interface OnActionClickListener {
         void OnBlockUserClicked();
         void OnViewProfileClicked();
+        void OnReportUserClicked();
     }
 
     private static final String ARG_CONTACT_NAME = "contactName";
     private static final String ARG_CONTACT_IMAGE_URL = "contactImageUrl";
+    private static final String ARG_CONTACT_ROLE = "contactRole";
 
     private String contactName, contactImageUrl;
+    private UserRole contactRole;
 
     @Setter
     private OnActionClickListener onActionClickListener;
@@ -41,11 +45,12 @@ public class ContactInfoDialogFragment extends BottomSheetDialogFragment {
         // Required empty public constructor
     }
 
-    public static ContactInfoDialogFragment newInstance(String contactName, String contactImageUrl) {
+    public static ContactInfoDialogFragment newInstance(String contactName, String contactImageUrl, UserRole contactRole) {
         ContactInfoDialogFragment fragment = new ContactInfoDialogFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CONTACT_NAME, contactName);
         args.putString(ARG_CONTACT_IMAGE_URL, contactImageUrl);
+        args.putString(ARG_CONTACT_ROLE, contactRole.toString());
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,9 +58,11 @@ public class ContactInfoDialogFragment extends BottomSheetDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            contactName = getArguments().getString(ARG_CONTACT_NAME);
-            contactImageUrl = getArguments().getString(ARG_CONTACT_IMAGE_URL);
+        Bundle args = getArguments();
+        if (args != null) {
+            contactName = args.getString(ARG_CONTACT_NAME);
+            contactImageUrl = args.getString(ARG_CONTACT_IMAGE_URL);
+            contactRole = UserRole.valueOf(args.getString(ARG_CONTACT_ROLE));
         }
     }
 
@@ -91,7 +98,16 @@ public class ContactInfoDialogFragment extends BottomSheetDialogFragment {
             dismiss();
         });
 
+        MaterialButton reportButton = view.findViewById(R.id.report_account_button);
+        reportButton.setVisibility(contactRole == UserRole.AUTH ? View.VISIBLE : View.GONE);
+        reportButton.setOnClickListener(v -> {
+            onActionClickListener.OnReportUserClicked();
+            dismiss();
+        });
+
+        boolean showProfileButton = contactRole == UserRole.SPP || contactRole == UserRole.EVENT_ORG;
         MaterialButton viewProfileButton = view.findViewById(R.id.view_profile_button);
+        viewProfileButton.setVisibility(showProfileButton ? View.VISIBLE : View.GONE);
         viewProfileButton.setOnClickListener(v -> {
             onActionClickListener.OnViewProfileClicked();
             dismiss();

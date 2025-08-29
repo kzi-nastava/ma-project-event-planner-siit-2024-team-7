@@ -1,13 +1,6 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.events;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,9 +8,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textview.MaterialTextView;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
@@ -37,10 +38,9 @@ import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.FavouriteEventRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.GetEventResponseDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.user.GetOrganizerResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
@@ -53,10 +53,12 @@ public class EventDetailsFragment extends Fragment {
 
     private static final String event = "eventDTO";
     private GetEventResponseDTO eventDto;
-    private GetOrganizerResponseDTO organizerDTO;
+    private GetUserDetailsResponseDTO organizerDTO;
 
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final EventService eventService = ClientUtils.injectService(EventService.class);
+    private String bearerToken;
+    private UserRole role;
 
     public EventDetailsFragment() {
         // Required empty public constructor
@@ -74,26 +76,35 @@ public class EventDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
+        bearerToken = AuthUtil.getAuthorizationValue(requireContext());
+        role = AuthUtil.extractRole(requireContext());
 
-        Button exportEventButton = view.findViewById(R.id.btn_export_event_pdf);
+        MaterialButton exportEventButton = view.findViewById(R.id.btn_export_event_pdf);
         exportEventButton.setOnClickListener(v -> downloadEventPdf());
 
-        Button exportGuestListButton = view.findViewById(R.id.btn_export_guest_list_pdf);
+        MaterialButton exportGuestListButton = view.findViewById(R.id.btn_export_guest_list_pdf);
         exportGuestListButton.setOnClickListener(v -> downloadGuestListPdf());
 
+        MaterialButton viewOrganizerButton = view.findViewById(R.id.btn_view_organizer);
+        if (eventDto.isOwn()) {
+            viewOrganizerButton.setVisibility(View.GONE);
+        }
+        viewOrganizerButton.setOnClickListener(v -> {});
 
-        Button chatButton = view.findViewById(R.id.btn_chat_w_organizer);
+        MaterialButton chatButton = view.findViewById(R.id.btn_chat_w_organizer);
+        if (role == UserRole.GUEST || eventDto.isOwn()) {
+            chatButton.setVisibility(View.GONE);
+        }
         chatButton.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putParcelable("contactDTO", new ChatContactDTO(organizerDTO.getId(), organizerDTO.getEmail(), organizerDTO.getPhotoURL(), false));
+            bundle.putParcelable("contactDTO", organizerDTO);
             Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
 
         });
-        String token = AuthUtil.getAuthorizationValue(requireContext());
-        userService.getOrganizerByEventId(token, eventDto.getId()).enqueue(new Callback<>() {
+        userService.getOrganizerByEventId(bearerToken, eventDto.getId()).enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<GetOrganizerResponseDTO> call,
-                                   @NonNull Response<GetOrganizerResponseDTO> response) {
+            public void onResponse(@NonNull Call<GetUserDetailsResponseDTO> call,
+                                   @NonNull Response<GetUserDetailsResponseDTO> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     organizerDTO = response.body();
                     chatButton.setEnabled(true);
@@ -101,7 +112,7 @@ public class EventDetailsFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<GetOrganizerResponseDTO> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
                 Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -113,24 +124,21 @@ public class EventDetailsFragment extends Fragment {
     }
 
     private void initButtons(View view) {
-        Button markFavButton = view.findViewById(R.id.btn_mark_favorite);
+        ImageView markFavButton = view.findViewById(R.id.mark_favorite_star);
         Log.d("EventDetails", "isFav = " + eventDto.isFav()); // Debug
 
-        if (eventDto.isFav()) {
-            Log.d("Im in", "HELOOOO");
-            markFavButton.setEnabled(false);
-            markFavButton.setText("Already favorite");
+        if (role == UserRole.GUEST) {
+            markFavButton.setVisibility(View.GONE);
         }
-        else {
-            markFavButton.setOnClickListener(v -> {
-                markFav(markFavButton);
-            });
+        if (eventDto.isFav()) {
+            markFavButton.setImageResource(R.drawable.ic_star_filled);
+        } else {
+            markFavButton.setOnClickListener(v -> markFav(markFavButton));
         }
 
-        Button eventStatisticsButton = view.findViewById(R.id.btn_event_statistics);
-        if (AuthUtil.extractRole(requireContext()) != UserRole.ADMIN && AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG) {
-            eventStatisticsButton.setVisibility(View.GONE);
-        }
+        FloatingActionButton eventStatisticsButton = view.findViewById(R.id.btn_event_statistics);
+        int visibility = role == UserRole.ADMIN || (role == UserRole.EVENT_ORG && eventDto.isOwn()) ? View.VISIBLE : View.GONE;
+        eventStatisticsButton.setVisibility(visibility);
         eventStatisticsButton.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putParcelable("event", eventDto);
@@ -138,14 +146,14 @@ public class EventDetailsFragment extends Fragment {
         });
     }
 
-    private void markFav(Button btn) {
+    private void markFav(ImageView btn) {
         userService.markEventAsFavourite(AuthUtil.getAuthorizationValue(requireContext()), AuthUtil.extractId(requireContext()), new FavouriteEventRequestDTO(eventDto.getId()))
-                .enqueue(new Callback<ResponseMessageDTO>() {
+                .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<ResponseMessageDTO> call, @NonNull Response<ResponseMessageDTO> response) {
                         if (response.isSuccessful()) {
-                            btn.setEnabled(false);
-                            btn.setText("Already favorite");
+                            btn.setOnClickListener(v -> {});
+                            btn.setImageResource(R.drawable.ic_star_filled);
                         }
                     }
 
@@ -159,16 +167,17 @@ public class EventDetailsFragment extends Fragment {
     private void populateEventDetails(View view) {
         if (eventDto == null) return;
 
-        TextView nameTv = view.findViewById(R.id.event_name);
-        TextView dateTimeTv = view.findViewById(R.id.event_date_time);
-        TextView locationTv = view.findViewById(R.id.event_location);
-        TextView descriptionTv = view.findViewById(R.id.event_description);
-        TextView participantsTv = view.findViewById(R.id.event_participants);
-        TextView eventTypeTv = view.findViewById(R.id.event_type);
+        MaterialTextView nameTv = view.findViewById(R.id.event_name);
+        MaterialTextView dateTimeTv = view.findViewById(R.id.event_date_time);
+        MaterialTextView locationTv = view.findViewById(R.id.event_location);
+        MaterialTextView descriptionTv = view.findViewById(R.id.event_description);
+        MaterialTextView participantsTv = view.findViewById(R.id.event_participants);
+        MaterialTextView eventTypeTv = view.findViewById(R.id.event_type);
 
         nameTv.setText(eventDto.getName());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        dateTimeTv.setText(eventDto.getDate().format(formatter));        locationTv.setText(eventDto.getFullAddress());
+        dateTimeTv.setText(eventDto.getDate().format(formatter));
+        locationTv.setText(eventDto.getFullAddress());
         descriptionTv.setText(eventDto.getDescription());
         eventTypeTv.setText(eventDto.getEventType().getName());
         participantsTv.setText(String.format("Participants: %s / %s",eventDto.getCurrentParticipants(), eventDto.getMaxParticipants()));
@@ -182,7 +191,6 @@ public class EventDetailsFragment extends Fragment {
 
     private void initActivities(View view) {
         RecyclerView recyclerView = view.findViewById(R.id.activities_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(new ActivityAdapter(eventDto.getActivities()));
     }
 

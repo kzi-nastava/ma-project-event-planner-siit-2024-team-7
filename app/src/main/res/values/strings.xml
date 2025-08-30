@@ -326,7 +326,9 @@
     <string name="report_actions">What will you do with this report?</string>
     <string name="decide">Decide</string>
     <string name="user_report">User Report</string>
+    <string name="feedback_report">Feedback Report</string>
     <string name="user_report_description">Why are you reporting this person?</string>
+    <string name="feedback_report_description">Why are you reporting this comment?</string>
     <string name="enter_report_reason">Enter your reason*</string>
     <string name="report_submitted">Your report has been recorded.</string>
     <string name="block">Block</string>

@@ -136,7 +136,7 @@ public class SPPDetailsFragment extends Fragment {
                 });
 
         reportButton.setOnClickListener(v -> {
-            var dialog = ReportReasonDialogFragment.newInstance();
+            var dialog = ReportReasonDialogFragment.newInstance(true);
             dialog.setCancelable(false);
             dialog.setOnSubmitClickListener(this::reportProvider);
             dialog.show(getChildFragmentManager(), "ReportProviderDialog");

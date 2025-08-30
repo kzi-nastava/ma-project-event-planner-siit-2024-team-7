@@ -1,5 +1,6 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.services;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +32,8 @@ import rs.ac.uns.eventplanner.team7.data.dto.event.FutureReservableEventsDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.GetEventResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.AverageRatingDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.FeedbackDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.reporting.CreateReportRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.reporting.ReportDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.WorkDayDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
@@ -40,10 +43,12 @@ import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.FeedbackService;
+import rs.ac.uns.eventplanner.team7.data.services.ReportService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.CommentAdapter;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.ui.fragments.feedback.FeedbackDialog;
+import rs.ac.uns.eventplanner.team7.ui.fragments.reporting.ReportReasonDialogFragment;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
@@ -51,6 +56,7 @@ public class ServiceDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final EventService eventService = ClientUtils.injectService(EventService.class);
     private final FeedbackService feedbackService = ClientUtils.injectService(FeedbackService.class);
+    private final ReportService reportService = ClientUtils.injectService(ReportService.class);
     private GetServiceResponseDTO service;
     private GetUserDetailsResponseDTO providerDTO;
     private List<GetEventResponseDTO> organizerEvents;
@@ -124,6 +130,7 @@ public class ServiceDetailsFragment extends Fragment {
         bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         commentAdapter = new CommentAdapter(requireContext(), new ArrayList<>());
         commentsView.setAdapter(commentAdapter);
+        commentAdapter.setOnReportCommentClickListener(this::showCommentReportDialog);
 
         userService.getProviderByItemId(AuthUtil.getAuthorizationValue(requireContext()), service.getId())
                 .enqueue(new Callback<>() {
@@ -156,16 +163,19 @@ public class ServiceDetailsFragment extends Fragment {
             Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
         });
 
+
         if (role == UserRole.GUEST) {
             favouriteStar.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);
-            reserveButton.setVisibility(View.GONE);
-            rateButton.setVisibility(View.GONE);
         } else if (role == UserRole.SPP) {
             viewProviderButton.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);
         } else if (role == UserRole.EVENT_ORG) {
             initReserveButton();
+        }
+        if (role != UserRole.EVENT_ORG || !service.isAvailable()) {
+            rateButton.setVisibility(View.GONE);
+            reserveButton.setVisibility(View.GONE);
         }
 
         if (getArguments() != null) {
@@ -175,9 +185,8 @@ public class ServiceDetailsFragment extends Fragment {
             }
         }
 
-        // TODO isn't it supposed to be the other way around?
-        if (!service.isReserved())
-            rateButton.setEnabled(true);
+        rateButton.setEnabled(service.isReserved());
+
         setFeedbacks();
 
         rateButton.setOnClickListener(v -> {
@@ -369,5 +378,43 @@ public class ServiceDetailsFragment extends Fragment {
                 stars[i].setImageResource(emptyStar);
             }
         }
+    }
+
+    private void showCommentReportDialog(FeedbackDTO feedback) {
+        var dialog = ReportReasonDialogFragment.newInstance(false);
+        dialog.setCancelable(false);
+        dialog.setOnSubmitClickListener(reportReason -> {
+            String userEmail = AuthUtil.extractEmail(requireContext());
+            var dto = new CreateReportRequestDTO(userEmail, feedback.getUserEmail(), feedback.getId(), reportReason);
+            reportService.create(bearerToken, dto).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(
+                        @NonNull Call<ReportDTO> call,
+                        @NonNull Response<ReportDTO> response
+                ) {
+                    if (!isAdded()) return;
+                    View view = getView();
+                    Context context = getContext();
+                    if (response.isSuccessful() && response.body() != null) {
+                        if (view == null) return;
+                        Snackbar.make(view, R.string.report_submitted, Snackbar.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (response.code() == 400) {
+                        var errorDto = ClientUtils.convertToErrorMessage(response.errorBody());
+                        if (errorDto != null && view != null && context != null) {
+                            Snackbar.make(view, errorDto.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ReportDTO> call, @NonNull Throwable t) {
+                    String message = t.getMessage();
+                    if (message != null) Log.d("ERROR", message);
+                }
+            });
+        });
+        dialog.show(getChildFragmentManager(), "ReportCommentDialog");
     }
 }

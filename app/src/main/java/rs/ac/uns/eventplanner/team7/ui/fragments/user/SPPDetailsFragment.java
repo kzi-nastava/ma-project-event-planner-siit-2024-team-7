@@ -99,6 +99,7 @@ public class SPPDetailsFragment extends Fragment {
         bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         commentAdapter = new CommentAdapter(requireContext(), new ArrayList<>());
         commentsView.setAdapter(commentAdapter);
+        commentAdapter.setOnReportCommentClickListener(this::showCommentReportDialog);
 
         UserRole role = AuthUtil.extractRole(requireContext());
         if (role == UserRole.GUEST) {
@@ -158,7 +159,21 @@ public class SPPDetailsFragment extends Fragment {
         reportButton.setEnabled(false);
         String userEmail = AuthUtil.extractEmail(requireContext());
         CreateReportRequestDTO dto = new CreateReportRequestDTO(userEmail, providerDTO.getEmail(), reportReason);
-        reportService.create(bearerToken, dto).enqueue(new Callback<>() {
+        handleReport(dto);
+    }
+
+    private void showCommentReportDialog(FeedbackDTO feedback) {
+        var dialog = ReportReasonDialogFragment.newInstance(false);
+        dialog.setCancelable(false);
+        dialog.setOnSubmitClickListener(reportReason -> {
+            String userEmail = AuthUtil.extractEmail(requireContext());
+            handleReport(new CreateReportRequestDTO(userEmail, feedback.getUserEmail(), feedback.getId(), reportReason));
+        });
+        dialog.show(getChildFragmentManager(), "ReportCommentDialog");
+    }
+
+    private void handleReport(CreateReportRequestDTO reportRequestDTO) {
+        reportService.create(bearerToken, reportRequestDTO).enqueue(new Callback<>() {
             @Override
             public void onResponse(
                     @NonNull Call<ReportDTO> call,

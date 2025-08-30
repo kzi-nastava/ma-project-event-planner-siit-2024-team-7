@@ -215,6 +215,7 @@ public class EventDetailsFragment extends Fragment {
             );
 
             handler.post(() -> {
+                if (!isAdded()) return;
                 if (coords != null) {
                     GeoPoint point = new GeoPoint(coords.lat, coords.lon);
                     map.getController().setZoom(15.0);

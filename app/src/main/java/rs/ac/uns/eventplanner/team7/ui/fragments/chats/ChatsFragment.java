@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
@@ -39,11 +40,14 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.blocking.BlockUserRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.reporting.CreateReportRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.reporting.ReportDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
-import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.ChatService;
+import rs.ac.uns.eventplanner.team7.data.services.ReportService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ChatAdapter;
+import rs.ac.uns.eventplanner.team7.ui.fragments.reporting.ReportReasonDialogFragment;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
@@ -52,6 +56,7 @@ import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 public class ChatsFragment extends Fragment implements ContactInfoDialogFragment.OnActionClickListener {
     private final ChatService chatService = ClientUtils.injectService(ChatService.class);
     private final UserService userService = ClientUtils.injectService(UserService.class);
+    private final ReportService reportService = ClientUtils.injectService(ReportService.class);
 
     private GetUserDetailsResponseDTO contactDTO;
     private MaterialTextView contactNameView, noMessageTextView;
@@ -96,8 +101,7 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
         email = AuthUtil.extractEmail(requireContext());
         adapter = new ChatAdapter(requireContext(), new ArrayList<>(), contactDTO.getPhotoURL());
         chatsRecyclerView.setAdapter(adapter);
-        getUserInfo();
-
+        formatUserInfo();
         setContent();
 
         adapter.setOnMessagesInsertedListener(itemCount ->
@@ -169,13 +173,42 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
     }
 
     @Override
-    public void OnViewProfileClicked() {
-
-    }
-
-    @Override
     public void OnReportUserClicked() {
+        var dialog = ReportReasonDialogFragment.newInstance(true);
+        dialog.setCancelable(false);
+        dialog.setOnSubmitClickListener(reportReason -> {
+            String userEmail = AuthUtil.extractEmail(requireContext());
+            CreateReportRequestDTO dto = new CreateReportRequestDTO(userEmail, contactDTO.getEmail(), reportReason);
+            reportService.create(bearerToken, dto).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(
+                        @NonNull Call<ReportDTO> call,
+                        @NonNull Response<ReportDTO> response
+                ) {
+                    if (!isAdded()) return;
+                    View view = getView();
+                    Context context = getContext();
+                    if (response.isSuccessful() && response.body() != null) {
+                        if (view == null) return;
+                        Snackbar.make(view, R.string.report_submitted, Snackbar.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (response.code() == 400) {
+                        var errorDto = ClientUtils.convertToErrorMessage(response.errorBody());
+                        if (errorDto != null && view != null && context != null) {
+                            Snackbar.make(view, errorDto.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                }
 
+                @Override
+                public void onFailure(@NonNull Call<ReportDTO> call, @NonNull Throwable t) {
+                    String message = t.getMessage();
+                    if (message != null) Log.d("ERROR", message);
+                }
+            });
+        });
+        dialog.show(getChildFragmentManager(), "ReportUserDialog");
     }
 
     private void blockUser() {
@@ -225,32 +258,15 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
         messageInput.setText("");
     }
 
-    private void getUserInfo() {
-        userService.getUserDetails(bearerToken, contactDTO.getId()).enqueue(new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<GetUserDetailsResponseDTO> call,
-                                   @NonNull Response<GetUserDetailsResponseDTO> response) {
-                if (!isAdded()) return;
-                if (response.isSuccessful() && response.body() != null) {
-                    GetUserDetailsResponseDTO user = response.body();
-                    if (user.getFirstName() != null && user.getLastName() != null) {
-                        contactName = String.format("%s %s", user.getFirstName(), user.getLastName());
-                    } else if (user.getOrgName() != null) {
-                        contactName = user.getOrgName();
-                    } else {
-                        contactName = user.getEmail();
-                    }
-                    contactNameView.setText(contactName);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
-                String message = t.getMessage();
-                if (message == null) return;
-                Log.d("ERROR", message);
-            }
-        });
+    private void formatUserInfo() {
+        if (contactDTO.getFirstName() != null && contactDTO.getLastName() != null) {
+            contactName = String.format("%s %s", contactDTO.getFirstName(), contactDTO.getLastName());
+        } else if (contactDTO.getOrgName() != null) {
+            contactName = contactDTO.getOrgName();
+        } else {
+            contactName = contactDTO.getEmail();
+        }
+        contactNameView.setText(contactName);
     }
 
     @Override

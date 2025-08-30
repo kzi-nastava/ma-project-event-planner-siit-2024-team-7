@@ -46,7 +46,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ChatContactDTO contact = contacts.get(position);
         holder.bindData(contact);
-        holder.itemView.setOnClickListener(v -> cardClickListener.onCardClicked(contact));
+        holder.itemView.setOnClickListener(v -> {
+            cardClickListener.onCardClicked(contact);
+            v.setEnabled(false);
+        });
     }
 
     @Override

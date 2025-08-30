@@ -46,15 +46,6 @@
             android:gravity="center">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/view_profile_button"
-                style="?attr/materialIconButtonFilledTonalStyle"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                app:icon="@drawable/ic_account"
-                app:iconPadding="6dp"
-                android:text="@string/profile" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/report_account_button"
                 style="?attr/materialIconButtonFilledTonalStyle"
                 android:backgroundTint="@color/orange_warning"
@@ -74,6 +65,8 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_block"
+                android:textColor="@color/white"
+                app:iconTint="@color/white"
                 app:iconPadding="6dp"
                 android:text="@string/block" />
         </LinearLayout>

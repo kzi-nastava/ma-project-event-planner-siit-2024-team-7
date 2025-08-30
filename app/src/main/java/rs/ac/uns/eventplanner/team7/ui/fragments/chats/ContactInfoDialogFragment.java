@@ -1,7 +1,6 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.chats;
 
 import android.os.Bundle;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,6 @@ public class ContactInfoDialogFragment extends BottomSheetDialogFragment {
 
     public interface OnActionClickListener {
         void OnBlockUserClicked();
-        void OnViewProfileClicked();
         void OnReportUserClicked();
     }
 
@@ -92,24 +90,18 @@ public class ContactInfoDialogFragment extends BottomSheetDialogFragment {
         MaterialButton closeDialogButton = view.findViewById(R.id.close_dialog_button);
         closeDialogButton.setOnClickListener(v -> dismiss());
 
+        int buttonVisibility = contactRole != UserRole.ADMIN ? View.VISIBLE : View.GONE;
         MaterialButton blockAccountButton = view.findViewById(R.id.block_account_button);
+        blockAccountButton.setVisibility(buttonVisibility);
         blockAccountButton.setOnClickListener(v -> {
             onActionClickListener.OnBlockUserClicked();
             dismiss();
         });
 
         MaterialButton reportButton = view.findViewById(R.id.report_account_button);
-        reportButton.setVisibility(contactRole == UserRole.AUTH ? View.VISIBLE : View.GONE);
+        reportButton.setVisibility(buttonVisibility);
         reportButton.setOnClickListener(v -> {
             onActionClickListener.OnReportUserClicked();
-            dismiss();
-        });
-
-        boolean showProfileButton = contactRole == UserRole.SPP || contactRole == UserRole.EVENT_ORG;
-        MaterialButton viewProfileButton = view.findViewById(R.id.view_profile_button);
-        viewProfileButton.setVisibility(showProfileButton ? View.VISIBLE : View.GONE);
-        viewProfileButton.setOnClickListener(v -> {
-            onActionClickListener.OnViewProfileClicked();
             dismiss();
         });
 

@@ -31,7 +31,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.data.services.ChatService;
+import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ContactAdapter;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
@@ -40,6 +43,7 @@ import rs.ac.uns.eventplanner.team7.utils.WebSocketService;
 public class ContactsFragment extends Fragment {
 
     private final ChatService chatService = ClientUtils.injectService(ChatService.class);
+    private final UserService userService = ClientUtils.injectService(UserService.class);
 
     private RecyclerView contactsView;
     private MaterialTextView messageTextView;
@@ -71,8 +75,7 @@ public class ContactsFragment extends Fragment {
 
         bearerToken = AuthUtil.getAuthorizationValue(requireContext());
 
-        adapter = new ContactAdapter(requireContext(), new ArrayList<>(),
-                c -> onCardClicked((ChatContactDTO) c));
+        adapter = new ContactAdapter(requireContext(), new ArrayList<>(), this::onCardClicked);
         contactsView.setAdapter(adapter);
 
         setContent();
@@ -101,10 +104,32 @@ public class ContactsFragment extends Fragment {
                 .unregisterReceiver(newNotificationReceiver);
     }
 
-    private void onCardClicked(ChatContactDTO contact) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("contactDTO", contact);
-        Navigation.findNavController(requireView()).navigate(R.id.navigate_to_chat_from_contacts, bundle);
+    private void onCardClicked(BasicCard contact) {
+        userService.getUserDetails(bearerToken, contact.getId()).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(
+                    @NonNull Call<GetUserDetailsResponseDTO> call,
+                    @NonNull Response<GetUserDetailsResponseDTO> response
+            ) {
+                if (!isAdded()) return;
+                if (response.isSuccessful() && response.body() != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("contactDTO", response.body());
+                    Navigation.findNavController(requireView()).navigate(R.id.navigate_to_chat_from_contacts, bundle);
+                }
+            }
+
+            @Override
+            public void onFailure(
+                    @NonNull Call<GetUserDetailsResponseDTO> call,
+                    @NonNull Throwable t
+            ) {
+                String message = t.getMessage();
+                if (message == null) return;
+                Log.d("ERROR", message);
+            }
+        });
+
     }
 
     private void setContent() {

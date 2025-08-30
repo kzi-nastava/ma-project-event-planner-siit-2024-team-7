@@ -89,7 +89,11 @@ public class EventDetailsFragment extends Fragment {
         if (eventDto.isOwn()) {
             viewOrganizerButton.setVisibility(View.GONE);
         }
-        viewOrganizerButton.setOnClickListener(v -> {});
+        viewOrganizerButton.setOnClickListener(v -> {
+            Bundle args = new Bundle();
+            args.putParcelable("organizerDTO", organizerDTO);
+            Navigation.findNavController(v).navigate(R.id.navigate_from_events_to_organizer_details, args);
+        });
 
         MaterialButton chatButton = view.findViewById(R.id.btn_chat_w_organizer);
         if (role == UserRole.GUEST || eventDto.isOwn()) {

@@ -99,11 +99,64 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:id="@+id/invite_people_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:visibility="gone"
+            >
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/invite_people_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/invite"
+                app:icon="@drawable/ic_group_add"
+                android:enabled="false"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/invite_limit"
+                android:paddingHorizontal="4dp"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/invited_people_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                tools:ignore="HardcodedText"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="2dp"
+                android:text="/"
+                tools:ignore="HardcodedText"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/max_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="\?"
+                tools:ignore="HardcodedText"
+                />
+
+        </LinearLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/event_date_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_calendar"
             android:hint="@string/pick_date">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -116,19 +169,21 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/event_time_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="10dp"
-        android:hint="@string/pick_time">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/event_time_input"
-            android:focusable="false"
-            android:clickable="true"
-            android:inputType="none"
+            android:id="@+id/event_time_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_clock"
+            android:hint="@string/pick_time">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/event_time_input"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -198,59 +253,6 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-
-        <LinearLayout
-            android:id="@+id/invite_people_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:visibility="gone"
-            >
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/invite_people_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/invite"
-                app:icon="@drawable/ic_group_add"
-                android:enabled="false"
-                />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/invite_limit"
-                android:paddingHorizontal="4dp"
-                />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/invited_people_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                tools:ignore="HardcodedText"
-                />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="2dp"
-                android:text="/"
-                tools:ignore="HardcodedText"
-                />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/max_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="\?"
-                tools:ignore="HardcodedText"
-                />
-
-        </LinearLayout>
-
         <!-- Container for dynamic activity fragments -->
         <LinearLayout
             android:id="@+id/activities_container"
@@ -263,11 +265,9 @@
             android:id="@+id/add_activity_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Activity"
+            android:text="@string/add_activity"
             android:layout_marginVertical="10dp"
             android:layout_gravity="center" />
-
-
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/submit_button"
@@ -277,8 +277,6 @@
             android:text="@string/submit"
             android:layout_marginBottom="10dp"
             />
-
-
 
     </LinearLayout>
 

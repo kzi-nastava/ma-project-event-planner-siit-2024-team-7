@@ -1,7 +1,7 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.events;
 
-import android.animation.TimeAnimator;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -12,19 +12,16 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavHostController;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.navigation.NavigationBarItemView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -33,12 +30,14 @@ import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.gson.Gson;
 
-import org.w3c.dom.Text;
-
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -48,10 +47,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.budget.CreateBudgetRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.budget.EventBudgetResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.CreateEventRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.CreateEventResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.invitation.InvitationSendingDTO;
 import rs.ac.uns.eventplanner.team7.data.model.Activity;
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.Location;
@@ -62,6 +63,7 @@ import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.data.services.InvitationService;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.DateConverter;
 
 
 public class CreateEventFragment extends Fragment {
@@ -71,7 +73,7 @@ public class CreateEventFragment extends Fragment {
     private final EventTypeService eventTypeService = ClientUtils.injectService(EventTypeService.class);
     private final BudgetService budgetService = ClientUtils.injectService(BudgetService.class);
 
-    private CreateEventRequestDTO createDTO = new CreateEventRequestDTO();
+    private final CreateEventRequestDTO createDTO = new CreateEventRequestDTO();
 
     private final ArrayList<String> invitedPeopleEmails = new ArrayList<>();
 
@@ -146,7 +148,7 @@ public class CreateEventFragment extends Fragment {
 
         listenForMaxParticipantsChanges();
 
-        submitButton.setOnClickListener(v -> tryToSubmit(v));
+        submitButton.setOnClickListener(this::tryToSubmit);
         addActivityButton.setOnClickListener(v -> addNewActivityFragment());
 
     }
@@ -164,30 +166,53 @@ public class CreateEventFragment extends Fragment {
     }
 
     private void initDatePicker() {
-        // When user taps the field, show the MaterialDatePicker
         dateInput.setOnClickListener(v -> {
-            MaterialDatePicker<Long> datePicker =
-                    MaterialDatePicker.Builder.datePicker()
-                            .setTitleText("Select a date")
-                            .build();
+            LocalDateTime minDate = LocalDateTime.now().plusDays(1);
+            long minDateEpoch = DateConverter.toLong(minDate);
+            long maxDateEpoch = DateConverter.toLong(minDate.plusYears(1));
+            var calendarConstraints = new CalendarConstraints.Builder()
+                    .setStart(minDateEpoch)
+                    .setEnd(maxDateEpoch)
+                    .setFirstDayOfWeek(Calendar.MONDAY)
+                    .setValidator(new CalendarConstraints.DateValidator() {
+                        @Override
+                        public boolean isValid(long date) {
+                            return minDateEpoch <= date && date <= maxDateEpoch;
+                        }
 
-            datePicker.show(getParentFragmentManager(), "DATE_PICKER");
+                        @Override
+                        public int describeContents() {return 0;}
+
+                        @Override
+                        public void writeToParcel(@NonNull Parcel dest, int flags) {}
+                    })
+                    .build();
+
+            var datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText(R.string.select_date)
+                    .setSelection(minDateEpoch)
+                    .setCalendarConstraints(calendarConstraints)
+                    .build();
 
             datePicker.addOnPositiveButtonClickListener(selection -> {
-                // Set selected date as text
-                dateInput.setText(datePicker.getHeaderText());
+                if (selection != null) {
+                    Instant instant = Instant.ofEpochMilli(selection);
+                    LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+                    dateInput.setText(localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                }
             });
+            datePicker.show(getChildFragmentManager(), "DATE_PICKER");
         });
     }
 
     private void initTimePicker() {
         timeInput.setOnClickListener(v -> {
             MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
-                    .setTitleText("Select time")
+                    .setTitleText(R.string.select_time)
                     .setTimeFormat(TimeFormat.CLOCK_24H)
                     .build();
 
-            timePicker.show(getParentFragmentManager(), "TIME_PICKER");
+            timePicker.show(getChildFragmentManager(), "TIME_PICKER");
 
             timePicker.addOnPositiveButtonClickListener(tp -> {
                 String formattedTime = String.format(Locale.getDefault(), "%02d:%02d",
@@ -202,11 +227,12 @@ public class CreateEventFragment extends Fragment {
     }
 
     private void fetchEventTypes() {
-        Call<List<EventType>> call = eventTypeService.findAllActive(AuthUtil.getAuthorizationValue(getContext())); // assuming getAll() returns List<EventType>
+        Call<List<EventType>> call = eventTypeService.findAllActive(bearerToken);
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<EventType>> call,
                                    @NonNull Response<List<EventType>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     List<EventType> types = response.body();
 
@@ -235,7 +261,8 @@ public class CreateEventFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<EventType>> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                String message = t.getMessage();
+                if (message != null) Log.d("ERROR", message);
             }
         });
     }
@@ -282,19 +309,14 @@ public class CreateEventFragment extends Fragment {
     }
 
     private LocalDateTime getSelectedDateTime() {
-        String dateText = Objects.requireNonNull(dateInput.getText()).toString(); // e.g., "Aug 18, 2025"
+        String dateText = Objects.requireNonNull(dateInput.getText()).toString(); // e.g., "2025-08-31"
         String timeText = Objects.requireNonNull(timeInput.getText()).toString(); // e.g., "14:30"
 
         if (dateText.isEmpty() || timeText.isEmpty()) return null;
         // Convert to LocalDateTime
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault());
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault());
         LocalDate date = LocalDate.parse(dateText, dateFormatter);
-
-        String[] parts = timeText.split(":");
-        int hour = Integer.parseInt(parts[0]);
-        int minute = Integer.parseInt(parts[1]);
-
-        return date.atTime(hour, minute);
+        return date.atTime(LocalTime.parse(timeText));
     }
 
     private void tryToSubmit(View v) {
@@ -324,79 +346,118 @@ public class CreateEventFragment extends Fragment {
         String json = gson.toJson(createDTO);
         Log.d("dto", json);
 
+        if (!createDTO.areValidFields()) return;
 
-
-        if (createDTO.areValidFields()) {
+        if (createDTO.getVisibility() == EventVisibility.PRIVATE
+                && invitedPeopleEmails.size() < createDTO.getMaxParticipants()) {
+            showWarningDialog();
+        } else {
             createEvent();
         }
-        // if (invalid) return;
-        // call eventService
-        // if event creation succeeds, call invitation service and show budget dialog like in Angular
+    }
+
+    private void showWarningDialog() {
+        boolean noOneInvited = invitedPeopleEmails.isEmpty();
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(noOneInvited ? R.string.no_one_invited : R.string.free_slots_remain)
+                .setMessage(noOneInvited ? R.string.no_one_invited_message : R.string.free_slots_remain_message)
+                .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.yes, (dialog, w) -> {
+                    dialog.dismiss();
+                    createEvent();
+                })
+                .show();
     }
 
     private void createEvent() {
-        Call<CreateEventResponseDTO> call = eventService.createEvent(AuthUtil.getAuthorizationValue(requireContext()), createDTO);
-
-        call.enqueue(new Callback<CreateEventResponseDTO>() {
+        submitButton.setEnabled(false);
+        addActivityButton.setEnabled(false);
+        inviteButton.setEnabled(false);
+        eventService.createEvent(bearerToken, createDTO).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<CreateEventResponseDTO> call, @NonNull Response<CreateEventResponseDTO> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    CreateEventResponseDTO createdEvent = response.body();
-
-                    // Show modal
-                    new MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("Create Budget")
-                            .setMessage("Do you want to create the budget for this event now?")
-                            .setPositiveButton("Yes", (dialog, which) -> {
-                                createBudget(createdEvent.getId(), true); // user wants to edit now
-                            })
-                            .setNegativeButton("No", (dialog, which) -> {
-                                createBudget(createdEvent.getId(), false); // still create budget, just not editing now
-                            })
-                            .setCancelable(false)
-                            .show();
-
-
+                if (isAdded()) {
+                    submitButton.setEnabled(true);
+                    addActivityButton.setEnabled(true);
+                    inviteButton.setEnabled(true);
                 }
+                CreateEventResponseDTO createdEvent = response.body();
+                if ((!response.isSuccessful() || createdEvent == null)) return;
+
+                if (createdEvent.getVisibility() == EventVisibility.PRIVATE) {
+                    sendInvitations(createdEvent.getId());
+                }
+                createBudget(createdEvent.getId());
             }
 
             @Override
             public void onFailure(@NonNull Call<CreateEventResponseDTO> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                String message = t.getMessage();
+                if (message != null) Log.d("ERROR", message);
+                if (isAdded()) {
+                    submitButton.setEnabled(true);
+                    addActivityButton.setEnabled(true);
+                    inviteButton.setEnabled(true);
+                }
             }
         });
     }
 
-    private void createBudget(Integer eventId, boolean editNow) {
-        CreateBudgetRequestDTO budgetRequest = new CreateBudgetRequestDTO();
-        budgetRequest.setEventId(eventId);
-        budgetRequest.setCategoryBudgets(new HashMap<>());
-
-        Call<EventBudgetResponseDTO> call = budgetService.createBudget(AuthUtil.getAuthorizationValue(requireContext()), budgetRequest);
-        call.enqueue(new Callback<>() {
+    private void sendInvitations(Integer eventId) {
+        InvitationSendingDTO dto = new InvitationSendingDTO(organizerEmail, invitedPeopleEmails, eventId);
+        invitationService.sendInvitations(bearerToken, dto).enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<EventBudgetResponseDTO> call, @NonNull Response<EventBudgetResponseDTO> response) {
-                if (response.isSuccessful()) {
-//                    Toast.makeText(requireContext(), "Budget created successfully", Toast.LENGTH_SHORT).show();
-
-                    // Navigate if needed
-                    if (!editNow) {
-                        Toast.makeText(requireContext(), "Successful event creation", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(requireView()).navigate(R.id.nav_event);
-                    }
-                    else {
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("eventBudget", response.body());
-                        Navigation.findNavController(requireView()).navigate(R.id.navigate_to_budget_creation, bundle);
-                    }
-                } else {
-                    Toast.makeText(requireContext(), "Failed to create budget", Toast.LENGTH_SHORT).show();
+            public void onResponse(
+                    @NonNull Call<ResponseMessageDTO> call,
+                    @NonNull Response<ResponseMessageDTO> response
+            ) {
+                if (!response.isSuccessful()) {
+                    Log.d("ERROR", "Error occurred while sending invitations");
                 }
             }
 
             @Override
+            public void onFailure(@NonNull Call<ResponseMessageDTO> call, @NonNull Throwable t) {
+                String message = t.getMessage();
+                if (message != null) Log.d("ERROR", message);
+            }
+        });
+    }
+
+    private void createBudget(Integer eventId) {
+        CreateBudgetRequestDTO dto = new CreateBudgetRequestDTO(eventId, new HashMap<>());
+
+        budgetService.createBudget(bearerToken, dto).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(
+                    @NonNull Call<EventBudgetResponseDTO> call,
+                    @NonNull Response<EventBudgetResponseDTO> response
+            ) {
+                if (!isAdded()) return;
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(requireContext(), R.string.budget_creation_failed, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText(requireContext(), R.string.event_created_successfully, Toast.LENGTH_SHORT).show();
+                new MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.create_budget_title)
+                        .setMessage(R.string.create_budget_message)
+                        .setPositiveButton(R.string.yes, (d, w) -> {
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable("eventBudget", response.body());
+                            Navigation.findNavController(requireView()).navigate(R.id.navigate_to_budget_creation, bundle);
+                        })
+                        .setNegativeButton(R.string.no, (d, w) ->
+                                Navigation.findNavController(requireView()).navigateUp()
+                        )
+                        .setCancelable(false)
+                        .show();
+            }
+
+            @Override
             public void onFailure(@NonNull Call<EventBudgetResponseDTO> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                String message = t.getMessage();
+                if (message != null) Log.d("ERROR", message);
             }
         });
     }
@@ -434,7 +495,7 @@ public class CreateEventFragment extends Fragment {
             if (dto != null) {
                 createDTO.getActivities().add(dto);
             } else {
-                Toast.makeText(requireContext(), "Please fill all activity fields correctly", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.invalid_activity, Toast.LENGTH_SHORT).show();
                 canContinue = false;
             }
         }

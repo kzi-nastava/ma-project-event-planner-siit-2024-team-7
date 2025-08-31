@@ -128,6 +128,7 @@
     <string name="cancel">Cancel</string>
     <string name="account_deactivation_message">You are about to deactivate your account. This action is <b>irreversible</b>! Are you sure you want to proceed?</string>
     <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="profile">Profile</string>
     <string name="openDrawer">Open</string>
     <string name="closeDrawer">Close</string>
@@ -358,6 +359,10 @@
     <string name="invite_limit">Invite limit:</string>
     <string name="delete_email_from_list">Delete email from list</string>
     <string name="invite">Invite</string>
+    <string name="no_one_invited">No one invited</string>
+    <string name="no_one_invited_message">You didn\'t invite anyone to this private event. This is the only place where you can do it. Proceed with event creation anyway?</string>
+    <string name="free_slots_remain">Free slots remain</string>
+    <string name="free_slots_remain_message">You didn\'t invite the maximum number of guests. This is the only place where you can do it. Proceed with event creation anyway?</string>
     <string name="event_creation">EVENT CREATION</string>
     <string name="event_description">Event description</string>
     <string name="visibility">Visibility</string>
@@ -370,6 +375,13 @@
     <string name="event_time_is_required">Event time is required</string>
     <string name="event_event_type_is_required">Event type is required</string>
     <string name="event_visibility_is_required">Event visibility is required</string>
+    <string name="create_budget_title">Create Budget</string>
+    <string name="create_budget_message">"Do you want to create the budget for this event now?"</string>
+    <string name="invalid_activity">Please fill all activity fields correctly</string>
+    <string name="select_time">Select time</string>
+    <string name="add_activity">Add Activity</string>
+    <string name="budget_creation_failed">Failed to create budget</string>
+    <string name="event_created_successfully">Successful event creation</string>
     <string name="event_details">Event details</string>
     <string name="d_products_found">%d products found</string>
     <string name="product_name_is_required">Product name is required</string>
@@ -390,6 +402,6 @@
     <string name="yesterday">Yesterday</string>
     <string name="scroll_to_bottom">Scroll to bottom</string>
     <string name="block_user">Block this user</string>
-    <string name="confirm_blocking">"If you block %s, you won't be able to chat or see their profile and items anymore. Do you want to proceed? They won't be notified if you block them."</string>
+    <string name="confirm_blocking">"If you block %s, you won\'t be able to chat or see their profile and items anymore. Do you want to proceed? They won\'t be notified if you block them."</string>
     <string name="user_blocked_successfully">Successfully blocked the user!</string>
 </resources>

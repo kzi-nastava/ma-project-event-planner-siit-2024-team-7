@@ -127,13 +127,10 @@
         android:label="Create Event"
         tools:layout="@layout/fragment_create_event" >
         <action
-            android:id="@+id/navigate_back_from_event_creation"
-            app:destination="@id/nav_event"
-            app:popUpTo="@id/nav_event"
-            app:popUpToInclusive="true"/>
-        <action
             android:id="@+id/navigate_to_budget_creation"
-            app:destination="@id/nav_budget_management" />
+            app:destination="@id/nav_budget_management"
+            app:popUpTo="@id/nav_event_creation"
+            app:popUpToInclusive="true" />
 
     </fragment>
 

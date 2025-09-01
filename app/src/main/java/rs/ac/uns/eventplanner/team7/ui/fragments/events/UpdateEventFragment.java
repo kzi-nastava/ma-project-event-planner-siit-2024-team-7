@@ -207,11 +207,12 @@ public class UpdateEventFragment extends Fragment {
     }
 
     private void fetchEventTypes() {
-        Call<List<EventType>> call = eventTypeService.findAllActive(AuthUtil.getAuthorizationValue(getContext())); // assuming getAll() returns List<EventType>
-        call.enqueue(new Callback<>() {
+        eventTypeService.findAllActive(bearerToken).enqueue(
+                new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<EventType>> call,
                                    @NonNull Response<List<EventType>> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     List<EventType> types = response.body();
 
@@ -305,9 +306,10 @@ public class UpdateEventFragment extends Fragment {
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<CreateEventResponseDTO> call, @NonNull Response<CreateEventResponseDTO> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     Toast.makeText(requireContext(), "Event updated successfully", Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(requireView()).navigate(R.id.nav_event);
+                    Navigation.findNavController(requireView()).navigateUp();
                 } else {
                     Toast.makeText(requireContext(), "Update failed: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
@@ -358,14 +360,13 @@ public class UpdateEventFragment extends Fragment {
     }
 
     private void deleteEvent() {
-        Call<Void> call = eventService.deleteEvent(AuthUtil.getAuthorizationValue(requireContext()), eventDTO.getId());
-
-        call.enqueue(new Callback<Void>() {
+        eventService.deleteEvent(bearerToken, eventDTO.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     Toast.makeText(requireContext(), "Event deletion successful", Toast.LENGTH_SHORT).show();
-                    Navigation.findNavController(requireView()).navigate(R.id.nav_event);
+                    Navigation.findNavController(requireView()).navigateUp();
                 }
             }
 

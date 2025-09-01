@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textview.MaterialTextView;
-import com.squareup.picasso.Picasso;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,10 +27,10 @@ import java.util.List;
 import java.util.Locale;
 
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatResponseDTO;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.BaseViewHolder> {
 
@@ -218,12 +217,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.BaseViewHolder
             messageTextView.setText(chatResponseDTO.getMessage());
 
             if (photoUrl != null && !photoUrl.isEmpty()) {
-                String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + photoUrl;
-                Picasso.get()
-                        .load(backendUrl)
-                        .placeholder(R.drawable.image_placeholder)
-                        .error(R.drawable.image_placeholder)
-                        .into(profilePic);
+                ImageLoader.loadImage(photoUrl, profilePic);
             }
 
             boolean isOutgoing = !chatResponseDTO.getRecipientEmail().equals(loggedInUser);

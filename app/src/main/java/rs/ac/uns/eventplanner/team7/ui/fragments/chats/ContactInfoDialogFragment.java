@@ -12,12 +12,11 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
-import com.squareup.picasso.Picasso;
 
 import lombok.Setter;
-import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
 
 
 public class ContactInfoDialogFragment extends BottomSheetDialogFragment {
@@ -76,13 +75,8 @@ public class ContactInfoDialogFragment extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + contactImageUrl;
         if (contactImageUrl != null && !contactImageUrl.isEmpty()) {
-            Picasso.get()
-                    .load(backendUrl)
-                    .placeholder(R.drawable.image_placeholder)
-                    .error(R.drawable.image_placeholder)
-                    .into(profilePicView);
+            ImageLoader.loadImage(contactImageUrl, profilePicView);
         }
         MaterialTextView contactNameView = view.findViewById(R.id.chat_contact_name);
         contactNameView.setText(contactName);

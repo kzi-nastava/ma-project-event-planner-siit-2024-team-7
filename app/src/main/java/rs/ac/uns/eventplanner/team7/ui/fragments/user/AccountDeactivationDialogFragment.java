@@ -89,6 +89,7 @@ public class AccountDeactivationDialogFragment extends MaterialDialogFragment {
                 if (!isAdded()) return;
                 if (response.isSuccessful()) {
                     dismiss();
+                    AuthUtil.clearPreferences(requireContext());
                     startActivity(new Intent(requireActivity(), LoginActivity.class));
                     requireActivity().finish();
                 } else {

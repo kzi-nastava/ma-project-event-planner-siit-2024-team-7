@@ -1,81 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    tools:context=".ui.fragments.user.UserProfileFragment"
+    >
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="16dp">
+
+            <include
+                android:id="@+id/user_profile_inputs"
+                layout="@layout/user_profile_inputs"/>
+
+
+            <include
+                layout="@layout/fragment_my_events"
+                android:id="@+id/my_events"
+                android:visibility="gone"/>
+
+            <include
+                layout="@layout/fragment_my_services"
+                android:id="@+id/my_services"
+                android:visibility="gone"/>
+
+            <include
+                layout="@layout/fragment_my_products"
+                android:id="@+id/my_products"
+                android:visibility="gone"/>
+
+            <include
+                layout="@layout/fragment_favourite_events"
+                android:id="@+id/favourite_events"/>
+
+            <include
+                layout="@layout/fragment_favourite_services"
+                android:id="@+id/favourite_services"/>
+
+            <include
+                layout="@layout/fragment_favourite_products"
+                android:id="@+id/favourite_products"/>
+
+            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                android:id="@+id/calendarView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:mcv_showOtherDates="none" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/future_activities"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/your_future_activities"
+                android:visibility="gone"/>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@android:color/darker_gray"
+                android:dividerHeight="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deactivate_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/deactivate_account"
+                android:textSize="16sp"
+                android:backgroundTint="@color/red_delete"
+                android:layout_marginBottom="5dp"
+                app:icon="@drawable/ic_delete"
+                />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/upgrade_account_fab"
+        style="?attr/floatingActionButtonSecondaryStyle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="16dp">
+        android:contentDescription="@string/upgrade_account"
+        android:src="@drawable/ic_upgrade"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        />
 
-        <include
-            android:id="@+id/user_profile_inputs"
-            layout="@layout/user_profile_inputs"/>
-
-
-
-        <include
-            layout="@layout/fragment_my_events"
-            android:id="@+id/my_events"
-            android:visibility="gone"/>
-
-        <include
-            layout="@layout/fragment_my_services"
-            android:id="@+id/my_services"
-            android:visibility="gone"/>
-
-        <include
-            layout="@layout/fragment_my_products"
-            android:id="@+id/my_products"
-            android:visibility="gone"/>
-
-        <include
-            layout="@layout/fragment_favourite_events"
-            android:id="@+id/favourite_events"/>
-
-        <include
-            layout="@layout/fragment_favourite_services"
-            android:id="@+id/favourite_services"/>
-
-        <include
-            layout="@layout/fragment_favourite_products"
-            android:id="@+id/favourite_products"/>
-
-        <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-            android:id="@+id/calendarView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:mcv_showOtherDates="none" />
-
-        <TextView
-            android:id="@+id/future_activities"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/your_future_activities"
-            android:visibility="gone"/>
-
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@android:color/darker_gray"
-            android:dividerHeight="1dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/deactivate_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/deactivate_account"
-            android:textSize="16sp"
-            android:backgroundTint="@color/red_delete"
-            android:layout_marginBottom="5dp"
-            />
-
-
-    </LinearLayout>
-
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

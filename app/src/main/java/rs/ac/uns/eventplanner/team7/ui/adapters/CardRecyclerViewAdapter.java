@@ -15,18 +15,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
-import com.squareup.picasso.Picasso;
 
 import java.util.Collection;
 import java.util.List;
 
-import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
 import rs.ac.uns.eventplanner.team7.data.interfaces.DetailedCard;
 import rs.ac.uns.eventplanner.team7.data.interfaces.WithImage;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
 
 public class CardRecyclerViewAdapter<T extends BasicCard>
         extends RecyclerView.Adapter<CardRecyclerViewAdapter.ViewHolder> {
@@ -168,12 +167,7 @@ public class CardRecyclerViewAdapter<T extends BasicCard>
             titleView.setText(entity.getTitle());
             subtitleView.setText(entity.getSubtitle());
             if (entity instanceof WithImage && imageView != null) {
-                String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + ((WithImage) entity).getCoverImage();
-                Picasso.get()
-                        .load(backendUrl)
-                        .placeholder(R.drawable.image_placeholder)
-                        .error(R.drawable.image_placeholder)
-                        .into(imageView);
+                ImageLoader.loadImage(((WithImage) entity).getCoverImage(), imageView);
             }
             if (entity instanceof BasicItemDTO && !((BasicItemDTO) entity).isCurrent()) {
                 cardView.setBackgroundColor(Color.parseColor("#D3D3D3"));

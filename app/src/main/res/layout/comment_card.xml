@@ -1,40 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/comment_card"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="wrap_content"
     android:layout_margin="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
-
+        android:orientation="vertical"
+        android:padding="15dp"
+        >
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="15dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             >
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/comment_author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="200dp"
-                android:layout_marginBottom="10dp"
-                android:text="Card title"
-                />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/comment_message"
+                android:id="@+id/comment_author"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                tools:text="john.doe@gmail.com"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/report_comment_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="200dp"
-                android:text="Card subtitle"
+                style="?attr/materialIconButtonStyle"
+                app:icon="@drawable/ic_flag"
                 />
 
         </LinearLayout>
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/comment_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="100dp"
+            android:paddingVertical="5dp"
+            android:justificationMode="inter_word"
+            tools:text="Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis et cetera..."
+            />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/comment_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Aug 30 at 19:45"
+            />
 
     </LinearLayout>
 

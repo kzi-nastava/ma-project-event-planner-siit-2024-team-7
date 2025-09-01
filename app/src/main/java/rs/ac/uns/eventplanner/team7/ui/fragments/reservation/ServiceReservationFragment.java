@@ -31,7 +31,7 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.event.FutureReservableEventsDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reservation.ReservationDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.GetServiceResponseDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.services.ReservationService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ReservationStepsAdapter;
@@ -180,11 +180,11 @@ public class ServiceReservationFragment extends Fragment {
         userService.getProviderByItemId(bearerToken, serviceId).enqueue(new Callback<>() {
             @Override
             public void onResponse(
-                    @NonNull Call<GetProviderResponseDTO> call,
-                    @NonNull Response<GetProviderResponseDTO> response
+                    @NonNull Call<GetUserDetailsResponseDTO> call,
+                    @NonNull Response<GetUserDetailsResponseDTO> response
             ) {
                 if (response.isSuccessful()) {
-                    GetProviderResponseDTO provider = response.body();
+                    GetUserDetailsResponseDTO provider = response.body();
                     if (provider == null) return;
                     viewModel.setProviderEmail(provider.getEmail());
                 } else {
@@ -193,7 +193,7 @@ public class ServiceReservationFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<GetProviderResponseDTO> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
                 viewModel.setResponseError(t.getMessage());
             }
         });

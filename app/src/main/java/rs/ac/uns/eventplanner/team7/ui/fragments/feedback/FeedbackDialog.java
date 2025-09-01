@@ -56,6 +56,11 @@ public class FeedbackDialog extends DialogFragment {
     }
 
     @Override
+    public int getTheme() {
+        return R.style.AppTheme_MaterialDialogStyle;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feedback_dialog, container, false);

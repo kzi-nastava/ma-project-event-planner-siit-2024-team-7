@@ -2,18 +2,17 @@ package rs.ac.uns.eventplanner.team7.ui.fragments.user;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -22,40 +21,40 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.AverageRatingDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.FeedbackDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reporting.CreateReportRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reporting.ReportDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.FeedbackService;
 import rs.ac.uns.eventplanner.team7.data.services.ReportService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.CommentAdapter;
 import rs.ac.uns.eventplanner.team7.ui.fragments.feedback.FeedbackDialog;
 import rs.ac.uns.eventplanner.team7.ui.fragments.reporting.ReportReasonDialogFragment;
-import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
 public class SPPDetailsFragment extends Fragment {
 
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final ReportService reportService = ClientUtils.injectService(ReportService.class);
     private final FeedbackService feedbackService = ClientUtils.injectService(FeedbackService.class);
-    private GetProviderResponseDTO providerDTO = null;
+    private GetUserDetailsResponseDTO providerDTO = null;
     private Integer itemId;
     private MaterialTextView titleNameView, emailView, descriptionView, addressView, phoneView, noComments, ratingCount;
     private ImageView providerImage, star1, star2, star3, star4, star5;
     private MaterialButton reportButton, chatButton, rateButton;
     private RecyclerView commentsView;
     private CommentAdapter commentAdapter;
+    private String bearerToken;
 
     public SPPDetailsFragment() {
         // Required empty public constructor
@@ -97,15 +96,27 @@ public class SPPDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         commentAdapter = new CommentAdapter(requireContext(), new ArrayList<>());
         commentsView.setAdapter(commentAdapter);
+        commentAdapter.setOnReportCommentClickListener(this::showCommentReportDialog);
 
-        userService.getProviderByItemId(AuthUtil.getAuthorizationValue(requireContext()), itemId)
+        UserRole role = AuthUtil.extractRole(requireContext());
+        if (role == UserRole.GUEST) {
+            reportButton.setVisibility(View.GONE);
+            chatButton.setVisibility(View.GONE);
+        }
+
+        if (role != UserRole.EVENT_ORG) {
+            rateButton.setVisibility(View.GONE);
+        }
+
+        userService.getProviderByItemId(bearerToken, itemId)
                 .enqueue(new Callback<>() {
                     @Override
-                    public void onResponse(@NonNull Call<GetProviderResponseDTO> call,
-                                           @NonNull Response<GetProviderResponseDTO> response) {
+                    public void onResponse(@NonNull Call<GetUserDetailsResponseDTO> call,
+                                           @NonNull Response<GetUserDetailsResponseDTO> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             providerDTO = response.body();
                             fillDetails();
@@ -113,17 +124,20 @@ public class SPPDetailsFragment extends Fragment {
                             reportButton.setEnabled(true);
                             chatButton.setEnabled(true);
                             rateButton.setEnabled(true);
+                        } else {
+                            if (getView() != null) Navigation.findNavController(getView()).navigateUp();
                         }
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<GetProviderResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
+                        String message = t.getMessage();
+                        if (message != null) Log.d("ERROR", message);
                     }
                 });
 
         reportButton.setOnClickListener(v -> {
-            var dialog = ReportReasonDialogFragment.newInstance();
+            var dialog = ReportReasonDialogFragment.newInstance(true);
             dialog.setCancelable(false);
             dialog.setOnSubmitClickListener(this::reportProvider);
             dialog.show(getChildFragmentManager(), "ReportProviderDialog");
@@ -131,7 +145,7 @@ public class SPPDetailsFragment extends Fragment {
 
         chatButton.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putParcelable("contactDTO", new ChatContactDTO(providerDTO.getId(), providerDTO.getEmail(), providerDTO.getPhotoURL(), false));
+            bundle.putParcelable("contactDTO", providerDTO);
             Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
         });
 
@@ -143,10 +157,23 @@ public class SPPDetailsFragment extends Fragment {
 
     private void reportProvider(String reportReason) {
         reportButton.setEnabled(false);
-        String token = AuthUtil.getAuthorizationValue(requireContext());
         String userEmail = AuthUtil.extractEmail(requireContext());
         CreateReportRequestDTO dto = new CreateReportRequestDTO(userEmail, providerDTO.getEmail(), reportReason);
-        reportService.create(token, dto).enqueue(new Callback<>() {
+        handleReport(dto);
+    }
+
+    private void showCommentReportDialog(FeedbackDTO feedback) {
+        var dialog = ReportReasonDialogFragment.newInstance(false);
+        dialog.setCancelable(false);
+        dialog.setOnSubmitClickListener(reportReason -> {
+            String userEmail = AuthUtil.extractEmail(requireContext());
+            handleReport(new CreateReportRequestDTO(userEmail, feedback.getUserEmail(), feedback.getId(), reportReason));
+        });
+        dialog.show(getChildFragmentManager(), "ReportCommentDialog");
+    }
+
+    private void handleReport(CreateReportRequestDTO reportRequestDTO) {
+        reportService.create(bearerToken, reportRequestDTO).enqueue(new Callback<>() {
             @Override
             public void onResponse(
                     @NonNull Call<ReportDTO> call,
@@ -171,8 +198,7 @@ public class SPPDetailsFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<ReportDTO> call, @NonNull Throwable t) {
                 String message = t.getMessage();
-                if (message == null) return;
-                Log.d("ERROR", message);
+                if (message != null) Log.d("ERROR", message);
             }
         });
     }
@@ -197,8 +223,7 @@ public class SPPDetailsFragment extends Fragment {
     }
 
     private void setFeedbacks() {
-        String token = AuthUtil.getAuthorizationValue(requireContext());
-        feedbackService.getAllApprovedForProvider(token, providerDTO.getId()).enqueue(new Callback<>() {
+        feedbackService.getAllApprovedForProvider(bearerToken, providerDTO.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<FeedbackDTO>> call,
                                    @NonNull Response<List<FeedbackDTO>> response) {
@@ -218,11 +243,12 @@ public class SPPDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<FeedbackDTO>> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                String message = t.getMessage();
+                if (message != null) Log.d("ERROR", message);
             }
         });
 
-        feedbackService.getAverageRatingForProvider(token, providerDTO.getId()).enqueue(new Callback<>() {
+        feedbackService.getAverageRatingForProvider(bearerToken, providerDTO.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<AverageRatingDTO> call,
                                    @NonNull Response<AverageRatingDTO> response) {
@@ -234,7 +260,8 @@ public class SPPDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<AverageRatingDTO> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                String message = t.getMessage();
+                if (message != null) Log.d("ERROR", message);
             }
         });
     }

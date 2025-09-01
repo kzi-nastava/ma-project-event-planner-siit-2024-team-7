@@ -19,7 +19,7 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1"
             >
 
@@ -29,18 +29,24 @@
                 android:orientation="vertical"
                 >
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/spp_profile_pic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:scaleType="centerInside"
-                    android:adjustViewBounds="true"
-                    app:shapeAppearanceOverlay="@style/circleImageView"
-                    app:srcCompat="@drawable/image_placeholder"
-                    android:maxWidth="200dp"
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    app:cardCornerRadius="125dp"
+                    app:strokeWidth="0dp"
                     android:layout_marginBottom="20dp"
                     android:layout_gravity="center"
-                    />
+                    >
+
+                    <ImageView
+                        android:id="@+id/spp_profile_pic"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/image_placeholder"
+                        />
+
+                </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
@@ -49,15 +55,13 @@
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginStart="10dp"
-                    android:textColor="@color/black" />
+                    android:layout_marginStart="10dp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/provider_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:textColor="@color/black"
                     android:layout_marginBottom="12dp"
                     android:layout_marginStart="8dp"/>
 
@@ -70,15 +74,13 @@
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginStart="10dp"
-                    android:textColor="@color/black" />
+                    android:layout_marginStart="10dp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/provider_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:textColor="@color/black"
                     android:layout_marginBottom="12dp"
                     android:layout_marginStart="8dp"/>
 
@@ -91,15 +93,13 @@
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginStart="10dp"
-                    android:textColor="@color/black" />
+                    android:layout_marginStart="10dp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/provider_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:textColor="@color/black"
                     android:layout_marginBottom="12dp"
                     android:layout_marginStart="8dp"/>
 
@@ -112,15 +112,13 @@
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginStart="10dp"
-                    android:textColor="@color/black" />
+                    android:layout_marginStart="10dp"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/provider_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:textColor="@color/black"
                     android:layout_marginBottom="12dp"
                     android:layout_marginStart="8dp"/>
 
@@ -133,8 +131,7 @@
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginStart="10dp"
-                    android:textColor="@color/black" />
+                    android:layout_marginStart="10dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -173,8 +170,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="(0)"
-                        android:layout_marginStart="10dp"
-                        android:textColor="@color/black" />
+                        android:layout_marginStart="10dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/rate_provider_button"
@@ -197,16 +193,14 @@
                     android:textSize="16sp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="4dp"
-                    android:layout_marginStart="10dp"
-                    android:textColor="@color/black" />
+                    android:layout_marginStart="10dp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/no_comments_provider"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/no_comments_yet"
-                    android:layout_marginStart="10dp"
-                    android:textColor="@color/black" />
+                    android:layout_marginStart="10dp" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/provider_comments"
@@ -231,9 +225,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/chat_w_provider_button"
             style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/open_chat"
             app:icon="@drawable/ic_add_comment"
             android:enabled="false"
@@ -243,9 +236,8 @@
             android:id="@+id/report_account_button"
             style="?attr/materialIconButtonFilledTonalStyle"
             android:backgroundTint="@color/orange_warning"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.9"
             android:text="@string/report"
             app:icon="@drawable/ic_feedback"
             app:iconPadding="8dp"
@@ -254,18 +246,6 @@
             android:enabled="false"
             />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/block_account_button"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            android:backgroundTint="@color/red_delete"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.9"
-            android:text="@string/block"
-            app:icon="@drawable/ic_block"
-            app:iconPadding="8dp"
-            android:enabled="false"
-            />
     </LinearLayout>
 
 </LinearLayout>

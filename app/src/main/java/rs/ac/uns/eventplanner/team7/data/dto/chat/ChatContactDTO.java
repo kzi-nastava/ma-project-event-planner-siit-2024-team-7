@@ -20,13 +20,13 @@ public class ChatContactDTO implements BasicCard, WithImage, Parcelable {
     private Integer userId;
     private String userEmail;
     private String photoUrl;
-    private boolean read;
+    private boolean readOrSenderIsLoggedIn;
 
     protected ChatContactDTO(Parcel in) {
         userId = in.readInt();
         userEmail = in.readString();
         photoUrl = in.readString();
-        read = in.readByte() != 0;
+        readOrSenderIsLoggedIn = in.readByte() != 0;
     }
 
     public static final Creator<ChatContactDTO> CREATOR = new Creator<>() {
@@ -51,7 +51,7 @@ public class ChatContactDTO implements BasicCard, WithImage, Parcelable {
         dest.writeInt(userId);
         dest.writeString(userEmail);
         dest.writeString(photoUrl);
-        dest.writeByte((byte) (read ? 1 : 0));
+        dest.writeByte((byte) (readOrSenderIsLoggedIn ? 1 : 0));
     }
 
     @Override

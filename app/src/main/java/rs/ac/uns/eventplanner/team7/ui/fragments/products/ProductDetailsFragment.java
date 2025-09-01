@@ -1,5 +1,6 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.products;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
@@ -27,28 +29,32 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.AverageRatingDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.FeedbackDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.product.GetProductResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.reporting.CreateReportRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.reporting.ReportDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.FavouriteItemResponseDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.EventType;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.FeedbackService;
+import rs.ac.uns.eventplanner.team7.data.services.ReportService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
 import rs.ac.uns.eventplanner.team7.ui.adapters.CommentAdapter;
 import rs.ac.uns.eventplanner.team7.ui.adapters.ImageAdapter;
 import rs.ac.uns.eventplanner.team7.ui.fragments.feedback.FeedbackDialog;
+import rs.ac.uns.eventplanner.team7.ui.fragments.reporting.ReportReasonDialogFragment;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 
 public class ProductDetailsFragment extends Fragment {
     private final UserService userService = ClientUtils.injectService(UserService.class);
     private final FeedbackService feedbackService = ClientUtils.injectService(FeedbackService.class);
+    private final ReportService reportService = ClientUtils.injectService(ReportService.class);
     private GetProductResponseDTO productDTO;
-    private GetProviderResponseDTO providerDTO;
+    private GetUserDetailsResponseDTO providerDTO;
 
     private ImageView favouriteStar, star1, star2, star3, star4, star5;
     private MaterialTextView nameView, descriptionView, priceView, discountView, categoryView, eventTypesView, availabilityView, noImagesView, ratingCount, noComments;
@@ -56,7 +62,10 @@ public class ProductDetailsFragment extends Fragment {
     private ImageAdapter imageAdapter;
     private CommentAdapter commentAdapter;
 
-    private MaterialButton buyButton, viewProviderButton, chatWithProviderButton, rateButton;
+    private FloatingActionButton buyButton;
+    private MaterialButton viewProviderButton, chatWithProviderButton, rateButton;
+
+    private String bearerToken;
 
     public ProductDetailsFragment() {
         // Required empty public constructor
@@ -109,15 +118,16 @@ public class ProductDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         commentAdapter = new CommentAdapter(requireContext(), new ArrayList<>());
         commentsView.setAdapter(commentAdapter);
+        commentAdapter.setOnReportCommentClickListener(this::showCommentReportDialog);
 
-        userService.getProviderByItemId(AuthUtil.getAuthorizationValue(requireContext()), productDTO.getId())
+        userService.getProviderByItemId(bearerToken, productDTO.getId())
                 .enqueue(new Callback<>() {
                     @Override
-                    public void onResponse(@NonNull Call<GetProviderResponseDTO> call,
-                                           @NonNull Response<GetProviderResponseDTO> response) {
+                    public void onResponse(@NonNull Call<GetUserDetailsResponseDTO> call,
+                                           @NonNull Response<GetUserDetailsResponseDTO> response) {
                         if (response.isSuccessful() && response.body() != null) {
                             providerDTO = response.body();
                             chatWithProviderButton.setEnabled(true);
@@ -125,7 +135,7 @@ public class ProductDetailsFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<GetProviderResponseDTO> call, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
                         Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
                     }
                 });
@@ -137,7 +147,7 @@ public class ProductDetailsFragment extends Fragment {
             else
                 favouriteStar.setImageResource(R.drawable.ic_star);
 
-            userService.markItemAsFavourite(AuthUtil.getAuthorizationValue(requireContext()),
+            userService.markItemAsFavourite(bearerToken,
                             AuthUtil.extractId(requireContext()),
                             new FavouriteItemRequestDTO(productDTO.getId(), productDTO.isFavourite()))
                     .enqueue(new Callback<>() {
@@ -158,16 +168,21 @@ public class ProductDetailsFragment extends Fragment {
                     });
         });
 
-        if (AuthUtil.extractRole(requireContext()) != UserRole.EVENT_ORG || !productDTO.isAvailable())
-            buyButton.setVisibility(View.GONE);
+        UserRole role = AuthUtil.extractRole(requireContext());
 
-        if (AuthUtil.extractRole(requireContext()) == UserRole.SPP) {
+        if (role == UserRole.GUEST) {
+            favouriteStar.setVisibility(View.GONE);
+            chatWithProviderButton.setVisibility(View.GONE);
+        } else if (role == UserRole.SPP) {
             viewProviderButton.setVisibility(View.GONE);
             chatWithProviderButton.setVisibility(View.GONE);
         }
+        if (role != UserRole.EVENT_ORG || !productDTO.isAvailable()) {
+            rateButton.setVisibility(View.GONE);
+            buyButton.setVisibility(View.GONE);
+        }
+        rateButton.setEnabled(productDTO.isPurchased());
 
-        if (!productDTO.isPurchased())
-            rateButton.setEnabled(true);
         setFeedbacks();
 
         buyButton.setOnClickListener(v -> {
@@ -188,7 +203,7 @@ public class ProductDetailsFragment extends Fragment {
 
         chatWithProviderButton.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putParcelable("contactDTO", new ChatContactDTO(providerDTO.getId(), providerDTO.getEmail(), providerDTO.getPhotoURL(), false));
+            bundle.putParcelable("contactDTO", providerDTO);
             Navigation.findNavController(view).navigate(R.id.nav_chats, bundle);
         });
 
@@ -237,7 +252,7 @@ public class ProductDetailsFragment extends Fragment {
     }
 
     private void setFeedbacks() {
-        String token = AuthUtil.getAuthorizationValue(requireContext());
+        String token = bearerToken;
         feedbackService.getAllApprovedForItem(token, productDTO.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<FeedbackDTO>> call,
@@ -307,5 +322,43 @@ public class ProductDetailsFragment extends Fragment {
                 stars[i].setImageResource(emptyStar);
             }
         }
+    }
+
+    private void showCommentReportDialog(FeedbackDTO feedback) {
+        var dialog = ReportReasonDialogFragment.newInstance(false);
+        dialog.setCancelable(false);
+        dialog.setOnSubmitClickListener(reportReason -> {
+            String userEmail = AuthUtil.extractEmail(requireContext());
+            var dto = new CreateReportRequestDTO(userEmail, feedback.getUserEmail(), feedback.getId(), reportReason);
+            reportService.create(bearerToken, dto).enqueue(new Callback<>() {
+                @Override
+                public void onResponse(
+                        @NonNull Call<ReportDTO> call,
+                        @NonNull Response<ReportDTO> response
+                ) {
+                    if (!isAdded()) return;
+                    View view = getView();
+                    Context context = getContext();
+                    if (response.isSuccessful() && response.body() != null) {
+                        if (view == null) return;
+                        Snackbar.make(view, R.string.report_submitted, Snackbar.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (response.code() == 400) {
+                        var errorDto = ClientUtils.convertToErrorMessage(response.errorBody());
+                        if (errorDto != null && view != null && context != null) {
+                            Snackbar.make(view, errorDto.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ReportDTO> call, @NonNull Throwable t) {
+                    String message = t.getMessage();
+                    if (message != null) Log.d("ERROR", message);
+                }
+            });
+        });
+        dialog.show(getChildFragmentManager(), "ReportCommentDialog");
     }
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textview.MaterialTextView;
@@ -45,7 +46,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ChatContactDTO contact = contacts.get(position);
         holder.bindData(contact);
-        holder.itemView.setOnClickListener(v -> cardClickListener.onCardClicked(contact));
+        holder.itemView.setOnClickListener(v -> {
+            cardClickListener.onCardClicked(contact);
+            v.setEnabled(false);
+        });
     }
 
     @Override
@@ -84,8 +88,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         }
 
         public void bindData(ChatContactDTO contactDTO) {
-            boolean read = contactDTO.isRead();
+            boolean read = contactDTO.isReadOrSenderIsLoggedIn();
             contactTextView.setText(contactDTO.getUserEmail());
+            profilePic.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(),R.drawable.image_placeholder));
             if (contactDTO.getPhotoUrl() != null && !contactDTO.getPhotoUrl().isEmpty()) {
                 String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + contactDTO.getPhotoUrl();
                 Picasso.get()
@@ -94,10 +99,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                         .error(R.drawable.image_placeholder)
                         .into(profilePic);
             }
-            if (!read) {
-                contactTextView.setTypeface(null, Typeface.BOLD);
-                unreadDot.setVisibility(View.VISIBLE);
-            }
+            int style = read ? Typeface.NORMAL : Typeface.BOLD;
+            Typeface tf = Typeface.create("sans-serif-medium", style);
+            contactTextView.setTypeface(tf);
+            unreadDot.setVisibility(read ? View.INVISIBLE : View.VISIBLE);
         }
     }
 }

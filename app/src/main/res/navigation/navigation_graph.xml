@@ -40,7 +40,12 @@
         android:id="@+id/nav_chats"
         android:name="rs.ac.uns.eventplanner.team7.ui.fragments.chats.ChatsFragment"
         android:label="@string/toolbar_chats"
-        tools:layout="@layout/fragment_chats"/>
+        tools:layout="@layout/fragment_chats">
+        <action
+            android:id="@+id/navigate_back_to_contacts_after_blocking"
+            app:destination="@id/nav_contacts"
+            app:popUpTo="@id/nav_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_product_list"
@@ -200,6 +205,9 @@
             app:destination="@id/nav_event_statistics" />
         <action android:id="@+id/navigate_to_chat_from_details"
             app:destination="@id/nav_chats" />
+        <action
+            android:id="@+id/navigate_from_events_to_organizer_details"
+            app:destination="@id/nav_organizer_details" />
 
     </fragment>
 
@@ -278,6 +286,15 @@
         <action
             android:id="@+id/navigate_to_chat_from_spp"
             app:destination="@+id/nav_chats" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_organizer_details"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.user.OrganizerDetailsFragment"
+        android:label="@string/user_details" >
+        <action
+            android:id="@+id/navigate_to_chat_from_organizer_details"
+            app:destination="@id/nav_chats" />
     </fragment>
 
     <fragment

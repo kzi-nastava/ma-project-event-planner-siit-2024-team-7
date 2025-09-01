@@ -27,6 +27,10 @@ public class ReportReasonDialogFragment extends DialogFragment implements TextWa
         void onSubmitClicked(String reportReason);
     }
 
+    private static final String ARG_IS_USER_REPORT = "isUserReport";
+
+    boolean isUserReport;
+
     private TextInputEditText reasonInput;
     private MaterialTextView characterCount, inputError;
 
@@ -37,9 +41,20 @@ public class ReportReasonDialogFragment extends DialogFragment implements TextWa
         // Required empty public constructor
     }
 
+    public static ReportReasonDialogFragment newInstance(boolean isUserReport) {
+        ReportReasonDialogFragment fragment = new ReportReasonDialogFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_IS_USER_REPORT, isUserReport);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-    public static ReportReasonDialogFragment newInstance() {
-        return new ReportReasonDialogFragment();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            isUserReport = getArguments().getBoolean(ARG_IS_USER_REPORT);
+        }
     }
 
     @Override
@@ -62,6 +77,13 @@ public class ReportReasonDialogFragment extends DialogFragment implements TextWa
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        MaterialTextView titleText = view.findViewById(R.id.report_title);
+        MaterialTextView subtitleText = view.findViewById(R.id.report_subtitle);
+        if (!isUserReport) {
+            titleText.setText(R.string.feedback_report);
+            subtitleText.setText(R.string.feedback_report_description);
+        }
+
         MaterialButton submitButton = view.findViewById(R.id.submit_btn);
         MaterialButton cancelButton = view.findViewById(R.id.cancel_btn);
 
@@ -73,14 +95,10 @@ public class ReportReasonDialogFragment extends DialogFragment implements TextWa
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-    }
+    public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
     @Override
     public void afterTextChanged(Editable text) {

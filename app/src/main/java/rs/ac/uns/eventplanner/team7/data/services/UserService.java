@@ -26,6 +26,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateProviderRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateProviderResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateUserRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpgradeAuthUserRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UserPreferencesDTO;
 
 public interface UserService {
@@ -136,6 +137,13 @@ public interface UserService {
     })
     @PUT("users/{id}")
     Call<Void> updateAuthUser(@Header("Authorization") String token, @Path("id") Integer id, @Body UpdateUserRequestDTO dto);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @PUT("users/{id}/upgrade")
+    Call<Void> upgradeAuthUser(@Header("Authorization") String token, @Path("id") Integer id, @Body UpgradeAuthUserRequestDTO dto);
 
     @Headers({
             "User-Agent: Mobile-Android",

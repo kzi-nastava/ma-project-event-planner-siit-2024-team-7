@@ -97,6 +97,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.BaseViewHolder
         return items.size();
     }
 
+    public String getLastMessageSender() {
+        return chatMessages.get(chatMessages.size()-1).getSenderEmail();
+    }
+
     public void add(@NonNull ChatResponseDTO message) {
         int position;
         synchronized (mutex) {

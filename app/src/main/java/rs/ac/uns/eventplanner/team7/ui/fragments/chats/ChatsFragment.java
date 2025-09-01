@@ -302,6 +302,21 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
                 }
                 adapter.addAll(response.body());
                 noMessageTextView.setText("");
+
+                if (!Objects.equals(adapter.getLastMessageSender(), email)) {
+                    chatService.markAsRead(bearerToken, contactDTO.getId()).enqueue(new Callback<>() {
+                        @Override
+                        public void onResponse(@NonNull Call<Void> call,
+                                               @NonNull Response<Void> response) {
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        }
+                    });
+
+                }
             }
 
             @Override
@@ -313,17 +328,6 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
             }
         });
 
-        chatService.markAsRead(bearerToken, contactDTO.getId()).enqueue(new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<Void> call,
-                                   @NonNull Response<Void> response) {
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
-            }
-        });
     }
 
     private final BroadcastReceiver newNotificationReceiver = new BroadcastReceiver() {

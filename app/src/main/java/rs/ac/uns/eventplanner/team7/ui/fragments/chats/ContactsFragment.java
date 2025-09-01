@@ -105,7 +105,7 @@ public class ContactsFragment extends Fragment {
     }
 
     private void onCardClicked(BasicCard contact) {
-        userService.getUserDetails(bearerToken, contact.getId()).enqueue(new Callback<>() {
+        userService.getUserDetails(contact.getId()).enqueue(new Callback<>() {
             @Override
             public void onResponse(
                     @NonNull Call<GetUserDetailsResponseDTO> call,

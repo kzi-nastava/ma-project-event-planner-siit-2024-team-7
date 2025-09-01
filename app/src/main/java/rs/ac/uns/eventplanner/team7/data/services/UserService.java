@@ -149,5 +149,5 @@ public interface UserService {
             "Content-Type: application/json"
     })
     @GET("users/{id}/details")
-    Call<GetUserDetailsResponseDTO> getUserDetails(@Header("Authorization") String token, @Path("id") Integer id);
+    Call<GetUserDetailsResponseDTO> getUserDetails(@Path("id") Integer id);
 }

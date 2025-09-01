@@ -88,7 +88,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         }
 
         public void bindData(ChatContactDTO contactDTO) {
-            boolean read = contactDTO.isRead();
+            boolean read = contactDTO.isReadOrSenderIsLoggedIn();
             contactTextView.setText(contactDTO.getUserEmail());
             profilePic.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(),R.drawable.image_placeholder));
             if (contactDTO.getPhotoUrl() != null && !contactDTO.getPhotoUrl().isEmpty()) {

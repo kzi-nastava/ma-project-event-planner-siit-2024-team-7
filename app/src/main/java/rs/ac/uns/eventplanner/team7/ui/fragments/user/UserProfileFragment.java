@@ -1,27 +1,34 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.user;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.util.Pair;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.squareup.picasso.Picasso;
 
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -36,32 +43,48 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserResponseDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateUserRequestDTO;
-import rs.ac.uns.eventplanner.team7.ui.adapters.CalendarAdapter;
-import rs.ac.uns.eventplanner.team7.ui.adapters.CarouselAdapter;
 import rs.ac.uns.eventplanner.team7.data.dto.BusynessDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.BasicEventDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.item.BasicItemDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateOrganizerRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateOrganizerResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateProviderRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateUserRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpgradeAuthUserRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
 import rs.ac.uns.eventplanner.team7.data.model.Location;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.data.services.EventService;
+import rs.ac.uns.eventplanner.team7.data.services.ProductService;
+import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
+import rs.ac.uns.eventplanner.team7.ui.activities.LoginActivity;
+import rs.ac.uns.eventplanner.team7.ui.adapters.CalendarAdapter;
+import rs.ac.uns.eventplanner.team7.ui.adapters.CarouselAdapter;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
 import rs.ac.uns.eventplanner.team7.utils.CurrentDayDecorator;
-import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
 
 public class UserProfileFragment extends Fragment {
-
-    private UserRole role;
     private final UserService userService = ClientUtils.injectService(UserService.class);
+    private final EventService eventService = ClientUtils.injectService(EventService.class);
+    private final ProductService productService = ClientUtils.injectService(ProductService.class);
+    private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
+
     private MaterialCalendarView calendarView;
     private List<BusynessDTO> futureBusyness;
+
+    private UserRole role;
+    private String bearerToken;
+    private Integer userId;
+    private MaterialButton changePasswordButton;
+    private MaterialButton deactivateAccountButton;
+    private FloatingActionButton upgradeAccountButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,7 +94,6 @@ public class UserProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
-
         calendarView = view.findViewById(R.id.calendarView);
 
         setupCalendar(view);
@@ -88,10 +110,19 @@ public class UserProfileFragment extends Fragment {
         setupInputIcons(view);
         fillFields(view);
 
-        MaterialButton changePass = view.findViewById(R.id.change_password);
-        changePass.setOnClickListener(v -> showChangePasswordDialog());
-        MaterialButton deactivate = view.findViewById(R.id.deactivate_account);
-        deactivate.setOnClickListener(v -> showConfirmDeactivationDialog());
+        changePasswordButton = view.findViewById(R.id.change_password);
+        changePasswordButton.setOnClickListener(v -> showChangePasswordDialog());
+        deactivateAccountButton = view.findViewById(R.id.deactivate_account);
+        deactivateAccountButton.setOnClickListener(v -> showConfirmDeactivationDialog());
+
+        upgradeAccountButton = view.findViewById(R.id.upgrade_account_fab);
+        if (role != UserRole.AUTH) upgradeAccountButton.setVisibility(View.GONE);
+        upgradeAccountButton.setOnClickListener(v -> {
+            var dialog = UpgradeAccountDialogFragment.newInstance();
+            dialog.setCancelable(false);
+            dialog.setOnConfirmClickListener(this::upgradeAuthUser);
+            dialog.show(getChildFragmentManager(), "UpgradeAccountDialog");
+        });
 
         return view;
     }
@@ -99,13 +130,14 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        this.role = AuthUtil.extractRole(requireContext());
+        role = AuthUtil.extractRole(requireContext());
+        bearerToken = AuthUtil.getAuthorizationValue(requireContext());
+        userId = AuthUtil.extractId(requireContext());
     }
 
     private void setupCalendar(View view) {
         calendarView.setSelectedDate(LocalDate.now());
-        Integer userId = AuthUtil.extractId(requireContext());
-        Call<List<BusynessDTO>> call = userService.getBusyness(AuthUtil.getAuthorizationValue(requireContext()), userId);
+        Call<List<BusynessDTO>> call = userService.getBusyness(bearerToken, userId);
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<BusynessDTO>> call, @NonNull Response<List<BusynessDTO>> response) {
@@ -241,8 +273,6 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void updateField(int fieldId, String value) {
-        Integer userId = AuthUtil.extractId(requireContext());
-        String authHeader = AuthUtil.getAuthorizationValue(requireContext());
         TextInputLayout field = requireView().findViewById(fieldId);
         if (value.isEmpty()) {
             field.setError("Value can't be empty!");
@@ -274,7 +304,7 @@ public class UserProfileFragment extends Fragment {
             } else if (fieldId == R.id.change_profile_pic_layout) {
                 dto.setPhotoURL(value);
             }
-            userService.updateOrganizer(authHeader, userId, dto).enqueue((Callback<UpdateOrganizerResponseDTO>) createUpdateFieldCallback());
+            userService.updateOrganizer(bearerToken, userId, dto).enqueue((Callback<UpdateOrganizerResponseDTO>) createUpdateFieldCallback());
         } else if (role == UserRole.SPP) {
             UpdateProviderRequestDTO dto = new UpdateProviderRequestDTO();
             Location location = getCurrentLocationData(); // Retrieve the full location data
@@ -297,7 +327,7 @@ public class UserProfileFragment extends Fragment {
             } else if (fieldId == R.id.change_profile_pic_layout) {
                 dto.setPhotoURL(value);
             }
-            userService.updateProvider(authHeader, userId, dto).enqueue((Callback<UpdateProviderResponseDTO>) createUpdateFieldCallback());
+            userService.updateProvider(bearerToken, userId, dto).enqueue((Callback<UpdateProviderResponseDTO>) createUpdateFieldCallback());
         }
         if (role == UserRole.AUTH) {
             UpdateUserRequestDTO dto = new UpdateUserRequestDTO();
@@ -318,7 +348,7 @@ public class UserProfileFragment extends Fragment {
                 dto.setPhone(value);
             }
             dto.setRole(UserRole.AUTH);
-            userService.updateAuthUser(AuthUtil.getAuthorizationValue(requireContext()), userId, dto).enqueue((Callback<Void>) createUpdateFieldCallback());
+            userService.updateAuthUser(bearerToken, userId, dto).enqueue((Callback<Void>) createUpdateFieldCallback());
         }
     }
 
@@ -400,21 +430,20 @@ public class UserProfileFragment extends Fragment {
 
         if (!items.isEmpty()) {
             CarouselAdapter adapter = new CarouselAdapter(requireContext(), new ArrayList<>(items));
+            adapter.setOnMoreInfoClickListener(this::onMoreInfoClicked);
             carousel.setAdapter(adapter);
         }
     }
 
     private void fillFields(View view) {
-        Integer userId = AuthUtil.extractId(requireContext());
-        String authHeader = AuthUtil.getAuthorizationValue(requireContext());
         if (role == UserRole.EVENT_ORG) {
-            userService.getOrganizer(authHeader, userId).enqueue((Callback<GetOrganizerResponseDTO>) createFillCallback(view, UserRole.EVENT_ORG));
+            userService.getOrganizer(bearerToken, userId).enqueue((Callback<GetOrganizerResponseDTO>) createFillCallback(view, UserRole.EVENT_ORG));
         } else if (role == UserRole.SPP) {
-            userService.getProvider(authHeader, userId).enqueue((Callback<GetProviderResponseDTO>) createFillCallback(view, UserRole.SPP));
+            userService.getProvider(bearerToken, userId).enqueue((Callback<GetProviderResponseDTO>) createFillCallback(view, UserRole.SPP));
         }
         else if (role == UserRole.AUTH) {
             Log.d("CALL", "We are making the get call");
-            userService.getUser(authHeader, userId).enqueue((Callback<GetUserResponseDTO>) createFillCallback(view, UserRole.AUTH));
+            userService.getUser(bearerToken, userId).enqueue((Callback<GetUserResponseDTO>) createFillCallback(view, UserRole.AUTH));
         }
     }
 
@@ -484,13 +513,9 @@ public class UserProfileFragment extends Fragment {
         fillField(view, R.id.change_house_number, houseNumber);
         fillField(view, R.id.change_profile_pic, photoURL);
 
-        ShapeableImageView profilePic = view.findViewById(R.id.profile_picture);
+        ImageView profilePic = view.findViewById(R.id.profile_picture);
         if (photoURL != null && !photoURL.isEmpty()) {
-            Picasso.get()
-                    .load(photoURL)
-                    .placeholder(R.drawable.image_placeholder)
-                    .error(R.drawable.image_placeholder)
-                    .into(profilePic);
+            ImageLoader.loadImage(photoURL, profilePic);
         }
     }
 
@@ -510,9 +535,94 @@ public class UserProfileFragment extends Fragment {
     }
 
     private boolean validatePhone(String phone) {
-        if (!Patterns.PHONE.matcher(phone).matches()) {
-            return false;
+        return Patterns.PHONE.matcher(phone).matches();
+    }
+
+    private void upgradeAuthUser(UpgradeAuthUserRequestDTO requestDTO) {
+        changePasswordButton.setEnabled(false);
+        deactivateAccountButton.setEnabled(false);
+        upgradeAccountButton.setEnabled(false);
+        userService.upgradeAuthUser(bearerToken, userId, requestDTO)
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (!isAdded()) return;
+                        if (!response.isSuccessful()) {
+                            changePasswordButton.setEnabled(true);
+                            deactivateAccountButton.setEnabled(true);
+                            upgradeAccountButton.setEnabled(true);
+
+                            var error = ClientUtils.convertToErrorMessage(response.errorBody());
+                            if (error != null) {
+                                String message = getString(R.string.failed_to_upgrade_account, error.getMessage());
+                                Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show();
+                            }
+                            return;
+                        }
+                        new MaterialAlertDialogBuilder(requireContext())
+                                .setTitle(R.string.account_upgraded_successfully)
+                                .setMessage(
+                                        requestDTO.getUpgradedRole() == UserRole.SPP
+                                                ? R.string.you_are_now_provider
+                                                : R.string.you_are_now_organizer
+                                )
+                                .setPositiveButton(R.string.logout, (d, w) -> {
+                                    handleLogout();
+                                    d.dismiss();
+                                })
+                                .show();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        String message = t.getMessage();
+                        if (message != null) Log.d("ERROR", message);
+                        changePasswordButton.setEnabled(true);
+                        deactivateAccountButton.setEnabled(true);
+                    }
+                });
+    }
+
+    private void handleLogout() {
+        AuthUtil.clearPreferences(requireContext());
+        FragmentActivity activity = requireActivity();
+        Intent intent = new Intent(activity, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        activity.finish();
+    }
+
+    public void onMoreInfoClicked(BasicCard entity) {
+        if (entity instanceof BasicEventDTO) {
+            getDetails(eventService.getEvent(bearerToken, entity.getId()), R.id.navigate_to_event_details_from_profile, "eventDTO");
+        } else if (entity instanceof BasicItemDTO && ((BasicItemDTO) entity).getType().equals("products")) {
+            getDetails(productService.getProduct(bearerToken, entity.getId()), R.id.navigate_to_product_details_from_profile, "productDTO");
+        } else {
+            getDetails(serviceService.getService(bearerToken, entity.getId()), R.id.navigate_to_service_details_from_profile, "serviceDTO");
         }
-        return true;
+
+    }
+
+    private <T extends Parcelable> void getDetails(
+            Call<T> serviceCall,
+            @IdRes int navDestination,
+            String bundleArgName
+    ) {
+        serviceCall.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
+                if (response.isSuccessful() && response.body() != null && isAdded()) {
+                    Bundle args = new Bundle();
+                    args.putParcelable(bundleArgName, response.body());
+                    Navigation.findNavController(requireView()).navigate(navDestination, args);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
+                String message = t.getMessage();
+                if (message != null) Log.d("ERROR", message);
+            }
+        });
     }
 }

@@ -22,6 +22,7 @@ public class GetUserResponseDTO {
     private Set<BasicItemDTO> favoriteItems;
     private Set<BasicEventDTO> createdEvents;
     private Set<BasicEventDTO> favoriteEvents;
+    private Set<BasicEventDTO> acceptedEvents;
     private Set<BasicItemDTO> items;
     private String orgName;
     private String orgDesc;

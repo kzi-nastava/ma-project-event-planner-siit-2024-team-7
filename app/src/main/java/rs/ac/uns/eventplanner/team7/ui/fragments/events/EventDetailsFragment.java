@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,6 +42,7 @@ import rs.ac.uns.eventplanner.team7.data.dto.ResponseMessageDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.FavouriteEventRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.event.GetEventResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserDetailsResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
 import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.UserService;
@@ -59,6 +61,8 @@ public class EventDetailsFragment extends Fragment {
     private final EventService eventService = ClientUtils.injectService(EventService.class);
     private String bearerToken;
     private UserRole role;
+    private boolean isJoined;
+    private Integer userId;
 
     public EventDetailsFragment() {
         // Required empty public constructor
@@ -78,6 +82,8 @@ public class EventDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
         bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         role = AuthUtil.extractRole(requireContext());
+        userId = AuthUtil.extractId(requireContext());
+
 
         MaterialButton exportEventButton = view.findViewById(R.id.btn_export_event_pdf);
         exportEventButton.setOnClickListener(v -> downloadEventPdf());
@@ -121,10 +127,75 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
+        getUser(view);
         initMap(view);
         populateEventDetails(view);
         initActivities(view);
         return view;
+    }
+
+    private void getUser(View v) {
+        userService.getUser(AuthUtil.getAuthorizationValue(requireContext()), userId)
+                .enqueue(new Callback<GetUserResponseDTO>() {
+                    @Override
+                    public void onResponse(@NonNull Call<GetUserResponseDTO> call, @NonNull Response<GetUserResponseDTO> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            isJoined = response.body().getAcceptedEvents().stream()
+                                    .anyMatch(event -> event.getId().equals(eventDto.getId()));                        }
+                            if (isJoined) setupLeaveButton(v);
+                            else setupJoinButton(v);
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<GetUserResponseDTO> call, @NonNull Throwable t) {
+                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void setupJoinButton(View v) {
+        MaterialButton joinButton = v.findViewById(R.id.btn_join_event);
+        joinButton.setText("Join Event");
+        joinButton.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_add));
+        joinButton.setOnClickListener(c -> userService.joinEvent(
+                AuthUtil.getAuthorizationValue(requireContext()), userId, eventDto.getId()).
+                enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(requireContext(),"Event joined successfully!", Toast.LENGTH_SHORT).show();
+                    setupLeaveButton(v);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }));
+
+    }
+
+    private void setupLeaveButton(View v) {
+        MaterialButton joinButton = v.findViewById(R.id.btn_join_event);
+        joinButton.setText("Leave Event");
+        joinButton.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_cancel));
+        joinButton.setOnClickListener(c -> userService.leaveEvent(
+                        AuthUtil.getAuthorizationValue(requireContext()), userId, eventDto.getId()).
+                enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(requireContext(),"Event left successfully!", Toast.LENGTH_SHORT).show();
+                            setupJoinButton(v);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
     }
 
     private void initButtons(View view) {

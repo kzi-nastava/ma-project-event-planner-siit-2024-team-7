@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.AverageRatingDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.feedback.FeedbackDTO;
@@ -41,6 +39,7 @@ import rs.ac.uns.eventplanner.team7.ui.fragments.feedback.FeedbackDialog;
 import rs.ac.uns.eventplanner.team7.ui.fragments.reporting.ReportReasonDialogFragment;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
 
 public class SPPDetailsFragment extends Fragment {
 
@@ -213,12 +212,7 @@ public class SPPDetailsFragment extends Fragment {
                 providerDTO.getLocation().getCountry()));
         phoneView.setText(providerDTO.getPhone());
         if (providerDTO.getPhotoURL() != null && !providerDTO.getPhotoURL().isEmpty()) {
-            String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + providerDTO.getPhotoURL();
-            Picasso.get()
-                    .load(backendUrl)
-                    .error(R.drawable.image_placeholder)
-                    .placeholder(R.drawable.image_placeholder)
-                    .into(providerImage);
+            ImageLoader.loadImage(providerDTO.getPhotoURL(), providerImage);
         }
     }
 

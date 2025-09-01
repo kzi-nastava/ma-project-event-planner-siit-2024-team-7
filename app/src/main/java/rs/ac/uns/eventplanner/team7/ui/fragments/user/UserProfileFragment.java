@@ -393,19 +393,14 @@ public class UserProfileFragment extends Fragment {
         return favItems;
     }
 
-    private void setupCarousel(View view, int carouselId, Set<?> items) {
+    private void setupCarousel(View view, int carouselId, Set<? extends BasicCard> items) {
         RecyclerView carousel = view.findViewById(carouselId);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
         carousel.setLayoutManager(layoutManager);
 
         if (!items.isEmpty()) {
-            if (items.iterator().next() instanceof BasicEventDTO) {
-                Set<BasicEventDTO> events = (Set<BasicEventDTO>) items;
-                carousel.setAdapter(new CarouselAdapter(requireContext(), new ArrayList<>(events), "events"));
-            } else if (items.iterator().next() instanceof BasicItemDTO) {
-                Set<BasicItemDTO> itemList = (Set<BasicItemDTO>) items;
-                carousel.setAdapter(new CarouselAdapter(requireContext(), new ArrayList<>(itemList), "items"));
-            }
+            CarouselAdapter adapter = new CarouselAdapter(requireContext(), new ArrayList<>(items));
+            carousel.setAdapter(adapter);
         }
     }
 

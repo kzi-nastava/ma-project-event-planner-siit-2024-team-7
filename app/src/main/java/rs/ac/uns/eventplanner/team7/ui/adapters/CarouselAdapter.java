@@ -11,23 +11,26 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import lombok.Setter;
 import rs.ac.uns.eventplanner.team7.R;
-import rs.ac.uns.eventplanner.team7.data.dto.event.BasicEventDTO;
-import rs.ac.uns.eventplanner.team7.data.dto.item.BasicItemDTO;
+import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
+import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
+import rs.ac.uns.eventplanner.team7.data.interfaces.WithImage;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
 
 public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHolder> {
     private final Context context;
-    private final List<?> items;
-    private final String type; // Can be "events" or "items"
+    private final List<BasicCard> items;
 
-    public CarouselAdapter(Context context, List<?> items, String type) {
+    @Setter
+    private CardClickListener onMoreInfoClickListener;
+
+    public CarouselAdapter(Context context, List<BasicCard> items) {
         this.context = context;
         this.items = items;
-        this.type = type;
     }
 
     @NonNull
@@ -42,25 +45,7 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         if (holder.titleView == null || holder.subtitleView == null || holder.descriptionView == null || holder.imageView == null) {
             return;
         }
-        if (type.equals("events")) {
-            BasicEventDTO event = (BasicEventDTO) items.get(position);
-            holder.titleView.setText(event.getTitle());
-            holder.subtitleView.setText(event.getSubtitle());
-            holder.descriptionView.setVisibility(View.GONE);
-            Picasso.get()
-                    .load(event.getCoverImage())
-                    .placeholder(R.drawable.image_placeholder)
-                    .into(holder.imageView);
-        } else if (type.equals("items")) {
-            BasicItemDTO item = (BasicItemDTO) items.get(position);
-            holder.titleView.setText(item.getTitle());
-            holder.subtitleView.setText(item.getSubtitle());
-            holder.descriptionView.setVisibility(View.GONE);
-            Picasso.get()
-                    .load(item.getCoverImage())
-                    .placeholder(R.drawable.image_placeholder)
-                    .into(holder.imageView);
-        }
+        holder.bindData(items.get(position));
     }
 
     @Override
@@ -68,7 +53,7 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
         return items.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView titleView;
         TextView subtitleView;
@@ -82,14 +67,17 @@ public class CarouselAdapter extends RecyclerView.Adapter<CarouselAdapter.ViewHo
             subtitleView = itemView.findViewById(R.id.card_subtitle);
             descriptionView = itemView.findViewById(R.id.card_description);
             moreInfoButton = itemView.findViewById(R.id.card_more_info_button);
+        }
 
-            // Optionally, set a listener for the button
-            if (moreInfoButton == null) { //happens if there is no fav item/event
-                return;
+        public void bindData(BasicCard entity) {
+            titleView.setText(entity.getTitle());
+            subtitleView.setText(entity.getSubtitle());
+
+            if (entity instanceof WithImage && imageView != null) {
+                ImageLoader.loadImage(((WithImage) entity).getCoverImage(), imageView);
             }
-            moreInfoButton.setOnClickListener(v -> {
-                // TODO: redirect to event details/item details page
-            });
+            if (moreInfoButton == null || onMoreInfoClickListener == null) return;
+            moreInfoButton.setOnClickListener(v -> onMoreInfoClickListener.onCardClicked(entity));
         }
     }
 }

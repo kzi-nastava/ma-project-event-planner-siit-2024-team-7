@@ -12,15 +12,14 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textview.MaterialTextView;
-import com.squareup.picasso.Picasso;
 
 import java.util.Collection;
 import java.util.List;
 
-import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.chat.ChatContactDTO;
 import rs.ac.uns.eventplanner.team7.data.interfaces.CardClickListener;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
@@ -92,12 +91,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             contactTextView.setText(contactDTO.getUserEmail());
             profilePic.setImageDrawable(AppCompatResources.getDrawable(itemView.getContext(),R.drawable.image_placeholder));
             if (contactDTO.getPhotoUrl() != null && !contactDTO.getPhotoUrl().isEmpty()) {
-                String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + contactDTO.getPhotoUrl();
-                Picasso.get()
-                        .load(backendUrl)
-                        .placeholder(R.drawable.image_placeholder)
-                        .error(R.drawable.image_placeholder)
-                        .into(profilePic);
+                ImageLoader.loadImage(contactDTO.getPhotoUrl(), profilePic);
             }
             int style = read ? Typeface.NORMAL : Typeface.BOLD;
             Typeface tf = Typeface.create("sans-serif-medium", style);

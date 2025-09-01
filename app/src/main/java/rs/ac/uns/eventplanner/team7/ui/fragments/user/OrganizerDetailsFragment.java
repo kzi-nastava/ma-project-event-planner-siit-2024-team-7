@@ -16,12 +16,10 @@ import androidx.navigation.Navigation;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textview.MaterialTextView;
-import com.squareup.picasso.Picasso;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.reporting.CreateReportRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.reporting.ReportDTO;
@@ -31,6 +29,7 @@ import rs.ac.uns.eventplanner.team7.data.services.ReportService;
 import rs.ac.uns.eventplanner.team7.ui.fragments.reporting.ReportReasonDialogFragment;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
 
 public class OrganizerDetailsFragment extends Fragment {
     private static final String ARG_ORGANIZER_DTO = "organizerDTO";
@@ -142,12 +141,7 @@ public class OrganizerDetailsFragment extends Fragment {
                 organizerDTO.getLocation().getCountry()));
         phoneView.setText(organizerDTO.getPhone());
         if (organizerDTO.getPhotoURL() != null && !organizerDTO.getPhotoURL().isEmpty()) {
-            String backendUrl = "http://" + BuildConfig.IP_ADDR + ":8080/api/images?imageUrl=" + organizerDTO.getPhotoURL();
-            Picasso.get()
-                    .load(backendUrl)
-                    .error(R.drawable.image_placeholder)
-                    .placeholder(R.drawable.image_placeholder)
-                    .into(organizerImage);
+            ImageLoader.loadImage(organizerDTO.getPhotoURL(), organizerImage);
         }
     }
 }

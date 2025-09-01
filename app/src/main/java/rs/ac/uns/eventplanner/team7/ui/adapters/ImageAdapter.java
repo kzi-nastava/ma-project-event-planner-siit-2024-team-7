@@ -9,12 +9,11 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import rs.ac.uns.eventplanner.team7.BuildConfig;
 import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
     private final Context context;
@@ -52,13 +51,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         }
 
         public void bindData(String image) {
-            Picasso.get()
-                    .load(image)
-                    .placeholder(R.drawable.image_placeholder)
-                    .resize(250, 200)
-                    .onlyScaleDown()
-                    .centerInside()
-                    .into(imageView);
+            ImageLoader.loadImage(image, imageView);
         }
     }
 }

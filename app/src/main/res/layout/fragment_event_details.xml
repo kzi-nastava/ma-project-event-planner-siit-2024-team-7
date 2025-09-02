@@ -87,6 +87,7 @@
                     app:icon="@drawable/ic_add"
                     app:layout_constraintTop_toBottomOf="@id/event_location"
                     app:layout_constraintStart_toStartOf="parent"
+                    android:visibility="invisible"
                     android:text="Join Event"/>
 
                 <!-- Event Location Map -->

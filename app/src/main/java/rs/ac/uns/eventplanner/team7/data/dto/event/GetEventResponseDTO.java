@@ -109,4 +109,16 @@ public class GetEventResponseDTO implements Parcelable {
     public String getFullAddress() {
         return String.format("%s, %s, %s, %s", location.getCountry(), location.getCity(), location.getStreet(), location.getHouseNumber());
     }
+
+    public boolean isFull() {
+        return currentParticipants == maxParticipants;
+    }
+
+    public void increaseParticipants() {
+        currentParticipants++;
+    }
+
+    public void decreaseParticipants() {
+        currentParticipants--;
+    }
 }

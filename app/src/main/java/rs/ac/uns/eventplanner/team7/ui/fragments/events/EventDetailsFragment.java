@@ -64,6 +64,8 @@ public class EventDetailsFragment extends Fragment {
     private boolean isJoined;
     private Integer userId;
 
+    private MaterialTextView participantsTextView;
+
     public EventDetailsFragment() {
         // Required empty public constructor
     }
@@ -127,16 +129,16 @@ public class EventDetailsFragment extends Fragment {
             }
         });
 
-        getUser(view);
         initMap(view);
         populateEventDetails(view);
         initActivities(view);
+        if (role == UserRole.AUTH || role == UserRole.SPP || role == UserRole.EVENT_ORG) getUser(view);
         return view;
     }
 
     private void getUser(View v) {
-        userService.getUser(AuthUtil.getAuthorizationValue(requireContext()), userId)
-                .enqueue(new Callback<GetUserResponseDTO>() {
+        userService.getUser(bearerToken, userId)
+                .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<GetUserResponseDTO> call, @NonNull Response<GetUserResponseDTO> response) {
                         if (response.isSuccessful() && response.body() != null) {
@@ -155,39 +157,53 @@ public class EventDetailsFragment extends Fragment {
 
     private void setupJoinButton(View v) {
         MaterialButton joinButton = v.findViewById(R.id.btn_join_event);
+        joinButton.setVisibility(View.VISIBLE);
+        joinButton.setEnabled(!eventDto.isFull());
         joinButton.setText("Join Event");
         joinButton.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_add));
         joinButton.setOnClickListener(c -> userService.joinEvent(
-                AuthUtil.getAuthorizationValue(requireContext()), userId, eventDto.getId()).
-                enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(requireContext(),"Event joined successfully!", Toast.LENGTH_SHORT).show();
-                    setupLeaveButton(v);
-                }
-            }
+                        bearerToken, userId, eventDto.getId()).
+                enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (!isAdded()) return;
+                        if (response.isSuccessful()) {
+                            Toast.makeText(requireContext(), "Event joined successfully!", Toast.LENGTH_SHORT).show();
+                            setupLeaveButton(v);
+                            eventDto.increaseParticipants();
+                            formatParticipantCount();
+                        } else {
+                            var error = ClientUtils.convertToErrorMessage(response.errorBody());
+                            if (error != null && "Event is full".equals(error.getMessage())) {
+                                joinButton.setEnabled(false);
+                                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
 
-            @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }));
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
 
     }
 
     private void setupLeaveButton(View v) {
         MaterialButton joinButton = v.findViewById(R.id.btn_join_event);
+        joinButton.setVisibility(View.VISIBLE);
         joinButton.setText("Leave Event");
         joinButton.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_cancel));
         joinButton.setOnClickListener(c -> userService.leaveEvent(
-                        AuthUtil.getAuthorizationValue(requireContext()), userId, eventDto.getId()).
-                enqueue(new Callback<Void>() {
+                        bearerToken, userId, eventDto.getId()).
+                enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(requireContext(),"Event left successfully!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Event left successfully!", Toast.LENGTH_SHORT).show();
                             setupJoinButton(v);
+                            eventDto.decreaseParticipants();
+                            formatParticipantCount();
                         }
                     }
 
@@ -222,7 +238,7 @@ public class EventDetailsFragment extends Fragment {
     }
 
     private void markFav(ImageView btn) {
-        userService.markEventAsFavourite(AuthUtil.getAuthorizationValue(requireContext()), AuthUtil.extractId(requireContext()), new FavouriteEventRequestDTO(eventDto.getId()))
+        userService.markEventAsFavourite(bearerToken, AuthUtil.extractId(requireContext()), new FavouriteEventRequestDTO(eventDto.getId()))
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<ResponseMessageDTO> call, @NonNull Response<ResponseMessageDTO> response) {
@@ -246,7 +262,7 @@ public class EventDetailsFragment extends Fragment {
         MaterialTextView dateTimeTv = view.findViewById(R.id.event_date_time);
         MaterialTextView locationTv = view.findViewById(R.id.event_location);
         MaterialTextView descriptionTv = view.findViewById(R.id.event_description);
-        MaterialTextView participantsTv = view.findViewById(R.id.event_participants);
+        participantsTextView = view.findViewById(R.id.event_participants);
         MaterialTextView eventTypeTv = view.findViewById(R.id.event_type);
 
         nameTv.setText(eventDto.getName());
@@ -255,13 +271,17 @@ public class EventDetailsFragment extends Fragment {
         locationTv.setText(eventDto.getFullAddress());
         descriptionTv.setText(eventDto.getDescription());
         eventTypeTv.setText(eventDto.getEventType().getName());
-        participantsTv.setText(String.format("Participants: %s / %s",eventDto.getCurrentParticipants(), eventDto.getMaxParticipants()));
+        formatParticipantCount();
 
         initButtons(view);
 
         // If you have a cover image, you can load it with Glide/Picasso
         // ImageView eventImage = view.findViewById(R.id.event_image);
         // Glide.with(this).load(eventDto.getCoverImage()).into(eventImage);
+    }
+
+    private void formatParticipantCount() {
+        participantsTextView.setText(String.format("Participants: %s / %s", eventDto.getCurrentParticipants(), eventDto.getMaxParticipants()));
     }
 
     private void initActivities(View view) {
@@ -302,7 +322,7 @@ public class EventDetailsFragment extends Fragment {
     }
 
     private void downloadEventPdf() {
-        eventService.getEventDetailsPdf(AuthUtil.getAuthorizationValue(requireContext()), eventDto.getId())
+        eventService.getEventDetailsPdf(bearerToken, eventDto.getId())
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
@@ -332,7 +352,7 @@ public class EventDetailsFragment extends Fragment {
     }
 
     private void downloadGuestListPdf() {
-        eventService.getEventGuestListPdf(AuthUtil.getAuthorizationValue(requireContext()), eventDto.getId())
+        eventService.getEventGuestListPdf(bearerToken, eventDto.getId())
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {

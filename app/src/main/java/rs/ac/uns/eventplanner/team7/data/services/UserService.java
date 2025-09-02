@@ -158,4 +158,18 @@ public interface UserService {
     })
     @GET("users/{id}/details")
     Call<GetUserDetailsResponseDTO> getUserDetails(@Path("id") Integer id);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @PUT("users/{userId}/accepted_events/{eventId}")
+    Call<Void> joinEvent(@Header("Authorization") String token, @Path("userId") Integer userId, @Path("eventId") Integer eventId);
+
+    @Headers({
+            "User-Agent: Mobile-Android",
+            "Content-Type: application/json"
+    })
+    @DELETE("users/{userId}/accepted_events/{eventId}")
+    Call<Void> leaveEvent(@Header("Authorization") String token, @Path("userId") Integer userId, @Path("eventId") Integer eventId);
 }

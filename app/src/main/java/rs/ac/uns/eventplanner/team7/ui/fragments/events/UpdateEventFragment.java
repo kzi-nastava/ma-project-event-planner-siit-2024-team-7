@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.events;
 
 import android.os.Bundle;
+import android.os.Parcel;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -21,16 +22,23 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -50,6 +58,7 @@ import rs.ac.uns.eventplanner.team7.data.services.EventService;
 import rs.ac.uns.eventplanner.team7.data.services.EventTypeService;
 import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
 import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.DateConverter;
 
 public class UpdateEventFragment extends Fragment {
 
@@ -126,6 +135,8 @@ public class UpdateEventFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         bearerToken = AuthUtil.getAuthorizationValue(requireContext());
 
+        initDatePicker();
+        initTimePicker();
         initVisibilityDropdown();
         fetchEventTypes();
         listenForMaxParticipantsChanges();
@@ -170,8 +181,7 @@ public class UpdateEventFragment extends Fragment {
 
         LocalDateTime eventDateTime = eventDTO.getDate();
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault());
-        dateInput.setText(eventDateTime.toLocalDate().format(dateFormatter));
+        dateInput.setText(eventDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         String formattedTime = String.format(Locale.getDefault(), "%02d:%02d",
                 eventDateTime.getHour(), eventDateTime.getMinute());
@@ -199,6 +209,63 @@ public class UpdateEventFragment extends Fragment {
 
             activityFragments.add(fragment);
         }
+    }
+
+    private void initDatePicker() {
+        dateInput.setOnClickListener(v -> {
+            LocalDateTime minDate = LocalDateTime.now().plusDays(1);
+            long minDateEpoch = DateConverter.toLong(minDate);
+            long maxDateEpoch = DateConverter.toLong(minDate.plusYears(1));
+            var calendarConstraints = new CalendarConstraints.Builder()
+                    .setStart(minDateEpoch)
+                    .setEnd(maxDateEpoch)
+                    .setFirstDayOfWeek(Calendar.MONDAY)
+                    .setValidator(new CalendarConstraints.DateValidator() {
+                        @Override
+                        public boolean isValid(long date) {
+                            return minDateEpoch <= date && date <= maxDateEpoch;
+                        }
+
+                        @Override
+                        public int describeContents() {return 0;}
+
+                        @Override
+                        public void writeToParcel(@NonNull Parcel dest, int flags) {}
+                    })
+                    .build();
+
+            var datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText(R.string.select_date)
+                    .setSelection(minDateEpoch)
+                    .setCalendarConstraints(calendarConstraints)
+                    .build();
+
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                if (selection != null) {
+                    Instant instant = Instant.ofEpochMilli(selection);
+                    LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+                    dateInput.setText(localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                }
+            });
+            datePicker.show(getChildFragmentManager(), "DATE_PICKER");
+        });
+    }
+
+    private void initTimePicker() {
+        timeInput.setOnClickListener(v -> {
+            MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+                    .setTitleText(R.string.select_time)
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .build();
+
+            timePicker.show(getChildFragmentManager(), "TIME_PICKER");
+
+            timePicker.addOnPositiveButtonClickListener(tp -> {
+                String formattedTime = String.format(Locale.getDefault(), "%02d:%02d",
+                        timePicker.getHour(), timePicker.getMinute());
+                timeInput.setText(formattedTime);
+            });
+        });
     }
 
     private void initVisibilityDropdown() {
@@ -395,19 +462,14 @@ public class UpdateEventFragment extends Fragment {
     }
 
     private LocalDateTime getSelectedDateTime() {
-        String dateText = Objects.requireNonNull(dateInput.getText()).toString(); // e.g., "Aug 18, 2025"
+        String dateText = Objects.requireNonNull(dateInput.getText()).toString(); // e.g., "2025-08-18"
         String timeText = Objects.requireNonNull(timeInput.getText()).toString(); // e.g., "14:30"
 
         if (dateText.isEmpty() || timeText.isEmpty()) return null;
         // Convert to LocalDateTime
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault());
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault());
         LocalDate date = LocalDate.parse(dateText, dateFormatter);
-
-        String[] parts = timeText.split(":");
-        int hour = Integer.parseInt(parts[0]);
-        int minute = Integer.parseInt(parts[1]);
-
-        return date.atTime(hour, minute);
+        return date.atTime(LocalTime.parse(timeText));
     }
 
     private void showDeleteConfirmationDialog() {

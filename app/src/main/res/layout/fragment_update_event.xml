@@ -91,31 +91,39 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/event_date_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_calendar"
             android:hint="@string/pick_date">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_date_input"
                 android:focusable="false"
                 android:clickable="true"
+                android:inputType="none"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/event_time_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_clock"
             android:hint="@string/pick_time">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_time_input"
                 android:focusable="false"
                 android:clickable="true"
+                android:inputType="none"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout

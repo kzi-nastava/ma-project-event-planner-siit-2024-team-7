@@ -161,6 +161,7 @@ public class UserProfileFragment extends Fragment {
                     recyclerView.setLayoutManager(new LinearLayoutManager(requireContext())); // for vertical layout
                     if (recyclerView.getAdapter() == null) {
                         CalendarAdapter adapter = new CalendarAdapter(requireContext(), filteredEvents);
+                        adapter.setOnEventMoreInfoClickListener(UserProfileFragment.this::onEventClicked);
                         recyclerView.setAdapter(adapter);
                     } else {
                         CalendarAdapter adapter = (CalendarAdapter) recyclerView.getAdapter();
@@ -594,7 +595,7 @@ public class UserProfileFragment extends Fragment {
         activity.finish();
     }
 
-    public void onMoreInfoClicked(BasicCard entity) {
+    private void onMoreInfoClicked(BasicCard entity) {
         if (entity instanceof BasicEventDTO) {
             getDetails(eventService.getEvent(bearerToken, entity.getId()), R.id.navigate_to_event_details_from_profile, "eventDTO");
         } else if (entity instanceof BasicItemDTO && ((BasicItemDTO) entity).getType().equals("products")) {
@@ -603,6 +604,10 @@ public class UserProfileFragment extends Fragment {
             getDetails(serviceService.getService(bearerToken, entity.getId()), R.id.navigate_to_service_details_from_profile, "serviceDTO");
         }
 
+    }
+
+    private void onEventClicked(Integer id) {
+        getDetails(eventService.getEvent(bearerToken, id), R.id.navigate_to_event_details_from_profile, "eventDTO");
     }
 
     private <T extends Parcelable> void getDetails(

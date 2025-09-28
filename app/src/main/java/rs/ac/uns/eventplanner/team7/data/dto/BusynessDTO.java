@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BusynessDTO {
+    private Integer id;
     private String date;
     private String name;
 }

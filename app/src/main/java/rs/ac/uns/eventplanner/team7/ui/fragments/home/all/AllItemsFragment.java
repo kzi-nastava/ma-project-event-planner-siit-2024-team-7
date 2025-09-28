@@ -96,14 +96,14 @@ public class AllItemsFragment extends Fragment
         bearerToken = AuthUtil.getAuthorizationValue(requireContext());
         
         latestFilters.put("city", AuthUtil.extractCity(requireContext()));
-        setContent(false);
+        setContent(false, false);
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.items_swipe_refresh);
         refreshLayout.setOnRefreshListener(() -> {
             refreshLayout.setRefreshing(false);
             messageView.setVisibility(View.VISIBLE);
             messageView.setText(R.string.fetching_data);
-            setContent(false);
+            setContent(false, false);
         });
 
         setupButtonListeners(view);
@@ -128,7 +128,7 @@ public class AllItemsFragment extends Fragment
         page.resetToDefault();
         latestFilters = filtersFragment.getFilters();
         sortOptionsFragment.scheduleReset(true);
-        setContent(false);
+        setContent(false, false);
     }
 
     @Override
@@ -136,21 +136,21 @@ public class AllItemsFragment extends Fragment
         page.resetToDefault();
         sortOptionsFragment.scheduleReset(true);
         latestFilters = new HashMap<>();
-        setContent(false);
+        setContent(false, false);
     }
 
     @Override
     public void onSortApplied() {
         page.resetToDefault();
         page.setSort(sortOptionsFragment.getSort());
-        setContent(false);
+        setContent(false, true);
     }
 
     @Override
     public void onNextPage() {
         if (isLoading || page.isLast()) return;
         page.nextPage();
-        setContent(true);
+        setContent(true, false);
     }
 
     @Override
@@ -237,9 +237,9 @@ public class AllItemsFragment extends Fragment
         onSortApplied(); // Must be called explicitly as the listener can be null in sortOptions
     }
 
-    private void setContent(boolean isUpdate) {
+    private void setContent(boolean isUpdate, boolean isShakeEvent) {
         isLoading = true;
-        if (!isUpdate) page.resetToDefault();
+        if (!isUpdate && !isShakeEvent) page.resetToDefault();
         messageView.setText(R.string.fetching_data);
         Map<String, String> combinedFilters = combineFiltersAndSort();
         switch (filtersFragment.getShownItemType().toLowerCase()) {

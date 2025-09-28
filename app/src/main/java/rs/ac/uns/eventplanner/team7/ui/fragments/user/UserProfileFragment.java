@@ -99,11 +99,13 @@ public class UserProfileFragment extends Fragment {
         setupCalendar(view);
         setupRoleText(view);
 
+        upgradeAccountButton = view.findViewById(R.id.upgrade_account_fab);
         if (role == UserRole.ADMIN) {
             View userInputs = view.findViewById(R.id.user_profile_inputs);
             userInputs.setVisibility(View.GONE);
             MaterialButton deactivateButton = view.findViewById(R.id.deactivate_account);
             deactivateButton.setVisibility(View.GONE);
+            upgradeAccountButton.setVisibility(View.GONE);
             return view;
         }
 
@@ -115,7 +117,6 @@ public class UserProfileFragment extends Fragment {
         deactivateAccountButton = view.findViewById(R.id.deactivate_account);
         deactivateAccountButton.setOnClickListener(v -> showConfirmDeactivationDialog());
 
-        upgradeAccountButton = view.findViewById(R.id.upgrade_account_fab);
         if (role != UserRole.AUTH) upgradeAccountButton.setVisibility(View.GONE);
         upgradeAccountButton.setOnClickListener(v -> {
             var dialog = UpgradeAccountDialogFragment.newInstance();

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -194,7 +195,7 @@ public class UpdateProductFragment extends Fragment implements CardClickListener
 
                     @Override
                     public void onFailure(@NonNull Call<List<EventType>> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -214,7 +215,7 @@ public class UpdateProductFragment extends Fragment implements CardClickListener
 
             @Override
             public void onFailure(@NonNull Call<List<Category>> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }
@@ -281,6 +282,7 @@ public class UpdateProductFragment extends Fragment implements CardClickListener
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful()) {
                             Toast.makeText(requireContext(), "Product updated successfully", Toast.LENGTH_SHORT).show();
                             Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_product_update);
@@ -289,7 +291,7 @@ public class UpdateProductFragment extends Fragment implements CardClickListener
 
                     @Override
                     public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -326,6 +328,7 @@ public class UpdateProductFragment extends Fragment implements CardClickListener
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful()) {
                             Toast.makeText(requireContext(), "Product deletion successful", Toast.LENGTH_SHORT).show();
                             Navigation.findNavController(requireView()).navigate(R.id.navigate_back_from_product_update);
@@ -334,7 +337,7 @@ public class UpdateProductFragment extends Fragment implements CardClickListener
 
                     @Override
                     public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }

@@ -117,6 +117,7 @@ public class EventDetailsFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<GetUserDetailsResponseDTO> call,
                                    @NonNull Response<GetUserDetailsResponseDTO> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     organizerDTO = response.body();
                     chatButton.setEnabled(true);
@@ -125,7 +126,7 @@ public class EventDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("ERROR", "Request failed", t);
             }
         });
 
@@ -141,6 +142,7 @@ public class EventDetailsFragment extends Fragment {
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<GetUserResponseDTO> call, @NonNull Response<GetUserResponseDTO> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             isJoined = response.body().getAcceptedEvents().stream()
                                     .anyMatch(event -> event.getId().equals(eventDto.getId()));                        }
@@ -150,7 +152,7 @@ public class EventDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<GetUserResponseDTO> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -183,7 +185,7 @@ public class EventDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 }));
 
@@ -199,6 +201,7 @@ public class EventDetailsFragment extends Fragment {
                 enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful()) {
                             Toast.makeText(requireContext(), "Event left successfully!", Toast.LENGTH_SHORT).show();
                             setupJoinButton(v);
@@ -209,7 +212,7 @@ public class EventDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 }));
     }
@@ -242,6 +245,7 @@ public class EventDetailsFragment extends Fragment {
                 .enqueue(new Callback<>() {
                     @Override
                     public void onResponse(@NonNull Call<ResponseMessageDTO> call, @NonNull Response<ResponseMessageDTO> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful()) {
                             btn.setOnClickListener(v -> {});
                             btn.setImageResource(R.drawable.ic_star_filled);
@@ -250,7 +254,7 @@ public class EventDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<ResponseMessageDTO> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -326,6 +330,7 @@ public class EventDetailsFragment extends Fragment {
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             try {
                                 // Save file to Downloads
@@ -346,7 +351,7 @@ public class EventDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Request failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -355,7 +360,9 @@ public class EventDetailsFragment extends Fragment {
         eventService.getEventGuestListPdf(bearerToken, eventDto.getId())
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response)
+                    {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             try {
                                 // Save file to Downloads
@@ -376,7 +383,7 @@ public class EventDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Request failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }

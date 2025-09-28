@@ -168,7 +168,7 @@ public class CategoryManagementFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

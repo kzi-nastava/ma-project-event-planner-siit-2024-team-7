@@ -3,6 +3,7 @@ package rs.ac.uns.eventplanner.team7.ui.fragments.reservation;
 import static rs.ac.uns.eventplanner.team7.utils.ClientUtils.injectService;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -195,6 +196,7 @@ public class ServiceReservationFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
                 viewModel.setResponseError(t.getMessage());
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }
@@ -225,6 +227,7 @@ public class ServiceReservationFragment extends Fragment {
             public void onFailure(@NonNull Call<ReservationDTO> call, @NonNull Throwable t) {
                 nextButton.setEnabled(true);
                 viewModel.setResponseError(t.getMessage());
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

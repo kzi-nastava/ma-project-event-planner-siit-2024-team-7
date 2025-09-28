@@ -101,7 +101,7 @@ public class OrganizerEventsFragment extends Fragment implements SearchActionsLi
 
             @Override
             public void onFailure(@NonNull Call<GetEventResponseDTO> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

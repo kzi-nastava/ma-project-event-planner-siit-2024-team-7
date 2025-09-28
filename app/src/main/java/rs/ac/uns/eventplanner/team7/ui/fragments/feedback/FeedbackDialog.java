@@ -173,9 +173,7 @@ public class FeedbackDialog extends DialogFragment {
             }
             @Override
             public void onFailure(@NonNull Call<FeedbackDTO> call, @NonNull Throwable t) {
-                String message = t.getMessage();
-                Log.d("Feedback", message == null ? "Unknown error" : message);
-                showToast(message == null ? "Unknown error" : message);
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

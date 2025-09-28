@@ -252,7 +252,7 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
 
             @Override
             public void onFailure(@NonNull Call<ChatResponseDTO> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
         messageInput.setText("");
@@ -312,7 +312,7 @@ public class ChatsFragment extends Fragment implements ContactInfoDialogFragment
 
                         @Override
                         public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                            Log.e("ERROR", "Request failed", t);
                         }
                     });
 

@@ -137,6 +137,7 @@ public class ServiceDetailsFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<GetUserDetailsResponseDTO> call,
                                            @NonNull Response<GetUserDetailsResponseDTO> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             providerDTO = response.body();
                             chatWithProviderButton.setEnabled(true);
@@ -145,7 +146,7 @@ public class ServiceDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
 
@@ -223,6 +224,7 @@ public class ServiceDetailsFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<FavouriteItemResponseDTO> call,
                                            @NonNull Response<FavouriteItemResponseDTO> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             String message = service.isFavourite() ? "Service added to favourites!" : "Service removed from favourites!";
                             if (getView() != null) {
@@ -233,7 +235,7 @@ public class ServiceDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<FavouriteItemResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -246,6 +248,7 @@ public class ServiceDetailsFragment extends Fragment {
                             @NonNull Call<FutureReservableEventsDTO> call,
                             @NonNull Response<FutureReservableEventsDTO> response
                     ) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             organizerEvents = response.body().getEvents();
                             reserveButton.setEnabled(!organizerEvents.isEmpty() && service.isAvailable());
@@ -255,7 +258,7 @@ public class ServiceDetailsFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Call<FutureReservableEventsDTO> call,
                                           @NonNull Throwable t) {
-
+                        Log.e("ERROR", "Request failed", t);
                     }
         });
     }
@@ -329,7 +332,7 @@ public class ServiceDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<FeedbackDTO>> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
 
@@ -345,7 +348,7 @@ public class ServiceDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<AverageRatingDTO> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

@@ -128,6 +128,7 @@ public class ProductDetailsFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<GetUserDetailsResponseDTO> call,
                                            @NonNull Response<GetUserDetailsResponseDTO> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             providerDTO = response.body();
                             chatWithProviderButton.setEnabled(true);
@@ -136,7 +137,7 @@ public class ProductDetailsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<GetUserDetailsResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
 
@@ -154,6 +155,7 @@ public class ProductDetailsFragment extends Fragment {
                         @Override
                         public void onResponse(@NonNull Call<FavouriteItemResponseDTO> call,
                                                @NonNull Response<FavouriteItemResponseDTO> response) {
+                            if (!isAdded()) return;
                             if (response.isSuccessful() && response.body() != null) {
                                 String message = productDTO.isFavourite() ? "Product added to favourites!" : "Product removed from favourites!";
                                 Snackbar snackbar = Snackbar.make(view, message, BaseTransientBottomBar.LENGTH_SHORT);
@@ -163,7 +165,7 @@ public class ProductDetailsFragment extends Fragment {
 
                         @Override
                         public void onFailure(@NonNull Call<FavouriteItemResponseDTO> call, @NonNull Throwable t) {
-                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                            Log.e("ERROR", "Request failed", t);
                         }
                     });
         });
@@ -273,7 +275,7 @@ public class ProductDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<FeedbackDTO>> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
 
@@ -289,7 +291,7 @@ public class ProductDetailsFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<AverageRatingDTO> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

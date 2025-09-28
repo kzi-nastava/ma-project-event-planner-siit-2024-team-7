@@ -172,6 +172,7 @@ public class UserProfileFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<BusynessDTO>> call, @NonNull Throwable t) {
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

@@ -149,7 +149,7 @@ public class ContactsFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<ChatContactDTO>> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
                 messageTextView.setText(R.string.unable_to_contact_server);
             }
         });

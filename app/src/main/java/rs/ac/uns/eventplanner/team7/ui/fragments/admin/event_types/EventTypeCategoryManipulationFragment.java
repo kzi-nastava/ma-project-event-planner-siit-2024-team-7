@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.admin.event_types;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,7 +126,7 @@ public class EventTypeCategoryManipulationFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<Category>> call, @NonNull Throwable t) {
-                // Handle failure
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

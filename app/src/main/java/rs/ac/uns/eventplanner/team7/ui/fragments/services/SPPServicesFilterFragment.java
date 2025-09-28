@@ -139,7 +139,7 @@ public class SPPServicesFilterFragment extends BottomSheetDialogFragment {
 
             @Override
             public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }
@@ -164,7 +164,7 @@ public class SPPServicesFilterFragment extends BottomSheetDialogFragment {
             @Override
             public void onFailure(@NonNull Call<List<String>> call,
                                   @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,7 +144,9 @@ public class ProductFilterFragment extends BottomSheetDialogFragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {}
+            public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
+                Log.e("ERROR", "Request failed", t);
+            }
         });
     }
 

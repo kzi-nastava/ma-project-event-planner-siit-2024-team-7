@@ -130,7 +130,7 @@ public class AddCategoryBudgetDialog extends MaterialDialogFragment {
 
                         @Override
                         public void onFailure(@NonNull Call<EventBudgetResponseDTO> call, @NonNull Throwable t) {
-                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                            Log.e("ERROR", "Add failed", t);
                         }
                     });
         });
@@ -163,7 +163,7 @@ public class AddCategoryBudgetDialog extends MaterialDialogFragment {
                     @Override
                     public void onFailure(@NonNull Call<List<Category>> call,
                                           @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }

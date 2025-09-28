@@ -233,7 +233,7 @@ public class BudgetManagement extends Fragment implements CardClickListener {
 
                     @Override
                     public void onFailure(@NonNull Call<EventBudgetResponseDTO> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -271,7 +271,7 @@ public class BudgetManagement extends Fragment implements CardClickListener {
 
                 @Override
                 public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
-                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    Log.e("ERROR", "Request failed", t);
                 }
             });
         } else {
@@ -303,7 +303,7 @@ public class BudgetManagement extends Fragment implements CardClickListener {
 
                 @Override
                 public void onFailure(@NonNull Call<GetProductResponseDTO> call, @NonNull Throwable t) {
-                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    Log.e("ERROR", "Request failed", t);
                 }
             });
         }

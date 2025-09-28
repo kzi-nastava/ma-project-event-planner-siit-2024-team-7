@@ -487,7 +487,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
             @Override
             public void onFailure(@NonNull Call<List<Category>> call,
                                   @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }
@@ -516,7 +516,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
 
             @Override
             public void onFailure(@NonNull Call<List<EventType>> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }
@@ -572,7 +572,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
 
             @Override
             public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }
@@ -583,6 +583,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
                     @Override
                     public void onResponse(@NonNull Call<List<String>> call,
                                            @NonNull Response<List<String>> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             Log.d("SUCCESS", "Images uploaded successfully!");
                         } else {
@@ -602,7 +603,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
 
                     @Override
                     public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -613,6 +614,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
                     @Override
                     public void onResponse(@NonNull Call<List<String>> call,
                                            @NonNull Response<List<String>> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             Log.d("SUCCESS", "Images uploaded successfully!");
                         } else {
@@ -632,7 +634,7 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
 
                     @Override
                     public void onFailure(@NonNull Call<List<String>> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }

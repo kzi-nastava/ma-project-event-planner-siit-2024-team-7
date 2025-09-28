@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.admin.event_types;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,7 +105,7 @@ public class UpdateEventTypeFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<EventType> call, @NonNull Throwable t) {
-
+                Log.e("ERROR", "Update failed", t);
             }
         };
     }
@@ -158,7 +159,7 @@ public class UpdateEventTypeFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<UpdateEventTypeResponseDTO> call, @NonNull Throwable t) {
-
+                Log.e("ERROR", "Update failed", t);
             }
         };
     }
@@ -214,7 +215,7 @@ public class UpdateEventTypeFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-
+                Log.e("ERROR", "Delete failed", t);
             }
         };
     }

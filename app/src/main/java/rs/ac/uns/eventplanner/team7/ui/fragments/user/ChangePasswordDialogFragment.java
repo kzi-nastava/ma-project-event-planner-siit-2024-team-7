@@ -154,6 +154,7 @@ public class ChangePasswordDialogFragment extends MaterialDialogFragment {
 
             @Override
             public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
+                Log.e("ERROR", "Request failed", t);
                 errorMsg.setText(t.getMessage());
                 errorMsg.setVisibility(View.VISIBLE);
             }

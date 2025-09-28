@@ -123,7 +123,7 @@ public class CreateEventTypeFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<CreateEventTypeResponseDTO> call, @NonNull Throwable t) {
-                // Handle failure
+                Log.e("ERROR", "Request failed", t);
             }
         };
     }

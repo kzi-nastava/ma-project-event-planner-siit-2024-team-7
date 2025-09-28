@@ -106,6 +106,7 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
                         @Override
                         public void onResponse(@NonNull Call<ResponseBody> call,
                                                @NonNull Response<ResponseBody> response) {
+                            if (!isAdded()) return;
                             if (response.isSuccessful()) {
                                 savePDF(response.body());
                             } else {
@@ -115,7 +116,7 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
 
                         @Override
                         public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                            Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                            Log.e("ERROR", "Request failed", t);
                         }
                     });
         });
@@ -146,7 +147,7 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
 
                     @Override
                     public void onFailure(@NonNull Call<List<PricingResponseDTO>> call, @NonNull Throwable t) {
-                        Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -179,7 +180,7 @@ public class PriceListFragment extends Fragment implements PricingAdapter.OnItem
 
             @Override
             public void onFailure(@NonNull Call<GetServiceResponseDTO> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

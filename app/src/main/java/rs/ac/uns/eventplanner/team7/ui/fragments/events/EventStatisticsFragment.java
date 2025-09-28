@@ -2,6 +2,7 @@ package rs.ac.uns.eventplanner.team7.ui.fragments.events;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,7 @@ public class EventStatisticsFragment extends Fragment {
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful() && response.body() != null) {
                             try {
                                 // Save file to Downloads
@@ -99,7 +101,7 @@ public class EventStatisticsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Request failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }
@@ -109,6 +111,7 @@ public class EventStatisticsFragment extends Fragment {
                 .enqueue(new Callback<EventStatistics>() {
                     @Override
                     public void onResponse(@NonNull Call<EventStatistics> call, @NonNull Response<EventStatistics> response) {
+                        if (!isAdded()) return;
                         if (response.isSuccessful()) {
                             eventStatistics = response.body();
                             fillStatistics();
@@ -117,7 +120,7 @@ public class EventStatisticsFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<EventStatistics> call, @NonNull Throwable t) {
-                        Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("ERROR", "Request failed", t);
                     }
                 });
     }

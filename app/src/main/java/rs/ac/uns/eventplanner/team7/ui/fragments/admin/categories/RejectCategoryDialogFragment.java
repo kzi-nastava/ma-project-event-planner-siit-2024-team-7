@@ -144,7 +144,7 @@ public class RejectCategoryDialogFragment extends MaterialDialogFragment {
                 @Override
                 public void onFailure(@NonNull Call<List<Category>> call,
                                       @NonNull Throwable t) {
-                    Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                    Log.e("ERROR", "Couldn't fetch categories", t);
                 }
             });
     }

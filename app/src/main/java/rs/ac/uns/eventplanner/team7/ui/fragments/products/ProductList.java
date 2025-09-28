@@ -168,7 +168,7 @@ public class ProductList extends Fragment implements SearchActionsListener, Card
 
             @Override
             public void onFailure(@NonNull Call<GetProductResponseDTO> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

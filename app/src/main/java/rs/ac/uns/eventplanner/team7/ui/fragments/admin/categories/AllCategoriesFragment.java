@@ -171,7 +171,7 @@ public class AllCategoriesFragment extends Fragment implements CardClickListener
 
             @Override
             public void onFailure(@NonNull Call<List<Category>> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Category fetch failed", t);
                 isLoading = false;
             }
         });
@@ -191,7 +191,7 @@ public class AllCategoriesFragment extends Fragment implements CardClickListener
 
             @Override
             public void onFailure(@NonNull Call<List<Category>> call, @NonNull Throwable t) {
-                Log.d("ERROR", Objects.requireNonNull(t.getMessage()));
+                Log.e("ERROR", "Category filter failed", t);
             }
         });
     }

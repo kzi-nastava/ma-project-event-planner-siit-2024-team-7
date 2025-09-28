@@ -1,6 +1,7 @@
 package rs.ac.uns.eventplanner.team7.ui.fragments.home.all;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,6 +129,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
         service.getEvent(AuthUtil.getAuthorizationValue(requireContext()), entity.getId()).enqueue(new Callback<GetEventResponseDTO>() {
             @Override
             public void onResponse(@NonNull Call<GetEventResponseDTO> call, @NonNull Response<GetEventResponseDTO> response) {
+                if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("eventDTO", response.body());
@@ -137,7 +139,7 @@ public class AllEventsFragment extends Fragment implements SearchActionsListener
 
             @Override
             public void onFailure(@NonNull Call<GetEventResponseDTO> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

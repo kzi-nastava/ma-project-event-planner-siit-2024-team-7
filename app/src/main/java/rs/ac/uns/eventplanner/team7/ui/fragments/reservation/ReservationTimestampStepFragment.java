@@ -6,6 +6,7 @@ import static android.view.View.VISIBLE;
 import static rs.ac.uns.eventplanner.team7.utils.ClientUtils.injectService;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,6 +115,7 @@ public class ReservationTimestampStepFragment extends Fragment {
                             @NonNull Call<AvailableTimeSlotsDTO> call,
                             @NonNull Response<AvailableTimeSlotsDTO> response
                     ) {
+                        if (!isAdded()) return;
                         fetchingTimeslotsView.setVisibility(GONE);
                         if (response.isSuccessful() && response.body() != null) {
                             availableTimeslotsAdapter.addAll(response.body().getAvailableTimeSlots());
@@ -129,6 +131,7 @@ public class ReservationTimestampStepFragment extends Fragment {
                     public void onFailure(
                             @NonNull Call<AvailableTimeSlotsDTO> call, @NonNull Throwable t
                     ) {
+                        Log.e("ERROR", "Request failed", t);
                         viewModel.setResponseError(t.getMessage());
                         fetchingTimeslotsView.setVisibility(GONE);
                     }

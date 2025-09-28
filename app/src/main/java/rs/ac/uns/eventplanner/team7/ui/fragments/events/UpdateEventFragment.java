@@ -3,6 +3,7 @@ package rs.ac.uns.eventplanner.team7.ui.fragments.events;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -241,7 +242,7 @@ public class UpdateEventFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<EventType>> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }
@@ -317,7 +318,7 @@ public class UpdateEventFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<CreateEventResponseDTO> call, @NonNull Throwable t) {
-                Toast.makeText(requireContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("ERROR", "Request failed", t);
             }
         });
     }

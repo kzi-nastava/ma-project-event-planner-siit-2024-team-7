@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AllItemsFragment"
+    tools:context=".ui.fragments.home.all.AllItemsFragment"
     android:orientation="vertical"
     android:id="@+id/all_services_products_fragment">
 
@@ -13,83 +13,66 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/all_services_products"
-        android:textSize="28sp"
-        android:layout_marginTop="20dp"
-        android:layout_marginHorizontal="5dp"
+        android:textSize="20sp"
+        android:paddingTop="4dp"
         android:textAlignment="center"/>
-
-    <SearchView
-        android:id="@+id/event_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_background"
-        android:layout_margin="15dp"
-        android:hint="@string/search_bar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/event_search_view"
-        app:layout_constraintBottom_toBottomOf="@id/event_search_view"
-        app:layout_constraintVertical_bias="0.001"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="10dp"
         >
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/srv_prd_filters_button"
+            android:id="@+id/item_filters_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
+            app:icon="@drawable/ic_filter"
             android:text="@string/filters"
             />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="0.4"/>
+        <include layout="@layout/space_divider" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/srv_prd_sort_button"
+            android:id="@+id/item_sort_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
+            app:icon="@drawable/ic_sort"
             android:text="@string/sort"/>
 
     </LinearLayout>
 
-    <!-- TODO figure out how it works and how to do pagination with it   -->
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:id="@+id/srv_prd_search_results"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="1"-->
-<!--        tools:listitem="@layout/horizontal_card"-->
-<!--        />-->
-
-    <ScrollView
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/items_search_result_message_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:text="@string/fetching_data"
+        />
 
-        <LinearLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/items_swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/all_items_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="15dp">
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-        </LinearLayout>
-    </ScrollView>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/horizontal_card"/>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

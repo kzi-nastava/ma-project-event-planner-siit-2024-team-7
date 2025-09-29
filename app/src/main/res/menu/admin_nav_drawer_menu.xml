@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_event_types"
+        android:title="@string/event_type_menu_item"
+        android:icon="@drawable/ic_square_grid"/>
+
+    <item
+        android:id="@+id/nav_categories"
+        android:title="@string/category_menu_item"
+        android:icon="@drawable/ic_mosaic"/>
+
+    <item
+        android:id="@+id/nav_reports"
+        android:title="@string/reports"
+        android:icon="@drawable/ic_feedback"/>
+
+    <item
+        android:id="@+id/nav_feedback"
+        android:title="@string/feedback"
+        android:icon="@drawable/ic_comment"/>
+
+</menu>

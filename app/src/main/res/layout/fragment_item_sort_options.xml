@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".ui.fragments.home.all.ItemSortOptionsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/sort_options"
+            android:textSize="24sp"
+            android:paddingStart="20dp"
+            android:paddingEnd="1dp"
+            android:gravity="center"
+            />
+
+        <include layout="@layout/space_divider"/>
+
+        <RadioGroup
+            android:id="@+id/item_sort_direction_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:checkedButton="@id/sort_ascending_item"
+            >
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/sort_ascending_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/ascending"
+                />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/sort_descending_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/descending"
+                />
+
+        </RadioGroup>
+
+        <include layout="@layout/space_divider"/>
+
+        <include android:id="@+id/item_sort_options_close_button" layout="@layout/view_close_button"/>
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/item_sort_options_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="15dp"
+        android:checkedButton="@id/sort_item_name"
+        >
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/sort_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/name"
+            />
+
+        <include layout="@layout/divider_thin"/>
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/sort_item_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/price"
+            />
+
+        <include layout="@layout/divider_thin"/>
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/sort_item_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/category"
+            />
+
+        <include layout="@layout/divider_thin"/>
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/sort_item_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/location"
+            />
+
+    </RadioGroup>
+
+    <include layout="@layout/divider_thick"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:gravity="center"
+        >
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/apply_sorting_items_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sort"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

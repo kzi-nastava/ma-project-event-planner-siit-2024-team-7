@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AllEventsFragment"
+    tools:context=".ui.fragments.home.all.AllEventsFragment"
     android:orientation="vertical"
     android:id="@+id/all_events_fragment">
 
@@ -13,80 +13,63 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/all_events"
-        android:textSize="28sp"
-        android:layout_marginTop="20dp"
-        android:layout_marginHorizontal="5dp"
+        android:textSize="20sp"
+        android:paddingTop="4dp"
         android:textAlignment="center"/>
-
-    <SearchView
-        android:id="@+id/event_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_background"
-        android:layout_margin="15dp"
-        android:queryHint="@string/search_bar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/event_search_view"
-        app:layout_constraintBottom_toBottomOf="@id/event_search_view"
-        app:layout_constraintVertical_bias="0.001"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="10dp"
-        >
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="10dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/event_filters_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:text="@string/filters"
-            />
+            app:icon="@drawable/ic_filter"
+            android:text="@string/filters" />
 
-        <include layout="@layout/space_divider"/>
+        <include layout="@layout/space_divider" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/event_sort_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:text="@string/sort"/>
+            app:icon="@drawable/ic_sort"
+            android:text="@string/sort" />
 
     </LinearLayout>
 
-    <!-- TODO figure out how it works and how to do pagination with it   -->
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:id="@+id/event_search_results"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_weight="1"-->
-<!--        tools:listitem="@layout/horizontal_card"-->
-<!--        />-->
-
-
-    <ScrollView
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/events_search_result_message_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:text="@string/fetching_data"
+        />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="15dp">
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-            <include layout="@layout/horizontal_card"/>
-        </LinearLayout>
-    </ScrollView>
+   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+       android:id="@+id/events_swipe_refresh"
+       android:layout_width="match_parent"
+       android:layout_height="0dp"
+       android:layout_weight="1">
+
+       <androidx.recyclerview.widget.RecyclerView
+           android:id="@+id/all_events_recycler_view"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+           tools:listitem="@layout/horizontal_card"/>
+
+   </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

@@ -1,6 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
 }
+def getIpAddress() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties.getProperty('ip_addr')
+}
+
+def getJwtSecret() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties.getProperty('jwt_secret')
+}
 
 android {
     namespace 'rs.ac.uns.eventplanner.team7'
@@ -8,11 +19,13 @@ android {
 
     defaultConfig {
         applicationId "rs.ac.uns.eventplanner.team7"
-        minSdk 30
+        minSdk 34
         targetSdk 34
         versionCode 1
         versionName "1.0"
-
+        android.buildFeatures.buildConfig true
+        buildConfigField "String", "IP_ADDR", "\"" + getIpAddress()+"\""
+        buildConfigField "String", "JWT_SECRET", "\"" + getJwtSecret()+"\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -33,17 +46,34 @@ android {
 
 dependencies {
 
-    implementation libs.lombok
-    implementation libs.appcompat
-    implementation libs.activity
-    implementation libs.constraintlayout
-    implementation libs.material
-    implementation libs.annotation
-    implementation libs.lifecycle.livedata.ktx
-    implementation libs.lifecycle.viewmodel.ktx
-    implementation libs.navigation.fragment
-    testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-
+    annotationProcessor libs.lombok
+    implementation libs.activity
+    implementation libs.annotation
+    implementation libs.appcompat
+    implementation libs.constraintlayout
+    implementation libs.converter.gson
+    implementation libs.core.splashscreen
+    implementation libs.jjwt.api
+    implementation libs.lombok
+    implementation libs.lifecycle.livedata.ktx
+    implementation libs.lifecycle.viewmodel.ktx
+    implementation libs.logging.interceptor
+    implementation libs.material
+    implementation libs.material.calendarview
+    implementation libs.navigation.fragment
+    implementation libs.navigation.fragment.ktx
+    implementation libs.navigation.ui.ktx
+    implementation libs.picasso
+    implementation libs.retrofit
+    implementation libs.swiperefreshlayout
+    implementation libs.threetenabp
+    implementation libs.stompprotocolandroid
+    implementation libs.rxjava
+    implementation libs.rxandroid
+    implementation 'org.osmdroid:osmdroid-android:6.1.14'
+    runtimeOnly libs.jjwt.impl
+    runtimeOnly libs.jjwt.jackson
+    testImplementation libs.junit
 }

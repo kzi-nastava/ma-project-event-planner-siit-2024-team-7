@@ -1,0 +1,635 @@
+package rs.ac.uns.eventplanner.team7.ui.fragments.user;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
+import android.util.Pair;
+import android.util.Patterns;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textview.MaterialTextView;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import rs.ac.uns.eventplanner.team7.R;
+import rs.ac.uns.eventplanner.team7.data.dto.BusynessDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.event.BasicEventDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.item.BasicItemDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetOrganizerResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.GetUserResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateOrganizerRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateOrganizerResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateProviderRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateProviderResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpdateUserRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.user.UpgradeAuthUserRequestDTO;
+import rs.ac.uns.eventplanner.team7.data.interfaces.BasicCard;
+import rs.ac.uns.eventplanner.team7.data.model.Location;
+import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.data.services.EventService;
+import rs.ac.uns.eventplanner.team7.data.services.ProductService;
+import rs.ac.uns.eventplanner.team7.data.services.ServiceService;
+import rs.ac.uns.eventplanner.team7.data.services.UserService;
+import rs.ac.uns.eventplanner.team7.ui.activities.LoginActivity;
+import rs.ac.uns.eventplanner.team7.ui.adapters.CalendarAdapter;
+import rs.ac.uns.eventplanner.team7.ui.adapters.CarouselAdapter;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+import rs.ac.uns.eventplanner.team7.utils.CurrentDayDecorator;
+import rs.ac.uns.eventplanner.team7.utils.ImageLoader;
+
+public class UserProfileFragment extends Fragment {
+    private final UserService userService = ClientUtils.injectService(UserService.class);
+    private final EventService eventService = ClientUtils.injectService(EventService.class);
+    private final ProductService productService = ClientUtils.injectService(ProductService.class);
+    private final ServiceService serviceService = ClientUtils.injectService(ServiceService.class);
+
+    private MaterialCalendarView calendarView;
+    private List<BusynessDTO> futureBusyness;
+
+    private UserRole role;
+    private String bearerToken;
+    private Integer userId;
+    private MaterialButton changePasswordButton;
+    private MaterialButton deactivateAccountButton;
+    private FloatingActionButton upgradeAccountButton;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        calendarView = view.findViewById(R.id.calendarView);
+
+        setupCalendar(view);
+        setupRoleText(view);
+
+        upgradeAccountButton = view.findViewById(R.id.upgrade_account_fab);
+        if (role == UserRole.ADMIN) {
+            View userInputs = view.findViewById(R.id.user_profile_inputs);
+            userInputs.setVisibility(View.GONE);
+            MaterialButton deactivateButton = view.findViewById(R.id.deactivate_account);
+            deactivateButton.setVisibility(View.GONE);
+            upgradeAccountButton.setVisibility(View.GONE);
+            return view;
+        }
+
+        setupInputIcons(view);
+        fillFields(view);
+
+        changePasswordButton = view.findViewById(R.id.change_password);
+        changePasswordButton.setOnClickListener(v -> showChangePasswordDialog());
+        deactivateAccountButton = view.findViewById(R.id.deactivate_account);
+        deactivateAccountButton.setOnClickListener(v -> showConfirmDeactivationDialog());
+
+        if (role != UserRole.AUTH) upgradeAccountButton.setVisibility(View.GONE);
+        upgradeAccountButton.setOnClickListener(v -> {
+            var dialog = UpgradeAccountDialogFragment.newInstance();
+            dialog.setCancelable(false);
+            dialog.setOnConfirmClickListener(this::upgradeAuthUser);
+            dialog.show(getChildFragmentManager(), "UpgradeAccountDialog");
+        });
+
+        return view;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        role = AuthUtil.extractRole(requireContext());
+        bearerToken = AuthUtil.getAuthorizationValue(requireContext());
+        userId = AuthUtil.extractId(requireContext());
+    }
+
+    private void setupCalendar(View view) {
+        calendarView.setSelectedDate(LocalDate.now());
+        Call<List<BusynessDTO>> call = userService.getBusyness(bearerToken, userId);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<List<BusynessDTO>> call, @NonNull Response<List<BusynessDTO>> response) {
+                if (!isAdded()) return;
+                if (response.isSuccessful()) {
+                    List<BusynessDTO> dtos = response.body();
+                    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                    futureBusyness = dtos;
+                    for (var dto : dtos) { // add dots to the calendar
+                        LocalDate date = LocalDate.parse(dto.getDate(), formatter);
+                        calendarView.addDecorator(new CurrentDayDecorator(date, R.color.red_delete));
+                    }
+                }
+
+                calendarView.setOnDateChangedListener((widget, date, selected) -> {
+                    LocalDate selectedDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+                    List<BusynessDTO> filteredEvents = filterEvents(selectedDate);
+
+                    RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(requireContext())); // for vertical layout
+                    if (recyclerView.getAdapter() == null) {
+                        CalendarAdapter adapter = new CalendarAdapter(requireContext(), filteredEvents);
+                        adapter.setOnEventMoreInfoClickListener(UserProfileFragment.this::onEventClicked);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        CalendarAdapter adapter = (CalendarAdapter) recyclerView.getAdapter();
+                        adapter.updateEvents(filteredEvents);
+                    }
+
+                    setFutureActivitiesVisibility(view, filteredEvents);
+                });
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<BusynessDTO>> call, @NonNull Throwable t) {
+                Log.e("ERROR", "Request failed", t);
+            }
+        });
+    }
+
+    private void setFutureActivitiesVisibility(View view, List<BusynessDTO> filteredEvents) {
+        TextView futureActivities = view.findViewById(R.id.future_activities);
+        if (filteredEvents.isEmpty()) {
+            futureActivities.setVisibility(View.GONE);
+        } else {
+            futureActivities.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private List<BusynessDTO> filterEvents(LocalDate selectedDate) {
+        List<BusynessDTO> filteredEvents = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        for (BusynessDTO dto : futureBusyness) {
+            LocalDate eventDate = LocalDate.parse(dto.getDate(), formatter);
+            if (eventDate.equals(selectedDate)) {
+                filteredEvents.add(dto);
+            }
+        }
+        return filteredEvents;
+    }
+
+    private void setupRoleText(View view) {
+        MaterialTextView roleTextView = view.findViewById(R.id.user_role);
+        int visibility;
+
+        switch (role) {
+            case EVENT_ORG:
+                roleTextView.setText(R.string.you_eo);
+                visibility = View.VISIBLE;
+                view.findViewById(R.id.eo_update_inputs).setVisibility(visibility);
+                break;
+            case SPP:
+                roleTextView.setText(R.string.you_spp);
+                visibility = View.VISIBLE;
+                view.findViewById(R.id.spp_update_inputs).setVisibility(visibility);
+                break;
+            case AUTH:
+                roleTextView.setText(R.string.you_au);
+                break;
+            case ADMIN:
+                roleTextView.setText(R.string.you_admin);
+                break;
+        }
+    }
+
+    private void setupInputIcons(View view) {
+        List<Pair<TextInputLayout, TextInputEditText>> fields = getFields(view);
+        int editIconRes = R.drawable.ic_edit;
+        int checkIconRes = R.drawable.ic_check;
+
+        for (Pair<TextInputLayout, TextInputEditText> field : fields) {
+            TextInputLayout layout = field.first;
+            TextInputEditText input = field.second;
+
+            layout.setTag(editIconRes);
+            layout.setEndIconOnClickListener(v -> toggleFieldEditMode(layout, input, editIconRes, checkIconRes));
+        }
+    }
+
+    private List<Pair<TextInputLayout, TextInputEditText>> getFields(View view) {
+        List<Pair<TextInputLayout, TextInputEditText>> fields = new ArrayList<>();
+
+        fields.add(new Pair<>(view.findViewById(R.id.change_phone_layout), view.findViewById(R.id.change_phone)));
+        fields.add(new Pair<>(view.findViewById(R.id.change_country_layout), view.findViewById(R.id.change_country)));
+        fields.add(new Pair<>(view.findViewById(R.id.change_city_layout), view.findViewById(R.id.change_city)));
+        fields.add(new Pair<>(view.findViewById(R.id.change_street_layout), view.findViewById(R.id.change_street)));
+        fields.add(new Pair<>(view.findViewById(R.id.change_house_number_layout), view.findViewById(R.id.change_house_number)));
+        fields.add(new Pair<>(view.findViewById(R.id.change_profile_pic_layout), view.findViewById(R.id.change_profile_pic)));
+
+        if (role == UserRole.EVENT_ORG) {
+            fields.add(new Pair<>(view.findViewById(R.id.change_first_name_layout), view.findViewById(R.id.change_first_name)));
+            fields.add(new Pair<>(view.findViewById(R.id.change_last_name_layout), view.findViewById(R.id.change_last_name)));
+        } else if (role == UserRole.SPP) {
+            fields.add(new Pair<>(view.findViewById(R.id.change_org_name_layout), view.findViewById(R.id.change_org_name)));
+            fields.add(new Pair<>(view.findViewById(R.id.change_org_desc_layout), view.findViewById(R.id.change_org_desc)));
+        }
+
+        return fields;
+    }
+
+    private void toggleFieldEditMode(TextInputLayout layout, TextInputEditText input, int editIconRes, int checkIconRes) {
+        if ((int) layout.getTag() == editIconRes) {
+            layout.setEndIconDrawable(checkIconRes);
+            input.setEnabled(true);
+            layout.setTag(checkIconRes);
+        } else {
+            layout.setEndIconDrawable(editIconRes);
+            input.setEnabled(false);
+            layout.setTag(editIconRes);
+
+            String fieldValue = Objects.requireNonNull(input.getText()).toString().trim();
+            updateField(layout.getId(), fieldValue);
+        }
+
+    }
+
+    private void updateField(int fieldId, String value) {
+        TextInputLayout field = requireView().findViewById(fieldId);
+        if (value.isEmpty()) {
+            field.setError("Value can't be empty!");
+        } else {
+            field.setError(null);
+        }
+
+        if (role == UserRole.EVENT_ORG) {
+            UpdateOrganizerRequestDTO dto = new UpdateOrganizerRequestDTO();
+            Location location = getCurrentLocationData();
+
+            if (fieldId == R.id.change_country_layout) {
+                location.setCountry(value);
+            } else if (fieldId == R.id.change_city_layout) {
+                location.setCity(value);
+            } else if (fieldId == R.id.change_street_layout) {
+                location.setStreet(value);
+            } else if (fieldId == R.id.change_house_number_layout) {
+                location.setHouseNumber(value);
+            }
+            dto.setLocation(location);
+
+            if (fieldId == R.id.change_phone_layout) {
+                dto.setPhone(value);
+            } else if (fieldId == R.id.change_first_name_layout) {
+                dto.setFirstName(value);
+            } else if (fieldId == R.id.change_last_name_layout) {
+                dto.setLastName(value);
+            } else if (fieldId == R.id.change_profile_pic_layout) {
+                dto.setPhotoURL(value);
+            }
+            userService.updateOrganizer(bearerToken, userId, dto).enqueue((Callback<UpdateOrganizerResponseDTO>) createUpdateFieldCallback());
+        } else if (role == UserRole.SPP) {
+            UpdateProviderRequestDTO dto = new UpdateProviderRequestDTO();
+            Location location = getCurrentLocationData(); // Retrieve the full location data
+
+            if (fieldId == R.id.change_country_layout) {
+                location.setCountry(value);
+            } else if (fieldId == R.id.change_city_layout) {
+                location.setCity(value);
+            } else if (fieldId == R.id.change_street_layout) {
+                location.setStreet(value);
+            } else if (fieldId == R.id.change_house_number_layout) {
+                location.setHouseNumber(value);
+            }
+            dto.setLocation(location);
+
+            if (fieldId == R.id.change_phone_layout) {
+                dto.setPhone(value);
+            } else if (fieldId == R.id.change_org_desc_layout) {
+                dto.setOrgDesc(value);
+            } else if (fieldId == R.id.change_profile_pic_layout) {
+                dto.setPhotoURL(value);
+            }
+            userService.updateProvider(bearerToken, userId, dto).enqueue((Callback<UpdateProviderResponseDTO>) createUpdateFieldCallback());
+        }
+        if (role == UserRole.AUTH) {
+            UpdateUserRequestDTO dto = new UpdateUserRequestDTO();
+            Location location = getCurrentLocationData(); // Retrieve the full location data
+
+            if (fieldId == R.id.change_country_layout) {
+                location.setCountry(value);
+            } else if (fieldId == R.id.change_city_layout) {
+                location.setCity(value);
+            } else if (fieldId == R.id.change_street_layout) {
+                location.setStreet(value);
+            } else if (fieldId == R.id.change_house_number_layout) {
+                location.setHouseNumber(value);
+            }
+            dto.setLocation(location);
+
+            if (fieldId == R.id.change_phone_layout && validatePhone(value)) {
+                dto.setPhone(value);
+            }
+            dto.setRole(UserRole.AUTH);
+            userService.updateAuthUser(bearerToken, userId, dto).enqueue((Callback<Void>) createUpdateFieldCallback());
+        }
+    }
+
+
+    private Location getCurrentLocationData() {
+        Location location = new Location();
+
+        TextInputEditText city = requireView().findViewById(R.id.change_city);
+        TextInputEditText country = requireView().findViewById(R.id.change_country);
+        TextInputEditText street = requireView().findViewById(R.id.change_street);
+        TextInputEditText houseNumber = requireView().findViewById(R.id.change_house_number);
+        location.setCountry(Objects.requireNonNull(country.getText()).toString());
+        location.setCity(Objects.requireNonNull(city.getText()).toString());
+        location.setStreet(Objects.requireNonNull(street.getText()).toString());
+        location.setHouseNumber(Objects.requireNonNull(houseNumber.getText()).toString());
+
+        return location;
+    }
+
+    private Callback<?> createUpdateFieldCallback() {
+        return new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
+                if (!isAdded()) return;
+                if (response.isSuccessful()) {
+                    Log.d("UserProfileFragment", "Field updated successfully");
+                } else {
+                    Log.d("UserProfileFragment", "Failed to update field: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
+                Log.d("UserProfileFragment", "Error updating field: " + t.getMessage());
+            }
+        };
+    }
+
+    private void setupAllCarousels(View view, GetOrganizerResponseDTO orgDto, GetProviderResponseDTO proDto) {
+        Set<BasicItemDTO> favServices;
+        Set<BasicItemDTO> favProducts;
+
+        if (role == UserRole.EVENT_ORG) {
+            setupCarousel(view, R.id.favouriteEventsCarousel, orgDto.getFavoriteEvents());
+            favServices = extractItems(orgDto.getFavoriteItems(), "services");
+            favProducts = extractItems(orgDto.getFavoriteItems(), "products");
+            setupCarousel(view, R.id.favouriteServicesCarousel, favServices);
+            setupCarousel(view, R.id.favouriteProductsCarousel, favProducts);
+            view.findViewById(R.id.my_events).setVisibility(View.VISIBLE);
+            setupCarousel(view, R.id.myEventsCarousel, orgDto.getCreatedEvents());
+        }
+        else if (role == UserRole.SPP) {
+            setupCarousel(view, R.id.favouriteEventsCarousel, proDto.getFavoriteEvents());
+            favServices = extractItems(proDto.getFavoriteItems(), "services");
+            favProducts = extractItems(proDto.getFavoriteItems(), "products");
+            setupCarousel(view, R.id.favouriteServicesCarousel, favServices);
+            setupCarousel(view, R.id.favouriteProductsCarousel, favProducts);
+            view.findViewById(R.id.my_services).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.my_products).setVisibility(View.VISIBLE);
+            setupCarousel(view, R.id.myServicesCarousel, extractItems(proDto.getItems(), "services"));
+            setupCarousel(view, R.id.myProductsCarousel, extractItems(proDto.getItems(), "products"));
+        }
+    }
+
+    private Set<BasicItemDTO> extractItems(Set<BasicItemDTO> items, String itemType) {
+        Set<BasicItemDTO> favItems = new HashSet<>();
+        for (var item : items) {
+            if (item.getType().equals(itemType)) {
+                favItems.add(item);
+            }
+        }
+        return favItems;
+    }
+
+    private void setupCarousel(View view, int carouselId, Set<? extends BasicCard> items) {
+        RecyclerView carousel = view.findViewById(carouselId);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        carousel.setLayoutManager(layoutManager);
+
+        if (!items.isEmpty()) {
+            CarouselAdapter adapter = new CarouselAdapter(requireContext(), new ArrayList<>(items));
+            adapter.setOnMoreInfoClickListener(this::onMoreInfoClicked);
+            carousel.setAdapter(adapter);
+        }
+    }
+
+    private void fillFields(View view) {
+        if (role == UserRole.EVENT_ORG) {
+            userService.getOrganizer(bearerToken, userId).enqueue((Callback<GetOrganizerResponseDTO>) createFillCallback(view, UserRole.EVENT_ORG));
+        } else if (role == UserRole.SPP) {
+            userService.getProvider(bearerToken, userId).enqueue((Callback<GetProviderResponseDTO>) createFillCallback(view, UserRole.SPP));
+        }
+        else if (role == UserRole.AUTH) {
+            Log.d("CALL", "We are making the get call");
+            userService.getUser(bearerToken, userId).enqueue((Callback<GetUserResponseDTO>) createFillCallback(view, UserRole.AUTH));
+        }
+    }
+
+    private Callback<?> createFillCallback(View view, UserRole role) {
+        return new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<Object> call, @NonNull Response<Object> response) {
+                if (!isAdded()) return;
+                Log.d("INFO", "We are in onResponse");
+                if (response.isSuccessful()) {
+                    Log.d("INFO", "response successful");
+
+                    if (role == UserRole.EVENT_ORG) {
+                        GetOrganizerResponseDTO dto = (GetOrganizerResponseDTO) response.body();
+                        fillFieldsFromDto(view, dto, null, null);
+                    } else if (role == UserRole.SPP) {
+                        GetProviderResponseDTO dto = (GetProviderResponseDTO) response.body();
+                        fillFieldsFromDto(view, null, dto, null);
+                    } else if (role == UserRole.AUTH) {
+                        Log.d("In", "we are in");
+                        GetUserResponseDTO dto = (GetUserResponseDTO) response.body();
+                        fillFieldsFromDto(view, null, null, dto);
+                    }
+
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<Object> call, @NonNull Throwable t) {
+                Log.d("UserProfileFragment", Objects.requireNonNull(t.getMessage()));
+            }
+        };
+    }
+
+    private void fillFieldsFromDto(View view, GetOrganizerResponseDTO orgDto, GetProviderResponseDTO proDto, GetUserResponseDTO userDto) {
+        if (orgDto != null) {
+            fillCommonFields(view, orgDto.getEmail(), orgDto.getPhone(), orgDto.getLocation().getCountry(),
+                    orgDto.getLocation().getCity(), orgDto.getLocation().getStreet(), orgDto.getLocation().getHouseNumber(),
+                    orgDto.getPhotoURL());
+
+            fillField(view, R.id.change_first_name, orgDto.getFirstName());
+            fillField(view, R.id.change_last_name, orgDto.getLastName());
+
+            setupAllCarousels(view, orgDto, proDto);
+        } else if (proDto != null) {
+            fillCommonFields(view, proDto.getEmail(), proDto.getPhone(), proDto.getLocation().getCountry(),
+                    proDto.getLocation().getCity(), proDto.getLocation().getStreet(), proDto.getLocation().getHouseNumber(),
+                    proDto.getPhotoURL());
+
+            fillField(view, R.id.change_org_name, proDto.getOrgName());
+            fillField(view, R.id.change_org_desc, proDto.getOrgDesc());
+
+            setupAllCarousels(view, null, proDto);
+        }
+        else if (userDto != null) {
+            fillCommonFields(view, userDto.getEmail(), userDto.getPhone(), userDto.getLocation().getCountry(),
+                    userDto.getLocation().getCity(), userDto.getLocation().getStreet(), userDto.getLocation().getHouseNumber(),
+                    userDto.getPhotoURL());
+        }
+    }
+
+    private void fillCommonFields(View view, String email, String phone, String country, String city, String street, String houseNumber, String photoURL) {
+        fillField(view, R.id.email_user_profile, email);
+        fillField(view, R.id.change_phone, phone);
+        fillField(view, R.id.change_country, country);
+        fillField(view, R.id.change_city, city);
+        fillField(view, R.id.change_street, street);
+        fillField(view, R.id.change_house_number, houseNumber);
+        fillField(view, R.id.change_profile_pic, photoURL);
+
+        ImageView profilePic = view.findViewById(R.id.profile_picture);
+        if (photoURL != null && !photoURL.isEmpty()) {
+            ImageLoader.loadImage(photoURL, profilePic);
+        }
+    }
+
+    private void fillField(View view, int fieldId, String data) {
+        TextInputEditText field = view.findViewById(fieldId);
+        field.setText(data);
+    }
+
+    private void showChangePasswordDialog() {
+        ChangePasswordDialogFragment fragment = ChangePasswordDialogFragment.newInstance(role);
+        fragment.show(getParentFragmentManager(), "ChangePasswordFragment");
+    }
+
+    private void showConfirmDeactivationDialog() {
+        AccountDeactivationDialogFragment fragment = AccountDeactivationDialogFragment.newInstance(role);
+        fragment.show(getParentFragmentManager(), "ConfirmDeactivationFragment");
+    }
+
+    private boolean validatePhone(String phone) {
+        return Patterns.PHONE.matcher(phone).matches();
+    }
+
+    private void upgradeAuthUser(UpgradeAuthUserRequestDTO requestDTO) {
+        changePasswordButton.setEnabled(false);
+        deactivateAccountButton.setEnabled(false);
+        upgradeAccountButton.setEnabled(false);
+        userService.upgradeAuthUser(bearerToken, userId, requestDTO)
+                .enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (!isAdded()) return;
+                        if (!response.isSuccessful()) {
+                            changePasswordButton.setEnabled(true);
+                            deactivateAccountButton.setEnabled(true);
+                            upgradeAccountButton.setEnabled(true);
+
+                            var error = ClientUtils.convertToErrorMessage(response.errorBody());
+                            if (error != null) {
+                                String message = getString(R.string.failed_to_upgrade_account, error.getMessage());
+                                Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show();
+                            }
+                            return;
+                        }
+                        new MaterialAlertDialogBuilder(requireContext())
+                                .setTitle(R.string.account_upgraded_successfully)
+                                .setMessage(
+                                        requestDTO.getUpgradedRole() == UserRole.SPP
+                                                ? R.string.you_are_now_provider
+                                                : R.string.you_are_now_organizer
+                                )
+                                .setPositiveButton(R.string.logout, (d, w) -> {
+                                    handleLogout();
+                                    d.dismiss();
+                                })
+                                .show();
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        String message = t.getMessage();
+                        if (message != null) Log.d("ERROR", message);
+                        changePasswordButton.setEnabled(true);
+                        deactivateAccountButton.setEnabled(true);
+                    }
+                });
+    }
+
+    private void handleLogout() {
+        AuthUtil.clearPreferences(requireContext());
+        FragmentActivity activity = requireActivity();
+        Intent intent = new Intent(activity, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        activity.finish();
+    }
+
+    private void onMoreInfoClicked(BasicCard entity) {
+        if (entity instanceof BasicEventDTO) {
+            getDetails(eventService.getEvent(bearerToken, entity.getId()), R.id.navigate_to_event_details_from_profile, "eventDTO");
+        } else if (entity instanceof BasicItemDTO && ((BasicItemDTO) entity).getType().equals("products")) {
+            getDetails(productService.getProduct(bearerToken, entity.getId()), R.id.navigate_to_product_details_from_profile, "productDTO");
+        } else {
+            getDetails(serviceService.getService(bearerToken, entity.getId()), R.id.navigate_to_service_details_from_profile, "serviceDTO");
+        }
+
+    }
+
+    private void onEventClicked(Integer id) {
+        getDetails(eventService.getEvent(bearerToken, id), R.id.navigate_to_event_details_from_profile, "eventDTO");
+    }
+
+    private <T extends Parcelable> void getDetails(
+            Call<T> serviceCall,
+            @IdRes int navDestination,
+            String bundleArgName
+    ) {
+        serviceCall.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
+                if (response.isSuccessful() && response.body() != null && isAdded()) {
+                    Bundle args = new Bundle();
+                    args.putParcelable(bundleArgName, response.body());
+                    Navigation.findNavController(requireView()).navigate(navDestination, args);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
+                String message = t.getMessage();
+                if (message != null) Log.d("ERROR", message);
+            }
+        });
+    }
+}

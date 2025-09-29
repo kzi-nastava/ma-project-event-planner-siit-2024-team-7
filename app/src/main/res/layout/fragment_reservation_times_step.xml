@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_marginTop="10dp"
+    android:layout_gravity="center_horizontal"
+    tools:context=".ui.fragments.reservation.ReservationTimesStepFragment"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp"
+        android:gravity="center_vertical"
+        >
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/step_indicator"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/reservation_step_num_bg"
+            android:gravity="center"
+            android:text="4"
+            android:textSize="16sp"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/choose_times_step"
+            android:textSize="22sp"
+            android:layout_marginStart="10dp"
+            />
+
+    </LinearLayout>
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/times_step_explanation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="5dp"
+        android:textSize="20sp"
+        android:text="@string/choose_both_times"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="4dp"
+        android:weightSum="2">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/reservation_timeslot_start_time_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_clock"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reservation_timeslot_start_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/start_time"
+                android:focusable="false"
+                android:inputType="none"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/reservation_timeslot_end_time_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_clock"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reservation_timeslot_end_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/end_time"
+                android:focusable="false"
+                android:inputType="none"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/error_out_of_timeslot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/design_default_color_error"
+        android:gravity="center"
+        android:layout_marginVertical="5dp"
+        android:text="@string/out_of_timeslot_range"
+        android:visibility="invisible"
+        />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/error_invalid_duration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/design_default_color_error"
+        android:gravity="center"
+        android:layout_marginBottom="5dp"
+        android:text="@string/invalid_duration"
+        android:visibility="invisible"
+        />
+
+</LinearLayout>

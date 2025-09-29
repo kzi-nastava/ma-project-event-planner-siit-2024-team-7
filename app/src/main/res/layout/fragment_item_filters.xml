@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".fragments.ItemFiltersFragment">
+    tools:context=".ui.fragments.home.all.ItemFiltersFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,122 +25,316 @@
 
         <include layout="@layout/space_divider"/>
 
-        <include layout="@layout/view_close_button"/>
+        <include android:id="@+id/item_filters_close_button" layout="@layout/view_close_button"/>
 
     </LinearLayout>
 
     <include layout="@layout/divider_thick"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/available_start_date_layout"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        app:endIconMode="custom"
-        app:endIconDrawable="@drawable/ic_calendar"
-        android:hint="@string/available_start_date">
+        android:layout_height="0dp"
+        android:layout_weight="0.75">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/available_start_date_input"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="false"
-            android:clickable="true"
-            android:inputType="none" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="vertical">
 
-    <include layout="@layout/divider_thin"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/shown_item_type_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="dropdown_menu">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/available_end_date_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        app:endIconMode="custom"
-        app:endIconDrawable="@drawable/ic_calendar"
-        android:hint="@string/available_end_date">
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/shown_item_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="18sp"
+                    android:paddingEnd="5sp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:hint="@string/show"/>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/available_end_date_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:clickable="true"
-            android:inputType="none" />
-    </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <include layout="@layout/divider_thin"/>
+            <include layout="@layout/divider_thin"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        app:endIconMode="clear_text"
-        android:hint="@string/item_name">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="clear_text"
+                android:hint="@string/name">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/item_name_filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/item_name_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <include layout="@layout/divider_thin"/>
+            <include layout="@layout/divider_thin"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        app:endIconMode="clear_text"
-        android:hint="@string/price">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/product_availability_filter_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="dropdown_menu">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/item_price_filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal" />
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/product_availability_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="18sp"
+                    android:paddingEnd="5sp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:hint="@string/product_availability"/>
 
-    </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <include layout="@layout/divider_thin"/>
+            <LinearLayout
+                android:id="@+id/service_filters_layout"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/item_category"
-        android:paddingHorizontal="20dp"
-        />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/service_availability_filter_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    android:paddingHorizontal="20dp"
+                    app:endIconMode="dropdown_menu">
 
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginVertical="2dp"
-        android:paddingHorizontal="20dp"
-        android:id="@+id/item_category_filter"
-        />
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/service_availability_filter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="18sp"
+                        android:paddingEnd="5sp"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:hint="@string/product_availability"/>
 
-    <include layout="@layout/divider_thin"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/item_location"
-        android:paddingHorizontal="20dp"
-        />
+                <include layout="@layout/divider_thin"/>
 
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="8dp"
-        android:paddingHorizontal="20dp"
-        android:id="@+id/item_location_filter"
-        />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/service_date_range_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginVertical="2dp"
+                    android:paddingHorizontal="20dp"
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/ic_calendar"
+                    android:hint="@string/date_range">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/service_date_range_filter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="none"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <include layout="@layout/divider_thin"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    android:paddingHorizontal="20dp"
+                    app:endIconMode="clear_text"
+                    android:hint="@string/service_specifics">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/service_specifics_filter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <include layout="@layout/divider_thin"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    android:paddingHorizontal="20dp"
+                    app:endIconMode="clear_text"
+                    android:hint="@string/minimum_duration">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/service_min_duration_filter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <include layout="@layout/divider_thin"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    android:paddingHorizontal="20dp"
+                    app:endIconMode="clear_text"
+                    android:hint="@string/maximum_duration">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/service_max_duration_filter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <include layout="@layout/divider_thin"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    android:paddingHorizontal="20dp"
+                    app:endIconMode="clear_text"
+                    android:hint="@string/reservation_deadline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/service_reservation_deadline_filter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <include layout="@layout/divider_thin"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    android:paddingHorizontal="20dp"
+                    app:endIconMode="clear_text"
+                    android:hint="@string/cancellation_deadline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/service_cancellation_deadline_filter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <include layout="@layout/divider_thin"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="clear_text"
+                android:hint="@string/description">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/item_description_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:gravity="top"
+                    android:minLines="3"
+                    android:maxLines="3"
+                    android:scrollbars="vertical"
+                    android:overScrollMode="always" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <include layout="@layout/divider_thin"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="clear_text"
+                android:hint="@string/price">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/item_price_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <include layout="@layout/divider_thin"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/item_category_filter_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="dropdown_menu">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/item_category_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="18sp"
+                    android:paddingEnd="5sp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:hint="@string/item_category"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <include layout="@layout/divider_thin"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/item_location_filter_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:paddingHorizontal="20dp"
+                app:endIconMode="dropdown_menu">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/item_location_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="18sp"
+                    android:paddingEnd="5sp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:hint="@string/item_location" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
     <include layout="@layout/divider_thick"/>
 
@@ -151,6 +345,7 @@
         android:padding="10dp"
         >
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/apply_item_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/apply"
@@ -160,6 +355,7 @@
         <include layout="@layout/space_divider"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/reset_item_filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/reset"

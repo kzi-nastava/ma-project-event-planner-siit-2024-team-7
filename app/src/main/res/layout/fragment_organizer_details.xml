@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.fragments.user.OrganizerDetailsFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/organizer_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:textSize="24sp"
+        tools:text="Organizer Name" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                app:cardCornerRadius="125dp"
+                app:strokeWidth="0dp"
+                android:layout_marginBottom="20dp"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/organizer_profile_pic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/image_placeholder"
+                    tools:ignore="ContentDescription" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Organizer Email:"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="10dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/organizer_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="8dp"
+                tools:text="john.doe@gmail.com" />
+
+            <include layout="@layout/divider_thin" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Address:"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="10dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/organizer_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="8dp"
+                tools:text="Bulevar oslobodjenja 123, Novi Sad, Serbia" />
+
+            <include layout="@layout/divider_thin" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone:"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="10dp" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/organizer_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="8dp"
+                tools:text="+38160123456" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="20dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/chat_w_organizer_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/open_chat"
+            app:icon="@drawable/ic_add_comment"
+            app:iconPadding="8dp"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/report_account_button"
+            style="?attr/materialIconButtonFilledTonalStyle"
+            android:backgroundTint="@color/orange_warning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/report"
+            app:icon="@drawable/ic_feedback"
+            app:iconPadding="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

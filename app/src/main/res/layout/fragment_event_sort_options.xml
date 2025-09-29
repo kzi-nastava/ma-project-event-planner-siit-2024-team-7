@@ -5,12 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".fragments.EventSortOptionsFragment">
+    tools:context=".ui.fragments.home.all.EventSortOptionsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
         android:orientation="horizontal"
         >
 
@@ -19,13 +18,15 @@
             android:layout_height="match_parent"
             android:text="@string/sort_options"
             android:textSize="24sp"
-            android:paddingHorizontal="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="1dp"
             android:gravity="center"
             />
 
         <include layout="@layout/space_divider"/>
 
         <RadioGroup
+            android:id="@+id/event_sort_direction_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -37,7 +38,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/ascending"
-                android:paddingHorizontal="4dp"
                 />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
@@ -45,18 +45,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/descending"
-                android:paddingHorizontal="4dp"
                 />
 
         </RadioGroup>
 
         <include layout="@layout/space_divider"/>
 
-        <include layout="@layout/view_close_button"/>
+        <include android:id="@+id/event_sort_options_close_button" layout="@layout/view_close_button"/>
 
     </LinearLayout>
 
     <RadioGroup
+        android:id="@+id/event_sort_options_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="15dp"
@@ -119,6 +119,7 @@
         android:gravity="center"
         >
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/apply_sorting_events_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sort"

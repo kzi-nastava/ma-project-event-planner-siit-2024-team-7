@@ -1,0 +1,163 @@
+package rs.ac.uns.eventplanner.team7.ui.activities;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
+
+import java.time.Instant;
+import java.util.Date;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import rs.ac.uns.eventplanner.team7.data.model.enums.UserRole;
+import rs.ac.uns.eventplanner.team7.data.services.ActivationLinkService;
+import rs.ac.uns.eventplanner.team7.utils.AuthUtil;
+import rs.ac.uns.eventplanner.team7.utils.ClientUtils;
+
+public class RoutingActivity extends AppCompatActivity {
+
+    private final ActivationLinkService activationLinkService = ClientUtils.injectService(ActivationLinkService.class);
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        super.onCreate(savedInstanceState);
+
+        splashScreen.setKeepOnScreenCondition(() -> true);
+
+        Intent intent = getIntentForNextActivity();
+        final int SPLASH_TIME_OUT = 500;
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            startActivity(intent);
+            finish();
+        }, SPLASH_TIME_OUT);
+    }
+
+    @NonNull
+    private Intent getIntentForNextActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        Uri data = getIntent().getData();
+        if (data != null && data.getPath() != null)
+            intent = handleRedirection(data, intent);
+
+        Instant suspensionEnd = AuthUtil.getSuspensionEnd(this);
+        if (suspensionEnd != null) {
+            if (suspensionEnd.isBefore(Instant.now())) AuthUtil.clearPreferences(this);
+            return intent;
+        }
+
+        if (AuthUtil.getToken(this) != null && isTokenExpired()) {
+            // bundle can contain values if handling invitation redirection
+            Bundle params = intent.getExtras() != null ? intent.getExtras().deepCopy() : new Bundle();
+            params.putBoolean("sessionExpired", true);
+            intent = new Intent(this, LoginActivity.class).putExtras(params);
+            AuthUtil.clearPreferences(this);
+        }
+        return intent;
+    }
+
+    @NonNull
+    private Intent handleRedirection(Uri data, Intent defaultIntent) {
+        String path = data.getPath().substring(1); // skips leading '/'
+        switch (path) {
+            case "quick_registration":
+                return handleQuickRegistration(data, defaultIntent);
+
+            case "accept_invitation":
+                return handleInvitation(data, defaultIntent);
+
+            case "activate":
+                return handleActivation(data, defaultIntent);
+
+            default:
+                return defaultIntent;
+        }
+    }
+
+    @NonNull
+    private Intent handleQuickRegistration(Uri data, Intent defaultIntent) {
+        String email = data.getQueryParameter("email");
+        String token = data.getQueryParameter("token");
+        if (email == null || token == null) return defaultIntent;
+        Bundle params = new Bundle();
+        params.putString("email", email);
+        params.putString("token", token);
+        AuthUtil.clearPreferences(this);
+        return new Intent(this, RegistrationActivity.class).putExtras(params);
+    }
+
+    @NonNull
+    private Intent handleInvitation(Uri data, Intent targetIntent) {
+        String email = data.getQueryParameter("email");
+        String token = data.getQueryParameter("token");
+        String eventId = data.getQueryParameter("eventId");
+        if (email == null || token == null || eventId == null) return targetIntent;
+
+        try {
+            // if not logged in go to login first
+            if (AuthUtil.extractRole(this) == UserRole.GUEST) {
+                targetIntent = new Intent(this, LoginActivity.class);
+            }
+            Bundle params = new Bundle();
+            params.putString("email", email);
+            params.putString("token", token);
+            params.putInt("eventId", Integer.parseInt(eventId));
+            return targetIntent.putExtras(params);
+        } catch (NumberFormatException e) {
+            return targetIntent;
+        }
+    }
+
+    @NonNull
+    private Intent handleActivation(Uri data, Intent defaultIntent) {
+        String token = data.getQueryParameter("id");
+        if (token == null) return defaultIntent;
+
+        // Start the activation process
+        activationLinkService.activate(AuthUtil.getAuthorizationValue(this), Integer.parseInt(token))
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                        if (response.code() == 204 || response.isSuccessful()) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(RoutingActivity.this,
+                                        "Account activation successful, you may login now",
+                                        Toast.LENGTH_LONG).show();
+                            });
+                        } else {
+                            runOnUiThread(() -> {
+                                Toast.makeText(RoutingActivity.this,
+                                        "Account activation unsuccessful, please try again later",
+                                        Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(RoutingActivity.this,
+                                    "Account activation failed, please try again later",
+                                    Toast.LENGTH_LONG).show();
+                        });
+                    }
+                });
+
+        // Show a loading message and return to login
+        Toast.makeText(this, "Activating account...", Toast.LENGTH_SHORT).show();
+        return new Intent(this, LoginActivity.class);
+    }
+
+    private boolean isTokenExpired() {
+        Date expirationDate = AuthUtil.extractExpirationDate(this);
+        return expirationDate == null || expirationDate.before(new Date());
+    }
+}

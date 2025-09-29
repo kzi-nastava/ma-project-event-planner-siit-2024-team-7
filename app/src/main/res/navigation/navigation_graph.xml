@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_navigation"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.home.HomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_nav_product_details"
+            app:destination="@id/nav_product_details" />
+        <action
+            android:id="@+id/navigate_to_service_details"
+            app:destination="@id/nav_service_details" />
+        <action
+            android:id="@+id/navigate_to_product_details"
+            app:destination="@id/nav_product_details" />
+        <action android:id="@+id/navigate_to_event_details"
+            app:destination="@+id/nav_event_details" />
+        <action android:id="@+id/navigate_to_product_list"
+            app:destination="@+id/nav_product_list" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_contacts"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.chats.ContactsFragment"
+        android:label="Contacts"
+        tools:layout="@layout/fragment_contacts">
+        <action
+            android:id="@+id/navigate_to_chat_from_contacts"
+            app:destination="@id/nav_chats"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_chats"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.chats.ChatsFragment"
+        android:label="@string/toolbar_chats"
+        tools:layout="@layout/fragment_chats">
+        <action
+            android:id="@+id/navigate_back_to_contacts_after_blocking"
+            app:destination="@id/nav_contacts"
+            app:popUpTo="@id/nav_home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_product_list"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.products.ProductList"
+        android:label="Products"
+        tools:layout="@layout/fragment_product_list">
+
+        <action
+            android:id="@+id/navigate_to_create_product"
+            app:destination="@id/nav_create_product" />
+
+        <action
+            android:id="@+id/navigate_to_product_update"
+            app:destination="@id/nav_update_product" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_create_product"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.products.CreateProductFragment"
+        android:label="Create Product"
+        tools:layout="@layout/fragment_create_product">
+
+        <action android:id="@+id/navigate_back_from_product_creation"
+            app:destination="@id/nav_product_list" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_update_product"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.products.UpdateProductFragment"
+        android:label="Update Product"
+        tools:layout="@layout/fragment_update_product">
+
+        <action android:id="@+id/navigate_back_from_product_update"
+            app:destination="@id/nav_product_list" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_notifications"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.notifications.NotificationsFragment"
+        android:label="@string/toolbar_notifications"
+        tools:layout="@layout/fragment_notifications"/>
+
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.user.UserProfileFragment"
+        android:label="@string/account"
+        tools:layout="@layout/fragment_user_profile" >
+        <action
+            android:id="@+id/navigate_to_event_details_from_profile"
+            app:destination="@id/nav_event_details" />
+        <action
+            android:id="@+id/navigate_to_product_details_from_profile"
+            app:destination="@id/nav_product_details" />
+        <action
+            android:id="@+id/navigate_to_service_details_from_profile"
+            app:destination="@id/nav_service_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_service"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.services.SPPServicesBaseFragment"
+        android:label="@string/my_services"
+        tools:layout="@layout/fragment_spp_services_base">
+        <action
+            android:id="@+id/navigate_to_service_management_creation"
+            app:destination="@id/nav_service_management" />
+        <action
+            android:id="@+id/navigate_to_service_management_update"
+            app:destination="@id/nav_service_management" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.OrganizerEventsFragment"
+        android:label="@string/my_events"
+        tools:layout="@layout/fragment_organizer_events">
+        <action
+            android:id="@+id/navigate_to_event_creation"
+            app:destination="@id/nav_event_creation" />
+        <action
+            android:id="@+id/navigate_to_update_event"
+            app:destination="@id/nav_update_event" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_creation"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.CreateEventFragment"
+        android:label="Create Event"
+        tools:layout="@layout/fragment_create_event" >
+        <action
+            android:id="@+id/navigate_to_budget_creation"
+            app:destination="@id/nav_budget_management"
+            app:popUpTo="@id/nav_event_creation"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_update_event"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.UpdateEventFragment"
+        android:label="@string/my_events"
+        tools:layout="@layout/fragment_update_event">
+        <action
+            android:id="@+id/navigate_to_budget_management"
+            app:destination="@id/nav_budget_management" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_budget_management"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.budgets.BudgetManagement"
+        android:label="Event Budget"
+        tools:layout="@layout/fragment_budget_management">
+        <action
+            android:id="@+id/navigate_to_service_details_from_budget"
+            app:destination="@id/nav_service_details" />
+        <action
+            android:id="@+id/navigate_to_product_details_from_budget"
+            app:destination="@id/nav_product_details" />
+        <action
+            android:id="@+id/navigate_to_add_category_budget_dialog"
+            app:destination="@id/nav_add_category_budget" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/nav_add_category_budget"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.budgets.AddCategoryBudgetDialog"
+        android:label="Add Category Budget"
+        tools:layout="@layout/dialog_add_category_budget"/>
+
+    <fragment
+        android:id="@+id/nav_event_types"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.event_types.AllEventTypesFragment"
+        android:label="@string/event_types"
+        tools:layout="@layout/fragment_all_event_types">
+        <action
+            android:id="@+id/navigate_to_event_type_create"
+            app:destination="@id/nav_event_type_create" />
+        <action
+            android:id="@+id/navigate_to_event_type_update"
+            app:destination="@id/nav_event_type_update"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_categories"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.categories.AllCategoriesFragment"
+        android:label="@string/categories"
+        tools:layout="@layout/fragment_all_categories">
+        <action
+            android:id="@+id/navigate_to_category_management"
+            app:destination="@id/nav_category_management"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_details"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.EventDetailsFragment"
+        android:label="@string/event_details"
+        tools:layout="@layout/fragment_event_details">
+
+        <action
+            android:id="@+id/navigate_to_event_statistics"
+            app:destination="@id/nav_event_statistics" />
+        <action android:id="@+id/navigate_to_chat_from_details"
+            app:destination="@id/nav_chats" />
+        <action
+            android:id="@+id/navigate_from_events_to_organizer_details"
+            app:destination="@id/nav_organizer_details" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_statistics"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.events.EventStatisticsFragment"
+        android:label="Event Statistics"
+        tools:layout="@layout/fragment_event_statistics"/>
+
+    <fragment
+        android:id="@+id/nav_service_management"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.services.ServiceManagementFragment"
+        android:label="@string/my_services"
+        tools:layout="@layout/fragment_service_management">
+        <action
+            android:id="@+id/navigate_back_from_service_management"
+            app:destination="@id/nav_service"
+            app:popUpTo="@id/nav_service"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_category_management"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.categories.CategoryManagementFragment"
+        android:label="@string/categories"
+        tools:layout="@layout/fragment_category_management" >
+        <action
+            android:id="@+id/navigate_back_from_category_management"
+            app:destination="@id/nav_categories"
+            app:popUpTo="@id/nav_categories"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/navigate_to_reject_category_dialog"
+            app:destination="@id/nav_reject_category" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_type_create"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.event_types.CreateEventTypeFragment"
+        android:label="@string/event_types"
+        tools:layout="@layout/fragment_create_event_type" >
+        <action
+            android:id="@+id/navigate_back_from_event_type_create"
+            app:destination="@id/nav_event_types"
+            app:popUpTo="@id/nav_event_types"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_event_type_update"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.event_types.UpdateEventTypeFragment"
+        android:label="@string/event_types"
+        tools:layout="@layout/fragment_update_event_type" >
+        <action
+            android:id="@+id/navigate_back_from_event_type_update"
+            app:destination="@id/nav_event_types"
+            app:popUpTo="@id/nav_event_types"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/nav_reject_category"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.categories.RejectCategoryDialogFragment"
+        tools:layout="@layout/dialog_reject_category" >
+        <action
+            android:id="@+id/navigate_back_from_reject_category"
+            app:destination="@id/nav_categories"
+            app:popUpTo="@id/nav_categories"
+            app:popUpToInclusive="true" />
+    </dialog>
+
+    <fragment
+        android:id="@+id/nav_spp_details"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.user.SPPDetailsFragment"
+        android:label="@string/user_details">
+        <action
+            android:id="@+id/navigate_to_chat_from_spp"
+            app:destination="@+id/nav_chats" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_organizer_details"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.user.OrganizerDetailsFragment"
+        android:label="@string/user_details" >
+        <action
+            android:id="@+id/navigate_to_chat_from_organizer_details"
+            app:destination="@id/nav_chats" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_product_details"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.products.ProductDetailsFragment"
+        android:label="@string/product_details"
+        tools:layout="@layout/fragment_product_details">
+        <action
+            android:id="@+id/navigate_to_spp_details_from_product"
+            app:destination="@id/nav_spp_details" />
+        <action
+            android:id="@+id/navigate_to_select_event"
+            app:destination="@id/nav_select_event_for_purchase"/>
+        <action
+            android:id="@+id/navigate_to_chat_from_product"
+            app:destination="@+id/nav_chats" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_select_event_for_purchase"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.purchases.SelectEventForPurchase"
+        android:label="Select Event"
+        tools:layout="@layout/fragment_select_event_for_purchase">
+        <action
+            android:id="@+id/navigate_back_from_purchase"
+            app:destination="@id/nav_product_details"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_service_details"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.services.ServiceDetailsFragment"
+        android:label="@string/service_details"
+        tools:layout="@layout/fragment_service_details" >
+        <action
+            android:id="@+id/navigate_to_spp_details_from_service"
+            app:destination="@id/nav_spp_details" />
+        <action
+            android:id="@+id/navigate_to_service_reservation_from_service_details"
+            app:destination="@id/nav_service_reservation" />
+        <action
+            android:id="@+id/navigate_to_chat_from_service"
+            app:destination="@+id/nav_chats" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_service_reservation"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.reservation.ServiceReservationFragment"
+        android:label="@string/reserve_a_service"
+        tools:layout="@layout/fragment_service_reservation" >
+        <action
+            android:id="@+id/navigate_back_from_service_reservation"
+            app:destination="@id/nav_service_details"
+            app:popUpTo="@id/nav_service_details"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/nav_suspended"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.reporting.AccountSuspendedFragment"
+        android:label="Account suspended"
+        tools:layout="@layout/fragment_account_suspended" />
+    <fragment
+        android:id="@+id/nav_reports"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.reports.AllReportsFragment"
+        android:label="@string/reports"
+        tools:layout="@layout/fragment_all_reports" />
+    <fragment
+        android:id="@+id/nav_feedback"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.admin.feedback.AllFeedbackFragment"
+        android:label="@string/feedback"
+        tools:layout="@layout/fragment_all_feedback" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_price_list"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.price_list.PriceListFragment"
+        android:label="@string/price_list_menu_item"
+        tools:layout="@layout/fragment_price_list">
+        <action
+            android:id="@+id/navigate_to_update_service"
+            app:destination="@id/nav_service_management"/>
+        <action
+            android:id="@+id/navigate_to_update_product"
+            app:destination="@id/nav_product_management"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_product_management"
+        android:name="rs.ac.uns.eventplanner.team7.ui.fragments.products.ProductManagementFragment"
+        android:label="@string/my_products"
+        tools:layout="@layout/fragment_product_management"/>
+
+
+</navigation>

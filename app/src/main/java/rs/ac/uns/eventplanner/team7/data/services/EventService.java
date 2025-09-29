@@ -68,7 +68,7 @@ public interface EventService {
             "Content-Type: application/json"
     })
     @GET("events")
-    Call<Page<BasicEventDTO>> getOrganizerEvents(@Header("Authorization") String token, @Query("organizerId") Integer organizerId, @Query("name") String name);
+    Call<Page<BasicEventDTO>> getOrganizerEvents(@Header("Authorization") String token, @QueryMap Map<String, String> params);
 
     @Headers({
             "User-Agent: Mobile-Android",

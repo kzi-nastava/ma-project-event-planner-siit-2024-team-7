@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -19,7 +20,11 @@ import com.google.android.material.textview.MaterialTextView;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -70,6 +75,7 @@ public class OrganizerEventsFragment extends Fragment implements SearchActionsLi
                 Navigation.findNavController(requireView()).navigate(R.id.navigate_to_event_creation));
 
         setContent(false);
+        setupContentScrollListener();
     }
 
     @Override
@@ -131,7 +137,9 @@ public class OrganizerEventsFragment extends Fragment implements SearchActionsLi
     }
 
     private void setContent(boolean isUpdate) {
-        eventService.getOrganizerEvents(AuthUtil.getAuthorizationValue(requireContext()), AuthUtil.extractId(requireContext()), "").enqueue(new Callback<>() {
+        isLoading = true;
+        if (!isUpdate) page.resetToDefault();
+        eventService.getOrganizerEvents(AuthUtil.getAuthorizationValue(requireContext()), prepareParams()).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Page<BasicEventDTO>> call,
                                    @NonNull Response<Page<BasicEventDTO>> response) {
@@ -166,5 +174,26 @@ public class OrganizerEventsFragment extends Fragment implements SearchActionsLi
             }
         });
 
+    }
+
+    private Map<String, String> prepareParams() {
+        Map<String, String> map = new HashMap<>();
+        map.put("organizerId", AuthUtil.extractId(requireContext()).toString());
+        page.setSort(new Sort().by("email"));
+        map.putAll(page.toQueryMap());
+        return map;
+    }
+
+    private void setupContentScrollListener() {
+        eventsView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                var layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int lastVisiblePosition = Objects.requireNonNull(layoutManager).findLastCompletelyVisibleItemPosition();
+                if (lastVisiblePosition == viewAdapter.getLastItemIndex() && !page.isLast())
+                    onNextPage();
+            }
+        });
     }
 }

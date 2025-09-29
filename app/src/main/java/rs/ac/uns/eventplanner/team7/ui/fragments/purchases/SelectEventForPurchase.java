@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
@@ -22,6 +23,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -93,6 +96,7 @@ public class SelectEventForPurchase extends Fragment implements SearchActionsLis
         purchaseWelcome.setText(String.format("Purchase %s", productDTO.getName()));
         setContent(false, eventQuery);
         setupSearchView();
+        setupContentScrollListener();
     }
 
     @Override
@@ -169,7 +173,9 @@ public class SelectEventForPurchase extends Fragment implements SearchActionsLis
     }
 
     private void setContent(boolean isUpdate, String name) {
-        eventService.getOrganizerEvents(AuthUtil.getAuthorizationValue(requireContext()), AuthUtil.extractId(requireContext()), name).enqueue(new Callback<>() {
+        isLoading = true;
+        if (!isUpdate) page.resetToDefault();
+        eventService.getOrganizerEvents(AuthUtil.getAuthorizationValue(requireContext()), prepareParams(name)).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Page<BasicEventDTO>> call,
                                    @NonNull Response<Page<BasicEventDTO>> response) {
@@ -204,6 +210,28 @@ public class SelectEventForPurchase extends Fragment implements SearchActionsLis
             }
         });
 
+    }
+
+    private Map<String, String> prepareParams(String name) {
+        Map<String, String> map = new HashMap<>();
+        map.put("organizerId", AuthUtil.extractId(requireContext()).toString());
+        map.put("name", name);
+        page.setSort(new Sort().by("email"));
+        map.putAll(page.toQueryMap());
+        return map;
+    }
+
+    private void setupContentScrollListener() {
+        eventsView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                var layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int lastVisiblePosition = Objects.requireNonNull(layoutManager).findLastCompletelyVisibleItemPosition();
+                if (lastVisiblePosition == viewAdapter.getLastItemIndex() && !page.isLast())
+                    onNextPage();
+            }
+        });
     }
 
     private void setupSearchView() {

@@ -55,6 +55,7 @@ import rs.ac.uns.eventplanner.team7.R;
 import rs.ac.uns.eventplanner.team7.data.dto.pricing.PricingRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.CreateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.CreateServiceResponseDTO;
+import rs.ac.uns.eventplanner.team7.data.dto.service.DeleteServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.GetServiceResponseDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.UpdateServiceRequestDTO;
 import rs.ac.uns.eventplanner.team7.data.dto.service.UpdateServiceResponseDTO;
@@ -548,7 +549,10 @@ public class ServiceManagementFragment extends Fragment implements CardClickList
             public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
                 if (!isAdded()) return;
                 if (response.isSuccessful() && response.body() != null) {
-                    if (serviceDTO == null)
+                    if (response.body() instanceof DeleteServiceResponseDTO) {
+                        Log.d("SUCCESS", "Service deleted successfully!");
+                    }
+                    else if (serviceDTO == null)
                         uploadImages(((CreateServiceResponseDTO)response.body()).getId(), new ArrayList<>());
                     else if (!images.isEmpty())
                         uploadImages(((UpdateServiceResponseDTO)response.body()).getId(), new ArrayList<>(imageUrls));
